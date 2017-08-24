@@ -1,0 +1,121 @@
+citation
+citation("R")
+citation(R)
+citation()
+## ************************************************************#
+rm(list=ls())#
+setwd('~/Dropbox/hedgerow_metacom/analysis/occupancy')#
+source('src/misc.R')#
+library('abind')#
+library('nimble')#
+library('R2jags')#
+source('src/prep.R')#
+source('src/initialize.R')#
+source('../../../nimble/occupancy/analysis/all/plotting.R')#
+w.rain <- TRUE
+source('../../../occupancy/analysis/all/plotting.R')
+## ************************************************************#
+rm(list=ls())#
+setwd('~/Dropbox/hedgerow_metacom/analysis/occupancy')#
+source('src/misc.R')#
+library('abind')#
+library('nimble')#
+library('R2jags')#
+source('src/prep.R')#
+source('src/initialize.R')#
+source('../../../occupancy/analysis/all/plotting.R')#
+w.rain <- TRUE#
+#
+## ************************************************************#
+## prep data#
+## ************************************************************#
+#
+model.input <- prep(nzero=0,#
+                    threshold=3,#
+                    phen=TRUE,#
+                    save.dir=save.dir,#
+                    spec,#
+                    sr.sched,#
+                    all.traits,#
+                    trait.ev1 = "r.degree",#
+                    trait.ev2 = "BodyLength",#
+                    rain=rain,#
+                    HRarea=sum.dist.area, ##spstats#
+                    natural=natural.land,#
+                    natural.decay="natural350",#
+                    w.rain=w.rain)
+scale <- 5e2#
+burnin <- 1e1*scale#
+niter <- (1e3)*scale
+scale
+niter
+?compreMCMCs
+?compareMCMCs
+head(natural)
+head(natural.land)
+natural.land$Site
+unique(natural.land$Site)
+dist.tables
+rm(list=ls())#
+## setwd('~/Dropbox/hedgerow_metacom/dataPrep')#
+setwd('dataPrep')#
+load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')#
+load('~/Dropbox/hedgerow_network/data/veg/veg.Rdata')#
+source('src/misc.R')#
+source('src/prepNets.R')#
+source('src/specialization.R')#
+library(bipartite)#
+library(fossil)#
+load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')#
+#
+trait.dir <- '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'#
+bee.trait <-#
+  read.csv(file.path(trait.dir, 'bee.csv'),#
+           row.names=1)#
+## syr.trait <-#
+##   read.csv(file.path(trait.dir, 'syr.csv'),#
+##            row.names=1)#
+#
+both.trait <-#
+  read.csv(file.path(trait.dir, 'bee.syr.csv'))#
+#
+spec <- dd
+rm(list=ls())#
+setwd('~/Dropbox/hedgerow_metacom/dataPrep')#
+setwd('dataPrep')#
+load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')#
+load('~/Dropbox/hedgerow_network/data/veg/veg.Rdata')#
+source('src/misc.R')#
+source('src/prepNets.R')#
+source('src/specialization.R')#
+library(bipartite)#
+library(fossil)#
+load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')#
+#
+trait.dir <- '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'#
+bee.trait <-#
+  read.csv(file.path(trait.dir, 'bee.csv'),#
+           row.names=1)#
+## syr.trait <-#
+##   read.csv(file.path(trait.dir, 'syr.csv'),#
+##            row.names=1)
+dimnames(mat)
+dim(mat)
+dimnames(mat)[[2]]
+apply(mat, 2, sum)
+apply(mat, 1, sum)
+apply(mat, 1, sum, na.rm=TRUE)
+apply(mat, c(1,2), sum, na.rm=TRUE)
+apply(mat, c(2,3), sum, na.rm=TRUE)
+apply(mat, c(1,3), sum, na.rm=TRUE)
+apply(mat, c(1,2), sum, na.rm=TRUE)
+samples <- apply(mat, c(1,2), function(x) sum(!is.na(x)))
+samples
+samples <- apply(mat, c(1,2), function(x) length(!is.na(x)))
+samples
+samples <- apply(mat, c(1,2), function(x) sum(!is.na(x)))
+samples
+samples <- apply(mat, c(1,2), function(x) all(!is.na(x)))
+samples
+samples <- apply(apply(mat, c(1,2), function(x) all(!is.na(x))), 1, sum)samples <- apply(apply(mat, c(1,2), function(x) all(!is.na(x))), 1, sum)
+samples
