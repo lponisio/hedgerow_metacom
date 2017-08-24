@@ -50,7 +50,7 @@ input1 <- c(code=ms.ms.occ,
 ## run in nimble, this works but the mid lelvel parameters do not mix
 ## *****************************************************************
 ms.ms.nimble <- compareMCMCs_withMonitors(input1,
-                                          MCMCs=c('nimble'),
+                                          MCMCs=c('nimble', 'jags'),
                                           niter=niter,
                                           burnin = burnin,
                                           thin=nthin,

@@ -270,7 +270,11 @@ prep <- function(nzero, threshold,
                   phi.traits2=rnorm(nsp),
                   gam.traits2=rnorm(nsp),
                   phi.traits1.fra=rnorm(nsp),
-                  gam.traits1.fra=rnorm(nsp))
+                  gam.traits1.fra=rnorm(nsp),
+                  phi.hr.area.fra=rnorm(nsp),
+                  gam.hr.area.fra=rnorm(nsp),
+                  phi.nat.area.fra=rnorm(nsp),
+                  gam.nat.area.fra=rnorm(nsp))
 
     ## load initial conditions from a previous run
     if(load.inits){
@@ -371,11 +375,14 @@ get.params <- function(w.rain){
              'sigma.gam.traits2',
              'mu.gam.traits1.fra',
              'sigma.gam.traits1.fra',
+             'mu.gam.hr.area.fra',
+             'sigma.gam.hr.area.fra',
+             'mu.gam.nat.area.fra',
+             'sigma.gam.nat.area.fra',
              'phi.site.mean',
              'gam.site.mean',
              'phi.sp.mean',
-             'gam.sp.mean',
-             'N')
+             'gam.sp.mean')
     if(!w.rain){
         out <- out[!grepl("rain", out)]
     }

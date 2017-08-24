@@ -63,6 +63,25 @@ ms.ms.occ <- nimbleCode({
     tau.gam.traits1.fra <-
         1/(sigma.gam.traits1.fra*sigma.gam.traits1.fra)
 
+    mu.phi.hr.area.fra  ~ dnorm(0,0.01)
+    mu.gam.hr.area.fra  ~ dnorm(0,0.01)
+    sigma.phi.hr.area.fra ~ dunif(0,10)
+    sigma.gam.hr.area.fra ~ dunif(0,10)
+    tau.phi.hr.area.fra <-
+        1/(sigma.phi.hr.area.fra*sigma.phi.hr.area.fra)
+    tau.gam.hr.area.fra <-
+        1/(sigma.gam.hr.area.fra*sigma.gam.hr.area.fra)
+
+    mu.phi.nat.area.fra  ~ dnorm(0,0.01)
+    mu.gam.nat.area.fra  ~ dnorm(0,0.01)
+    sigma.phi.nat.area.fra ~ dunif(0,10)
+    sigma.gam.nat.area.fra ~ dunif(0,10)
+    tau.phi.nat.area.fra <-
+        1/(sigma.phi.nat.area.fra*sigma.phi.nat.area.fra)
+    tau.gam.nat.area.fra <-
+        1/(sigma.gam.nat.area.fra*sigma.gam.nat.area.fra)
+
+
 
     ## species-specific  parameters
     for(sp in 1:nsp) {
@@ -110,6 +129,20 @@ ms.ms.occ <- nimbleCode({
                                     tau.phi.traits1.fra)
         gam.traits1.fra[sp] ~ dnorm(mu.gam.traits1.fra,
                                     tau.gam.traits1.fra)
+
+
+       ## hr area * fra interaction
+        phi.hr.area.fra[sp] ~ dnorm(mu.phi.hr.area.fra,
+                                    tau.phi.hr.area.fra)
+        gam.hr.area.fra[sp] ~ dnorm(mu.gam.hr.area.fra,
+                                    tau.gam.hr.area.fra)
+
+        ## nat area * fra interaction
+        phi.nat.area.fra[sp] ~ dnorm(mu.phi.nat.area.fra,
+                                    tau.phi.nat.area.fra)
+        gam.nat.area.fra[sp] ~ dnorm(mu.gam.nat.area.fra,
+                                    tau.gam.nat.area.fra)
+
         for(site in 1:nsite) {
             for(yr in 1:nyear) {
                 for(rep in 1:nrep[site,yr,sp]) {
@@ -150,7 +183,9 @@ ms.ms.occ <- nimbleCode({
                     phi.hr.area[sp]*HRarea[site] +
                     phi.nat.area[sp]*natural[site] +
                     phi.fra[sp]*fra[site, yr] +
-                    phi.traits1.fra[sp]*fra[site, yr]*traits1[sp]
+                    phi.traits1.fra[sp]*fra[site, yr]*traits1[sp] +
+                    phi.hr.area.fra[sp]*fra[site, yr]*HRarea[site] +
+                    phi.nat.area.fra[sp]*fra[site, yr]*natural[site]
 
                 gam[site,yr,sp] <-
                     gam.0[sp] +
@@ -159,7 +194,9 @@ ms.ms.occ <- nimbleCode({
                     gam.hr.area[sp]*HRarea[site] +
                     gam.nat.area[sp]*natural[site] +
                     gam.fra[sp]*fra[site, yr] +
-                    gam.traits1.fra[sp]*fra[site, yr]*traits1[sp]
+                    gam.traits1.fra[sp]*fra[site, yr]*traits1[sp] +
+                    gam.hr.area.fra[sp]*fra[site, yr]*HRarea[site] +
+                    gam.nat.area.fra[sp]*fra[site, yr]*natural[site]
 
                 logit(psi[site,yr+1,sp]) <-
                     Z[site,yr,sp] * phi[site,yr,sp] +
@@ -177,11 +214,11 @@ ms.ms.occ <- nimbleCode({
     }
 
     ## calculate some useful stuff
-    for(yr in 1:nyear) {
-        for(site in 1:nsite) {
-            N[site,yr] <- sum(Z[site,yr, 1:nsp])
-        }
-    }
+    ## for(yr in 1:nyear) {
+    ##     for(site in 1:nsite) {
+    ##         N[site,yr] <- sum(Z[site,yr, 1:nsp])
+    ##     }
+    ## }
 
     for(sp in 1:nsp) {
         phi.sp.mean[sp] <- mean(phi[1:nsite, 1:(nyear-1), sp])
