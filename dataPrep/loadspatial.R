@@ -139,8 +139,10 @@ r <- raster(nrow=ill.dim[1], ncol=ill.dim[2],
               ymn=bbox(landcover.nat)[2,1],
               ymx=bbox(landcover.nat)[2,2],
             crs=CRS(proj4string(landcover.nat)))
-landcover.r <- rasterize(landcover.nat, r, 'VegName')
 
+landcover.r <- rasterize(landcover.nat, r, 'VegCode')
+
+landcover.r <- projectRaster(landcover.r, CRS(proj4string(all.sites.pt)))
 
 save(landcover.r,
      file=file.path(save.dir, "landcoverNat_raster.Rdata"))

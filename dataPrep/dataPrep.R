@@ -11,14 +11,14 @@ load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')
 
 trait.dir <- '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'
 bee.trait <-
-  read.csv(file.path(trait.dir, 'bee.csv'),
-           row.names=1)
+    read.csv(file.path(trait.dir, 'bee.csv'),
+             row.names=1)
 ## syr.trait <-
 ##   read.csv(file.path(trait.dir, 'syr.csv'),
 ##            row.names=1)
 
 both.trait <-
-  read.csv(file.path(trait.dir, 'bee.syr.csv'))
+    read.csv(file.path(trait.dir, 'bee.syr.csv'))
 
 ## minimum number of samples across year needed to be included in the
 ## analysis
@@ -55,19 +55,20 @@ agg.spec <- aggregate(list(abund=spec$GenusSpecies),
                       length)
 
 nets.all <- samp2site.spp(agg.spec$PlantGenusSpecies,
-                          agg.spec$GenusSpecies, agg.spec$abund, FUN=sum)
+                          agg.spec$GenusSpecies,
+                          agg.spec$abund, FUN=sum)
 
 all.specializations <- specieslevel(nets.all,
                                     index=c('proportional generality',
-                                      'degree',
-                                      'd'))
+                                            'degree',
+                                            'd'))
 
 ## calculate rarified plant.pol degree
 rare.plants.degree <- apply(nets.all, 1, chao1)
 rare.pols.degree <- apply(nets.all, 2, chao1)
 
 traits <- data.frame(GenusSpecies= unlist(sapply(all.specializations,
-                       rownames)),
+                                                 rownames)),
                      do.call(rbind, all.specializations))
 
 traits$r.degree <-  rare.pols.degree[match(traits$GenusSpecies,
@@ -117,19 +118,19 @@ length(unique(paste(spec$GenusSpecies, spec$PlantGenusSpecies)))
 ## thermal traits
 ## *************************************************
 spec$AverageTemp <- apply(spec, 1, function(x){
-  mean(as.numeric(c(x['TempStart'], x['TempEnd'])),
-       na.rm=TRUE)
+    mean(as.numeric(c(x['TempStart'], x['TempEnd'])),
+         na.rm=TRUE)
 })
 
 temp.tol <- do.call(rbind, tapply(spec$AverageTemp, spec$GenusSpecies,
                                   function(x){
-                                    temp.mean <- mean(x, na.rm=TRUE)
-                                    temp.range <- range(x, na.rm=TRUE)
-                                    max.temp <- temp.range[2]
-                                    temp.range <- temp.range[2] - temp.range[1]
-                                    return(c(temp.mean=temp.mean,
-                                             max.temp=max.temp,
-                                             temp.range=temp.range))
+                                      temp.mean <- mean(x, na.rm=TRUE)
+                                      temp.range <- range(x, na.rm=TRUE)
+                                      max.temp <- temp.range[2]
+                                      temp.range <- temp.range[2] - temp.range[1]
+                                      return(c(temp.mean=temp.mean,
+                                               max.temp=max.temp,
+                                               temp.range=temp.range))
                                   }))
 temp.tol <- as.data.frame(temp.tol)
 temp.tol$GenusSpecies <- rownames(temp.tol)
@@ -143,16 +144,16 @@ traits <- merge(traits, temp.tol, all.x=TRUE)
 ## *************************************************
 
 doy.tol <- do.call(rbind, tapply(spec$doy, spec$GenusSpecies,
-                                  function(x){
-                                    doy.mean <- mean(x, na.rm=TRUE)
-                                    doy.range <- range(x, na.rm=TRUE)
-                                    max.doy <- doy.range[2]
-                                    doy.range <- (doy.range[2] -
-                                  doy.range[1]) +1
-                                    return(c(doy.mean=doy.mean,
-                                             max.doy=max.doy,
-                                             doy.range=doy.range))
-                                  }))
+                                 function(x){
+                                     doy.mean <- mean(x, na.rm=TRUE)
+                                     doy.range <- range(x, na.rm=TRUE)
+                                     max.doy <- doy.range[2]
+                                     doy.range <- (doy.range[2] -
+                                                   doy.range[1]) +1
+                                     return(c(doy.mean=doy.mean,
+                                              max.doy=max.doy,
+                                              doy.range=doy.range))
+                                 }))
 doy.tol <- as.data.frame(doy.tol)
 doy.tol$GenusSpecies <- rownames(doy.tol)
 rownames(doy.tol) <- NULL
@@ -207,7 +208,7 @@ occ.plants <- apply(occ.plant, 1, mean)
 occ.all <- c(occ.bees, occ.plants)
 
 traits$occ.date <- occ.all[match(traits$GenusSpecies,
-                                         names(occ.all))]
+                                 names(occ.all))]
 
 ## functional traits
 ## traits <- merge(traits, syr.trait[,c(5:7,10,33)], all.x=TRUE)
