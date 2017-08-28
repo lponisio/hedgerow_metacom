@@ -41,3 +41,5 @@ load('../../data/spatial/HRareaDist.Rdata')
 load('../../data/spatial/natcover_decay_yolo.Rdata')
 ## veg data
 load('../../data/veg.Rdata')
+
+
