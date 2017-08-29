@@ -6,11 +6,11 @@ makeNetworkFig <- function(spec,
                            cols,
                            nets,
                            weight.edge.colors=FALSE,
-                           cols.vertex=brewer.pal(11, 'RdGy')[c(1,11)],
-                           cols.edges=add.alpha(brewer.pal(11,
-                                                           'RdGy')[c(6,11,1,6)], alpha=0.5),
+                           cols.vertex=brewer.pal(11, 'RdGy')[c(1,10)],
+                           cols.edges=add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.5),
                            vertex.names = c("control", "mature"),
-                           natural.cover=NULL, ...){
+                           natural.cover=NULL,
+                           site.ave=NULL, ...){
     expandNets <- function(sub.mat, all.mat){
         sub.mat <- sub.mat[rownames(sub.mat) %in% rownames(all.mat),]
         sub.mat <- sub.mat[,colnames(sub.mat) %in% colnames(all.mat)]
@@ -38,8 +38,12 @@ makeNetworkFig <- function(spec,
     mean.net.year[mean.net.year > 0] <- 1
     dist.year <- designdist(mean.net.year, method="J")
     dist.year <- as.matrix(dist.year)
-    importance <-  (rowSums(dist.year)/
-                    max(rowSums(dist.year)))*2
+    if(!is.null(site.ave)){
+        importance <- site.ave
+    } else{
+        importance <-  (rowSums(dist.year)/
+                        max(rowSums(dist.year)))*2
+    }
     ## zero out duplicate edges
     dist.year[lower.tri(dist.year, diag=FALSE)] <- 0
 
@@ -85,7 +89,7 @@ makeNetworkFig <- function(spec,
              col= rgb(1,1,1, alpha=0.3))
         if(!is.null(natural.cover)){
 
-            poly.cols <- add.alpha("darkolivegreen",
+            poly.cols <- add.alpha("black",
                                alpha=0.1)
             plot(natural.cover,
                  col=poly.cols, border=poly.cols, add=TRUE)
@@ -114,13 +118,14 @@ makeNetworkFig <- function(spec,
 
     if(!is.null(lat.long)){
         points(latex, col=V(gs)$color, pch=16, cex=importance)
+        points(latex, col="black", pch=1, cex=importance)
         new.sites <-
             rownames(lat.long)[!rownames(lat.long) %in%
                                unique(spec$Site)]
-        points(lat.long[new.sites,], col="goldenrod2", pch=15,
-               cex=0.5)
         points(lat.long[new.sites,], col="black", pch=0,
-               cex=0.5)
+               cex=0.3)
+        points(lat.long[new.sites,], col="goldenrod2", pch=15,
+               cex=0.25)
 
     }
 }

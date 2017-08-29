@@ -28,15 +28,21 @@ all.sites.pt <- spTransform(all.sites.pt,
                             CRS("+init=epsg:4326"))
 
 landcover.nat <- spTransform(landcover.nat,
-                            CRS("+init=epsg:4326"))
+                             CRS("+init=epsg:4326"))
 
 bbox.sites <- bbox(all.sites.pt)
 bbox.nat <- bbox(landcover.nat)
 
-bbox.all <- matrix(c(min(bbox.sites[1,1], bbox.nat[1,1]),
-                   min(bbox.sites[2,1], bbox.nat[2,1]),
-                   max(bbox.sites[1,2], bbox.nat[1,2]),
-                   max(bbox.sites[2,2], bbox.nat[2,2])), ncol=2)
+## bbox.all <- matrix(c(min(bbox.sites[1,1], bbox.nat[1,1]),
+##                    min(bbox.sites[2,1], bbox.nat[2,1]),
+##                    max(bbox.sites[1,2], bbox.nat[1,2]),
+##                    max(bbox.sites[2,2], bbox.nat[2,2])), ncol=2)
+
+bbox.all <- matrix(c(bbox.nat[1,1],
+                     bbox.nat[2,1],
+                     bbox.nat[1,2],
+                     bbox.nat[2,2]), ncol=2)
+
 ## + c(0, -0.001, -0.01, -0.15)
 
 sys <- gmap(x=bbox.all,
@@ -52,20 +58,31 @@ nets.year.sp <- lapply(nets.year, t)
 
 
 landcover.nat <- spTransform(landcover.nat,
-                            sys@crs)
+                             sys@crs)
 
 
- load('../../../hedgerow_metacom_saved/occupancy/5-0-all.RData')
- load('../../../hedgerow_metacom_saved/occupancy/runs/nimble_bees_noRain.Rdata')
+load('../../../hedgerow_metacom_saved/occupancy/5-0-all.RData')
+load('../../../hedgerow_metacom_saved/occupancy/runs/nimble_bees_noRain.Rdata')
 
 nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
-nimble.sum <- nimble.sum[, grep("site.mean", colnames(nimble.sum))]
 
-indexes <- gsub("gam.site.mean\\[|phi.site.mean\\[","", colnames(nimble.sum))
-site.num <- sapply(strsplit(indexes, ","), function(x) x[1])
+getSiteAve <- function(pattern, nimble.summary, model.input){
+    nimble.summary <- nimble.summary[, grep(pattern,
+                                            colnames(nimble.summary))]
 
-nimble.site.ave <- tapply(nimble.sum["mean",], site.num, mean)
+    indexes <- gsub("gam.site.mean\\[|phi.site.mean\\[","", colnames(nimble.summary))
+    site.num <- sapply(strsplit(indexes, ","), function(x) x[1])
 
-sites <- dimnames(model.input$data$X)[[1]]
+    nimble.site.ave <- tapply(nimble.summary["mean",], site.num, mean)
 
-names(nimble.site.ave) <- sites
+    sites <- dimnames(model.input$data$X)[[1]]
+
+    names(nimble.site.ave) <- sites
+    return(nimble.site.ave)
+}
+
+phi.site.ave <- getSiteAve("phi.site.mean", nimble.sum, model.input)
+gam.site.ave <- getSiteAve("gam.site.mean", nimble.sum, model.input)
+
+
+phi.gam <- list(phi.site.ave, gam.site.ave*2)
