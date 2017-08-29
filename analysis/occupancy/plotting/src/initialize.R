@@ -53,3 +53,19 @@ nets.year.sp <- lapply(nets.year, t)
 
 landcover.nat <- spTransform(landcover.nat,
                             sys@crs)
+
+
+ load('../../../hedgerow_metacom_saved/occupancy/5-0-all.RData')
+ load('../../../hedgerow_metacom_saved/occupancy/runs/nimble_bees_noRain.Rdata')
+
+nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
+nimble.sum <- nimble.sum[, grep("site.mean", colnames(nimble.sum))]
+
+indexes <- gsub("gam.site.mean\\[|phi.site.mean\\[","", colnames(nimble.sum))
+site.num <- sapply(strsplit(indexes, ","), function(x) x[1])
+
+nimble.site.ave <- tapply(nimble.sum["mean",], site.num, mean)
+
+sites <- dimnames(model.input$data$X)[[1]]
+
+names(nimble.site.ave) <- sites

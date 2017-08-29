@@ -36,10 +36,10 @@ model.input <- prep(nzero=0,
 
 ## buffer "d2000"
 
-scale <- 1e1
+scale <- 5e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
-nthin <- scale/10
+nthin <- 2
 
 
 source('src/complete_noRain.R')
@@ -60,7 +60,7 @@ ms.ms.nimble <- compareMCMCs_withMonitors(input1,
                                           monitors=model.input$monitors)
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  'runs/nimble_bees_noRain.Rdata'))
+                                  'runs/nimble_bees_noRain'))
 
 ## *****************************************************************
 ## cross level sampler

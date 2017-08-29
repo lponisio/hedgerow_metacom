@@ -4,10 +4,7 @@ library(igraph)
 library(bipartite)
 library(RColorBrewer)
 source('src/initialize.R')
-source('src/misc.R')
-source('plotting/src/makeNetworkFig.R')
-
-
+source('plotting/src/initialize.R')
 
 plotAllStatuses <- function(){
     makeNetworkFig(spec, sys, lat.long=lat.long,

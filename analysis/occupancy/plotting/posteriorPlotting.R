@@ -8,12 +8,11 @@ source('src/misc.R')
 source('src/plotting.R')
 source('src/prep.R')
 source('src/initialize.R')
+source('../../../occupancy/analysis/all/plotting.R')
 
 ## *****************************************************************
 ## comparisons
 ## *****************************************************************
-source('../../../occupancy/analysis/all/plotting.R')
-
 ## load(file=file.path(save.dir, 'runs/crosslevel.Rdata'))
 load(file=file.path(save.dir, 'runs/nimble_bees_noRain.Rdata'))
 
@@ -48,21 +47,6 @@ pdf.f(cat.func,
                      "figures/chains/nimble-mus-caterpillar.pdf"),
       height=6, width=4)
 
-
-## phis
-samples.phis <- ggs(as.mcmc(t(ms.ms.occ.all$ms.ms$samples["nimble",
- grep("^phi", dimnames(ms.ms.occ.all$ms.ms$samples["nimble",,])[[1]]),])))
-
-ggmcmc(samples.phis,
-       file=file.path(save.dir,
-                      "figures/chains/nimble-phis.pdf"))
-
-pdf.f(ggs_caterpillar(samples.phis),
-      file=file.path(save.dir,
-                     "figures/chains/nimble-phis-caterpillar.pdf"))
-
-
-
 ## *****************************************************************
 ## paramter groups
 ## *****************************************************************
@@ -92,11 +76,12 @@ nimble.summary <- ms.ms.occ.all$ms.ms$summary["nimble",,]
 mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
 wanted.order <- c("hr.area", "nat.area", "fra", "hr.area.fra",
-                  "nat.area.fra", "traits1", "traits2") # "traits1.fra"
+                  "nat.area.fra", "traits1", "traits1.fra", "traits2")
 
 xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
            "Floral diversity", "Hedgerow* \n floral diversity",
            "Semi-natural* \n floral diversity", "Diet breadth",
+           "Diet breadth* \n floral diversity",
            "Body size")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
@@ -105,4 +90,39 @@ pdf.f(f,
       file=file.path(save.dir,
                      "figures/ms/mus.pdf"),
       height=8, width=6)
+
+
+
+## *****************************************************************
+## persistence vs. hr and nat habitat effects
+## *****************************************************************
+load(file.path(save.dir,
+               'runs/nimble_bees_noRain_allparam_short.Rdata'))
+
+load(file.path(save.dir,
+               '5-0-all.Rdata'))
+
+nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
+
+params.to.get <- c("phi.sp.mean", "gam.sp.mean", "phi.nat.area",
+                   "gam.nat.area", "phi.hr.area", "gam.hr.area")
+
+params <- lapply(params.to.get, function(x){
+    nimble.sum[, grep(x,
+                      colnames(nimble.sum))]
+})
+names(params) <- params.to.get
+
+params <- lapply(params, function(x){
+    x[, !grepl("^mu|^sigma", colnames(x))]
+})
+
+## no relationships between persistence/colonization and hedgerow/nat
+## habtiat proximity effect
+layout(matrix(1:4, byrow=TRUE, nrow=2))
+plot(params$phi.sp.mean["mean",], params$phi.hr.area["mean",])
+plot(params$gam.sp.mean["mean",], params$gam.hr.area["mean",])
+
+plot(params$phi.sp.mean["mean",], params$phi.nat.area["mean",])
+plot(params$gam.sp.mean["mean",], params$gam.nat.area["mean",])
 

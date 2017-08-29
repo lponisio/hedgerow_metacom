@@ -1,5 +1,5 @@
 rm(list=ls())
-## setwd('~/Dropbox/hedgerow_metacom/')
+setwd('~/Dropbox/hedgerow_metacom/')
 setwd('dataPrep')
 load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')
 source('src/misc.R')
@@ -24,7 +24,6 @@ both.trait <-
 ## analysis
 
 sample.min <- 5
-
 spec <- dd
 
 ## subset to net specimens
@@ -45,6 +44,14 @@ spec$SiteStatus[spec$SiteStatus == 'restored'] <- 'maturing'
 spec$Date <- as.Date(spec$Date)
 spec$doy <- as.numeric(strftime(spec$Date, format='%j'))
 
+
+occ.data <-
+    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/5-0-all.RData'),
+        silent=TRUE)
+if(!inherits(occ.data, "try-error")){
+    keep.sites <- dimnames(model.input$data$X)[[1]]
+    spec <- spec[spec$Site %in% keep.sites,]
+}
 
 ## *************************************************
 ## create a giant network to calculate specialization
@@ -95,7 +102,7 @@ to.drop.status <- c('forb', 'natural')
 ## sites.to.drop <- c('RLong', 'Johnston', 'Gilmer')
 
 spec <- spec[!spec$SiteStatus %in% to.drop.status,]
-spec <- spec[!spec$Site %in% sites.to.drop,]
+## spec <- spec[!spec$Site %in% sites.to.drop,]
 
 ## total specimens
 nrow(spec)

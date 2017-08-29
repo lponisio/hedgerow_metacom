@@ -1,6 +1,7 @@
 rm(list=ls())
 setwd('analysis/spatial')
-## setwd('~/Dropbox/hedgerow_metacom/analysis/spatial')
+## setwd('~/Dropbox/hedgerow_metacom')
+setwd('analysis/spatial')
 source('../../dataPrep/src/misc.R')
 library(rgdal)
 library(maptools)
