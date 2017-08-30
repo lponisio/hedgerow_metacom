@@ -85,4 +85,4 @@ phi.site.ave <- getSiteAve("phi.site.mean", nimble.sum, model.input)
 gam.site.ave <- getSiteAve("gam.site.mean", nimble.sum, model.input)
 
 
-phi.gam <- list(phi.site.ave, gam.site.ave*2)
+phi.gam <- list(phi.site.ave, gam.site.ave*3)
