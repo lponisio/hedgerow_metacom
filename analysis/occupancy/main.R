@@ -8,7 +8,6 @@ source('src/misc.R')
 source('src/plotting.R')
 source('src/prep.R')
 source('src/initialize.R')
-w.rain <- FALSE
 w.ypr <- FALSE
 
 
@@ -16,27 +15,24 @@ w.ypr <- FALSE
 ## prep data
 ## ************************************************************
 
-model.input <- prep(nzero=0,
+model.input <- prepOccModelInput(nzero=0,
                     threshold=5,
-                    phen=TRUE,
                     save.dir=save.dir,
                     spec,
                     sr.sched,
                     all.traits,
-                    trait.ev1 = "r.degree",
-                    trait.ev2 = "BodyLength",
-                    rain=rain,
+                    col.name.trait1 = "r.degree",
+                    col.name.trait2 = "BodyLength",
                     HRarea=sum.dist.area, ##spstats
                     natural.mat=nat.area.sum,
                     natural.decay="350",
                     veg=by.site,
-                    w.rain=w.rain,
                     w.ypr=w.ypr,
                     load.inits=FALSE)
 
 ## buffer "d2000"
 
-scale <- 5e2
+scale <- 1e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2

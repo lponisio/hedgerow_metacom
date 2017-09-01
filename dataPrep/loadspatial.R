@@ -101,7 +101,8 @@ landcover <- spTransform(landcover, CRS(proj4string(all.sites.pt)))
 
 non.natural <- c("Water", "Vineyards", "Urban or Built-up",
                  "Truck/Nursery/Berry Crops",
-                 "Semiagricultural/Incidental to Agriculture", "Rice",
+                 "Semiagricultural/Incidental to Agriculture",
+                 "Rice",
                  "Pasture", "Levee", "Field Crops",
                  "Deciduous Fruits/Nuts",
                  "Citrus/Subtropical",
