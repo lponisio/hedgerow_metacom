@@ -37,7 +37,6 @@ burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
 
-
 source('src/complete_noRain.R')
 
 input1 <- c(code=ms.ms.occ,
@@ -119,7 +118,8 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            constants=model.input$constants,
                            data=model.input$data,
                            inits=model.input$inits,
-                           check=FALSE)
+                           check=FALSE,
+                           calculate=FALSE)
 
 ## configure and build mcmc
 mcmc.spec <- configureMCMC(ms.ms.model,

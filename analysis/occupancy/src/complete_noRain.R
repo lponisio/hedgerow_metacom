@@ -2,6 +2,7 @@ ms.ms.occ <- nimbleCode({
 
 
     ## multi-species priors
+    ## detectablility
     mu.p.0     ~ dnorm(0,0.01)
     mu.p.day.1 ~ dnorm(0,0.01)
     mu.p.day.2 ~ dnorm(0,0.01)
@@ -11,58 +12,50 @@ ms.ms.occ <- nimbleCode({
     tau.p.0 <- 1/(sigma.p.0*sigma.p.0)
     tau.p.day.1 <- 1/(sigma.p.day.1*sigma.p.day.1)
     tau.p.day.2 <- 1/(sigma.p.day.2*sigma.p.day.2)
-
+    ## phi/gam random intercepts
     mu.phi.0  ~ dnorm(0,0.01)
     mu.gam.0  ~ dnorm(0,0.01)
     sigma.phi.0 ~ dunif(0,10)
     sigma.gam.0 ~ dunif(0,10)
     tau.phi.0 <-  1/(sigma.phi.0*sigma.phi.0)
     tau.gam.0 <-  1/(sigma.gam.0*sigma.gam.0)
-
+    ## hedgerow area proximity
     mu.phi.hr.area  ~ dnorm(0,0.01)
     mu.gam.hr.area  ~ dnorm(0,0.01)
     sigma.phi.hr.area ~ dunif(0,10)
     sigma.gam.hr.area ~ dunif(0,10)
     tau.phi.hr.area <- 1/(sigma.phi.hr.area*sigma.phi.hr.area)
     tau.gam.hr.area <- 1/(sigma.gam.hr.area*sigma.gam.hr.area)
-
+    ## semi nat habitat area proximity
     mu.phi.nat.area  ~ dnorm(0,0.01)
     mu.gam.nat.area  ~ dnorm(0,0.01)
     sigma.phi.nat.area ~ dunif(0,10)
     sigma.gam.nat.area ~ dunif(0,10)
     tau.phi.nat.area <- 1/(sigma.phi.nat.area*sigma.phi.nat.area)
     tau.gam.nat.area <- 1/(sigma.gam.nat.area*sigma.gam.nat.area)
-
+    ## floral resource diversity
     mu.phi.fra  ~ dnorm(0,0.01)
     mu.gam.fra  ~ dnorm(0,0.01)
     sigma.phi.fra ~ dunif(0,10)
     sigma.gam.fra ~ dunif(0,10)
     tau.phi.fra <- 1/(sigma.phi.fra*sigma.phi.fra)
     tau.gam.fra <- 1/(sigma.gam.fra*sigma.gam.fra)
-
-    mu.phi.traits1  ~ dnorm(0,0.01)
-    mu.gam.traits1  ~ dnorm(0,0.01)
-    sigma.phi.traits1 ~ dunif(0,10)
-    sigma.gam.traits1 ~ dunif(0,10)
-    tau.phi.traits1 <- 1/(sigma.phi.traits1*sigma.phi.traits1)
-    tau.gam.traits1 <- 1/(sigma.gam.traits1*sigma.gam.traits1)
-
-    mu.phi.traits2  ~ dnorm(0,0.01)
-    mu.gam.traits2  ~ dnorm(0,0.01)
-    sigma.phi.traits2 ~ dunif(0,10)
-    sigma.gam.traits2 ~ dunif(0,10)
-    tau.phi.traits2 <- 1/(sigma.phi.traits2*sigma.phi.traits2)
-    tau.gam.traits2 <- 1/(sigma.gam.traits2*sigma.gam.traits2)
-
-    mu.phi.traits1.fra  ~ dnorm(0,0.01)
-    mu.gam.traits1.fra  ~ dnorm(0,0.01)
-    sigma.phi.traits1.fra ~ dunif(0,10)
-    sigma.gam.traits1.fra ~ dunif(0,10)
-    tau.phi.traits1.fra <-
-        1/(sigma.phi.traits1.fra*sigma.phi.traits1.fra)
-    tau.gam.traits1.fra <-
-        1/(sigma.gam.traits1.fra*sigma.gam.traits1.fra)
-
+    ## diet breadth
+    mu.phi.k  ~ dnorm(0,0.01)
+    mu.gam.k  ~ dnorm(0,0.01)
+    sigma.phi.k ~ dunif(0,10)
+    sigma.gam.k ~ dunif(0,10)
+    tau.phi.k <- 1/(sigma.phi.k*sigma.phi.k)
+    tau.gam.k <- 1/(sigma.gam.k*sigma.gam.k)
+    ## body size
+    mu.phi.B  ~ dnorm(0,0.01)
+    mu.gam.B  ~ dnorm(0,0.01)
+    sigma.phi.B ~ dunif(0,10)
+    sigma.gam.B ~ dunif(0,10)
+    tau.phi.B <- 1/(sigma.phi.B*sigma.phi.B)
+    tau.gam.B <- 1/(sigma.gam.B*sigma.gam.B)
+    ## interaction between hedgerow proximity and floral resources
+    ## (habitat quality)
     mu.phi.hr.area.fra  ~ dnorm(0,0.01)
     mu.gam.hr.area.fra  ~ dnorm(0,0.01)
     sigma.phi.hr.area.fra ~ dunif(0,10)
@@ -71,7 +64,8 @@ ms.ms.occ <- nimbleCode({
         1/(sigma.phi.hr.area.fra*sigma.phi.hr.area.fra)
     tau.gam.hr.area.fra <-
         1/(sigma.gam.hr.area.fra*sigma.gam.hr.area.fra)
-
+    ## interaction between semi nat habitat proximity and floral
+    ## resources (habitat quality)
     mu.phi.nat.area.fra  ~ dnorm(0,0.01)
     mu.gam.nat.area.fra  ~ dnorm(0,0.01)
     sigma.phi.nat.area.fra ~ dunif(0,10)
@@ -80,27 +74,25 @@ ms.ms.occ <- nimbleCode({
         1/(sigma.phi.nat.area.fra*sigma.phi.nat.area.fra)
     tau.gam.nat.area.fra <-
         1/(sigma.gam.nat.area.fra*sigma.gam.nat.area.fra)
-
-
-    mu.phi.hr.area.traits1  ~ dnorm(0,0.01)
-    mu.gam.hr.area.traits1  ~ dnorm(0,0.01)
-    sigma.phi.hr.area.traits1 ~ dunif(0,10)
-    sigma.gam.hr.area.traits1 ~ dunif(0,10)
-    tau.phi.hr.area.traits1 <-
-        1/(sigma.phi.hr.area.traits1*sigma.phi.hr.area.traits1)
-    tau.gam.hr.area.traits1 <-
-        1/(sigma.gam.hr.area.traits1*sigma.gam.hr.area.traits1)
-
-    mu.phi.nat.area.traits1  ~ dnorm(0,0.01)
-    mu.gam.nat.area.traits1  ~ dnorm(0,0.01)
-    sigma.phi.nat.area.traits1 ~ dunif(0,10)
-    sigma.gam.nat.area.traits1 ~ dunif(0,10)
-    tau.phi.nat.area.traits1 <-
-        1/(sigma.phi.nat.area.traits1*sigma.phi.nat.area.traits1)
-    tau.gam.nat.area.traits1 <-
-        1/(sigma.gam.nat.area.traits1*sigma.gam.nat.area.traits1)
-
-
+    ## interaction between hedgerow proximity and species diet breadth
+    mu.phi.hr.area.k  ~ dnorm(0,0.01)
+    mu.gam.hr.area.k  ~ dnorm(0,0.01)
+    sigma.phi.hr.area.k ~ dunif(0,10)
+    sigma.gam.hr.area.k ~ dunif(0,10)
+    tau.phi.hr.area.k <-
+        1/(sigma.phi.hr.area.k*sigma.phi.hr.area.k)
+    tau.gam.hr.area.k <-
+        1/(sigma.gam.hr.area.k*sigma.gam.hr.area.k)
+    ## interaction between semi nat habitat proximity and species diet
+    ## breadth
+    mu.phi.nat.area.k  ~ dnorm(0,0.01)
+    mu.gam.nat.area.k  ~ dnorm(0,0.01)
+    sigma.phi.nat.area.k ~ dunif(0,10)
+    sigma.gam.nat.area.k ~ dunif(0,10)
+    tau.phi.nat.area.k <-
+        1/(sigma.phi.nat.area.k*sigma.phi.nat.area.k)
+    tau.gam.nat.area.k <-
+        1/(sigma.gam.nat.area.k*sigma.gam.nat.area.k)
 
     ## species-specific  parameters
     for(sp in 1:nsp) {
@@ -131,24 +123,17 @@ ms.ms.occ <- nimbleCode({
         gam.fra[sp] ~ dnorm(mu.gam.fra,
                             tau.gam.fra)
 
-        ## traits 1
-        phi.traits1[sp] ~ dnorm(mu.phi.traits1,
-                                tau.phi.traits1)
-        gam.traits1[sp] ~ dnorm(mu.gam.traits1,
-                                tau.gam.traits1)
+        ## diet breadth
+        phi.k[sp] ~ dnorm(mu.phi.k,
+                                tau.phi.k)
+        gam.k[sp] ~ dnorm(mu.gam.k,
+                                tau.gam.k)
 
-        ## traits 2
-        phi.traits2[sp] ~ dnorm(mu.phi.traits2,
-                                tau.phi.traits2)
-        gam.traits2[sp] ~ dnorm(mu.gam.traits2,
-                                tau.gam.traits2)
-
-        ## traits 1 * fra interaction
-        phi.traits1.fra[sp] ~ dnorm(mu.phi.traits1.fra,
-                                    tau.phi.traits1.fra)
-        gam.traits1.fra[sp] ~ dnorm(mu.gam.traits1.fra,
-                                    tau.gam.traits1.fra)
-
+        ## body size
+        phi.B[sp] ~ dnorm(mu.phi.B,
+                                tau.phi.B)
+        gam.B[sp] ~ dnorm(mu.gam.B,
+                                tau.gam.B)
 
         ## hr area * fra interaction
         phi.hr.area.fra[sp] ~ dnorm(mu.phi.hr.area.fra,
@@ -163,19 +148,17 @@ ms.ms.occ <- nimbleCode({
                                      tau.gam.nat.area.fra)
 
 
-        ## hr area * traits1 interaction
-        phi.hr.area.traits1[sp] ~ dnorm(mu.phi.hr.area.traits1,
-                                        tau.phi.hr.area.traits1)
-        gam.hr.area.traits1[sp] ~ dnorm(mu.gam.hr.area.traits1,
-                                        tau.gam.hr.area.traits1)
+        ## hr area * diet breadth interaction
+        phi.hr.area.k[sp] ~ dnorm(mu.phi.hr.area.k,
+                                        tau.phi.hr.area.k)
+        gam.hr.area.k[sp] ~ dnorm(mu.gam.hr.area.k,
+                                        tau.gam.hr.area.k)
 
-        ## nat area * traits1 interaction
-        phi.nat.area.traits1[sp] ~ dnorm(mu.phi.nat.area.traits1,
-                                         tau.phi.nat.area.traits1)
-        gam.nat.area.traits1[sp] ~ dnorm(mu.gam.nat.area.traits1,
-                                         tau.gam.nat.area.traits1)
-
-
+        ## nat area * diet breadth interaction
+        phi.nat.area.k[sp] ~ dnorm(mu.phi.nat.area.k,
+                                         tau.phi.nat.area.k)
+        gam.nat.area.k[sp] ~ dnorm(mu.gam.nat.area.k,
+                                         tau.gam.nat.area.k)
 
         for(site in 1:nsite) {
             for(yr in 1:nyear) {
@@ -212,29 +195,27 @@ ms.ms.occ <- nimbleCode({
             for(yr in 1:(nyear-1)) {
                 phi[site,yr,sp] <-
                     phi.0[sp] +
-                    phi.traits1[sp]*traits1[sp] +
-                    phi.traits2[sp]*traits2[sp] +
+                    phi.k[sp]*k[sp] +
+                    phi.B[sp]*B[sp] +
                     phi.hr.area[sp]*HRarea[site] +
                     phi.nat.area[sp]*natural[site] +
                     phi.fra[sp]*fra[site, yr] +
-                    phi.traits1.fra[sp]*fra[site, yr]*traits1[sp] +
                     phi.hr.area.fra[sp]*fra[site, yr]*HRarea[site] +
                     phi.nat.area.fra[sp]*fra[site, yr]*natural[site] +
-                    phi.hr.area.traits1[sp]*traits1[sp]*HRarea[site] +
-                    phi.nat.area.traits1[sp]*traits[sp]*natural[site]
+                    phi.hr.area.k[sp]*k[sp]*HRarea[site] +
+                    phi.nat.area.k[sp]*k[sp]*natural[site]
 
                 gam[site,yr,sp] <-
                     gam.0[sp] +
-                    gam.traits1[sp]*traits1[sp] +
-                    gam.traits2[sp]*traits2[sp] +
+                    gam.k[sp]*k[sp] +
+                    gam.B[sp]*B[sp] +
                     gam.hr.area[sp]*HRarea[site] +
                     gam.nat.area[sp]*natural[site] +
                     gam.fra[sp]*fra[site, yr] +
-                    gam.traits1.fra[sp]*fra[site, yr]*traits1[sp] +
                     gam.hr.area.fra[sp]*fra[site, yr]*HRarea[site] +
                     gam.nat.area.fra[sp]*fra[site, yr]*natural[site] +
-                    gam.hr.area.traits1[sp]*traits1[sp]*HRarea[site] +
-                    gam.nat.area.traits1[sp]*traits[sp]*natural[site]
+                    gam.hr.area.k[sp]*k[sp]*HRarea[site] +
+                    gam.nat.area.k[sp]*k[sp]*natural[site]
 
                 logit(psi[site,yr+1,sp]) <-
                     Z[site,yr,sp] * phi[site,yr,sp] +

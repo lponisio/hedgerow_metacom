@@ -33,24 +33,18 @@ model
     sigma.gam.fra ~ dunif(0, 10)
     tau.phi.fra <- 1/(sigma.phi.fra * sigma.phi.fra)
     tau.gam.fra <- 1/(sigma.gam.fra * sigma.gam.fra)
-    mu.phi.traits1 ~ dnorm(0, 0.01)
-    mu.gam.traits1 ~ dnorm(0, 0.01)
-    sigma.phi.traits1 ~ dunif(0, 10)
-    sigma.gam.traits1 ~ dunif(0, 10)
-    tau.phi.traits1 <- 1/(sigma.phi.traits1 * sigma.phi.traits1)
-    tau.gam.traits1 <- 1/(sigma.gam.traits1 * sigma.gam.traits1)
-    mu.phi.traits2 ~ dnorm(0, 0.01)
-    mu.gam.traits2 ~ dnorm(0, 0.01)
-    sigma.phi.traits2 ~ dunif(0, 10)
-    sigma.gam.traits2 ~ dunif(0, 10)
-    tau.phi.traits2 <- 1/(sigma.phi.traits2 * sigma.phi.traits2)
-    tau.gam.traits2 <- 1/(sigma.gam.traits2 * sigma.gam.traits2)
-    mu.phi.traits1.fra ~ dnorm(0, 0.01)
-    mu.gam.traits1.fra ~ dnorm(0, 0.01)
-    sigma.phi.traits1.fra ~ dunif(0, 10)
-    sigma.gam.traits1.fra ~ dunif(0, 10)
-    tau.phi.traits1.fra <- 1/(sigma.phi.traits1.fra * sigma.phi.traits1.fra)
-    tau.gam.traits1.fra <- 1/(sigma.gam.traits1.fra * sigma.gam.traits1.fra)
+    mu.phi.k ~ dnorm(0, 0.01)
+    mu.gam.k ~ dnorm(0, 0.01)
+    sigma.phi.k ~ dunif(0, 10)
+    sigma.gam.k ~ dunif(0, 10)
+    tau.phi.k <- 1/(sigma.phi.k * sigma.phi.k)
+    tau.gam.k <- 1/(sigma.gam.k * sigma.gam.k)
+    mu.phi.B ~ dnorm(0, 0.01)
+    mu.gam.B ~ dnorm(0, 0.01)
+    sigma.phi.B ~ dunif(0, 10)
+    sigma.gam.B ~ dunif(0, 10)
+    tau.phi.B <- 1/(sigma.phi.B * sigma.phi.B)
+    tau.gam.B <- 1/(sigma.gam.B * sigma.gam.B)
     mu.phi.hr.area.fra ~ dnorm(0, 0.01)
     mu.gam.hr.area.fra ~ dnorm(0, 0.01)
     sigma.phi.hr.area.fra ~ dunif(0, 10)
@@ -63,6 +57,18 @@ model
     sigma.gam.nat.area.fra ~ dunif(0, 10)
     tau.phi.nat.area.fra <- 1/(sigma.phi.nat.area.fra * sigma.phi.nat.area.fra)
     tau.gam.nat.area.fra <- 1/(sigma.gam.nat.area.fra * sigma.gam.nat.area.fra)
+    mu.phi.hr.area.k ~ dnorm(0, 0.01)
+    mu.gam.hr.area.k ~ dnorm(0, 0.01)
+    sigma.phi.hr.area.k ~ dunif(0, 10)
+    sigma.gam.hr.area.k ~ dunif(0, 10)
+    tau.phi.hr.area.k <- 1/(sigma.phi.hr.area.k * sigma.phi.hr.area.k)
+    tau.gam.hr.area.k <- 1/(sigma.gam.hr.area.k * sigma.gam.hr.area.k)
+    mu.phi.nat.area.k ~ dnorm(0, 0.01)
+    mu.gam.nat.area.k ~ dnorm(0, 0.01)
+    sigma.phi.nat.area.k ~ dunif(0, 10)
+    sigma.gam.nat.area.k ~ dunif(0, 10)
+    tau.phi.nat.area.k <- 1/(sigma.phi.nat.area.k * sigma.phi.nat.area.k)
+    tau.gam.nat.area.k <- 1/(sigma.gam.nat.area.k * sigma.gam.nat.area.k)
     for (sp in 1:nsp) {
         p.0[sp] ~ dnorm(mu.p.0, tau.p.0)
         p.day.1[sp] ~ dnorm(mu.p.day.1, tau.p.day.1)
@@ -75,29 +81,31 @@ model
         gam.nat.area[sp] ~ dnorm(mu.gam.nat.area, tau.gam.nat.area)
         phi.fra[sp] ~ dnorm(mu.phi.fra, tau.phi.fra)
         gam.fra[sp] ~ dnorm(mu.gam.fra, tau.gam.fra)
-        phi.traits1[sp] ~ dnorm(mu.phi.traits1, tau.phi.traits1)
-        gam.traits1[sp] ~ dnorm(mu.gam.traits1, tau.gam.traits1)
-        phi.traits2[sp] ~ dnorm(mu.phi.traits2, tau.phi.traits2)
-        gam.traits2[sp] ~ dnorm(mu.gam.traits2, tau.gam.traits2)
-        phi.traits1.fra[sp] ~ dnorm(mu.phi.traits1.fra, tau.phi.traits1.fra)
-        gam.traits1.fra[sp] ~ dnorm(mu.gam.traits1.fra, tau.gam.traits1.fra)
+        phi.k[sp] ~ dnorm(mu.phi.k, tau.phi.k)
+        gam.k[sp] ~ dnorm(mu.gam.k, tau.gam.k)
+        phi.B[sp] ~ dnorm(mu.phi.B, tau.phi.B)
+        gam.B[sp] ~ dnorm(mu.gam.B, tau.gam.B)
         phi.hr.area.fra[sp] ~ dnorm(mu.phi.hr.area.fra, tau.phi.hr.area.fra)
         gam.hr.area.fra[sp] ~ dnorm(mu.gam.hr.area.fra, tau.gam.hr.area.fra)
         phi.nat.area.fra[sp] ~ dnorm(mu.phi.nat.area.fra, tau.phi.nat.area.fra)
         gam.nat.area.fra[sp] ~ dnorm(mu.gam.nat.area.fra, tau.gam.nat.area.fra)
+        phi.hr.area.k[sp] ~ dnorm(mu.phi.hr.area.k, tau.phi.hr.area.k)
+        gam.hr.area.k[sp] ~ dnorm(mu.gam.hr.area.k, tau.gam.hr.area.k)
+        phi.nat.area.k[sp] ~ dnorm(mu.phi.nat.area.k, tau.phi.nat.area.k)
+        gam.nat.area.k[sp] ~ dnorm(mu.gam.nat.area.k, tau.gam.nat.area.k)
         for (site in 1:nsite) {
             for (yr in 1:nyear) {
                 for (rep in 1:nrep[site, yr, sp]) {
-                  logit(p[site, yr, rep, sp]) <- p.0[sp] + p.day.1[sp] * day[site, yr, rep, sp] + p.day.2[sp] * day[site, yr, rep, sp]^2
+                  logit(p[site, yr, rep, sp]) <- p.0[sp] + p.day.1[sp] * day[site, yr, rep, sp] + p.day.2[sp] * day.2[site, yr, rep, sp]
                 }
             }
         }
     }
     for (sp in 1:nsp) {
         for (site in 1:nsite) {
-            logit(phi.site.mean[site, sp]) <- mean(phi[site, 1:(nyear - 1), sp])
-            logit(gam.site.mean[site, sp]) <- mean(gam[site, 1:(nyear - 1), sp])
-            psi.1[site, sp] <- gam.site.mean[site, sp]/(1 - phi.site.mean[site, sp] + gam.site.mean[site, sp])
+            logit(phi.site.sp.mean[site, sp]) <- mean(phi[site, 1:(nyear - 1), sp])
+            logit(gam.site.sp.mean[site, sp]) <- mean(gam[site, 1:(nyear - 1), sp])
+            psi.1[site, sp] <- gam.site.sp.mean[site, sp]/(1 - phi.site.sp.mean[site, sp] + gam.site.sp.mean[site, sp])
             psi[site, 1, sp] <- psi.1[site, sp]
             Z[site, 1, sp] ~ dbern(psi.1[site, sp])
             for (rep in 1:nrep[site, 1, sp]) {
@@ -105,8 +113,8 @@ model
                 X[site, 1, rep, sp] ~ dbern(mu.p[site, 1, rep, sp])
             }
             for (yr in 1:(nyear - 1)) {
-                phi[site, yr, sp] <- phi.0[sp] + phi.traits1[sp] * traits1[sp] + phi.traits2[sp] * traits2[sp] + phi.hr.area[sp] * HRarea[site] + phi.nat.area[sp] * natural[site] + phi.fra[sp] * fra[site, yr] + phi.traits1.fra[sp] * fra[site, yr] * traits1[sp] + phi.hr.area.fra[sp] * fra[site, yr] * HRarea[site] + phi.nat.area.fra[sp] * fra[site, yr] * natural[site]
-                gam[site, yr, sp] <- gam.0[sp] + gam.traits1[sp] * traits1[sp] + gam.traits2[sp] * traits2[sp] + gam.hr.area[sp] * HRarea[site] + gam.nat.area[sp] * natural[site] + gam.fra[sp] * fra[site, yr] + gam.traits1.fra[sp] * fra[site, yr] * traits1[sp] + gam.hr.area.fra[sp] * fra[site, yr] * HRarea[site] + gam.nat.area.fra[sp] * fra[site, yr] * natural[site]
+                phi[site, yr, sp] <- phi.0[sp] + phi.k[sp] * k[sp] + phi.B[sp] * B[sp] + phi.hr.area[sp] * HRarea[site] + phi.nat.area[sp] * natural[site] + phi.fra[sp] * fra[site, yr] + phi.hr.area.fra[sp] * fra[site, yr] * HRarea[site] + phi.nat.area.fra[sp] * fra[site, yr] * natural[site] + phi.hr.area.k[sp] * k[sp] * HRarea[site] + phi.nat.area.k[sp] * k[sp] * natural[site]
+                gam[site, yr, sp] <- gam.0[sp] + gam.k[sp] * k[sp] + gam.B[sp] * B[sp] + gam.hr.area[sp] * HRarea[site] + gam.nat.area[sp] * natural[site] + gam.fra[sp] * fra[site, yr] + gam.hr.area.fra[sp] * fra[site, yr] * HRarea[site] + gam.nat.area.fra[sp] * fra[site, yr] * natural[site] + gam.hr.area.k[sp] * k[sp] * HRarea[site] + gam.nat.area.k[sp] * k[sp] * natural[site]
                 logit(psi[site, yr + 1, sp]) <- Z[site, yr, sp] * phi[site, yr, sp] + (1 - Z[site, yr, sp]) * gam[site, yr, sp]
                 Z[site, yr + 1, sp] ~ dbern(psi[site, yr + 1, sp])
                 for (rep in 1:nrep[site, yr + 1, sp]) {
@@ -116,8 +124,12 @@ model
             }
         }
     }
+    for (site in 1:nsite) {
+        logit(phi.site.mean[site]) <- mean(phi[site, 1:(nyear - 1), 1:nsp])
+        logit(gam.site.mean[site]) <- mean(gam[site, 1:(nyear - 1), 1:nsp])
+    }
     for (sp in 1:nsp) {
-        phi.sp.mean[sp] <- mean(phi[1:nsite, 1:(nyear - 1), sp])
-        gam.sp.mean[sp] <- mean(gam[1:nsite, 1:(nyear - 1), sp])
+        logit(phi.sp.mean[sp]) <- mean(phi[1:nsite, 1:(nyear - 1), sp])
+        logit(gam.sp.mean[sp]) <- mean(gam[1:nsite, 1:(nyear - 1), sp])
     }
 }

@@ -74,7 +74,7 @@ plotPosterior <- function(summarys, wanted.order,
          labels=FALSE)
     text(x=1:length(wanted.order),
          y=par()$usr[3]-0.1*(par()$usr[4]-par()$usr[3]),
-         labels=xlabs, srt=45, xpd=TRUE, adj=1)
+         labels=xlabs, srt=45, xpd=TRUE, adj=1, cex=1)
     mtext(text="Colonization", 2,
           line=3, cex=1.5)
     mtext(text="Posterior model estimate", 2,

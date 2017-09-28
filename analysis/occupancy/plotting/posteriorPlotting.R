@@ -40,12 +40,12 @@ ggmcmc(samples.mus, file=file.path(save.dir,
                                    "figures/chains/nimble-mus.pdf"))
 
 
-cat.func <- function() {plot(ggs_caterpillar(samples.mus))}
+## cat.func <- function() {plot(ggs_caterpillar(samples.mus))}
 
-pdf.f(cat.func,
-      file=file.path(save.dir,
-                     "figures/chains/nimble-mus-caterpillar.pdf"),
-      height=6, width=4)
+## pdf.f(cat.func,
+##       file=file.path(save.dir,
+##                      "figures/chains/nimble-mus-caterpillar.pdf"),
+##       height=6, width=4)
 
 ## *****************************************************************
 ## paramter groups
@@ -76,12 +76,15 @@ nimble.summary <- ms.ms.occ.all$ms.ms$summary["nimble",,]
 mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
 wanted.order <- c("hr.area", "nat.area", "fra", "hr.area.fra",
-                  "nat.area.fra", "traits1", "traits1.fra", "traits2")
+                  "nat.area.fra", "traits1", "traits1.fra",
+                  "hr.area.traits1", "nat.area.traits1", "traits2")
 
 xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
-           "Floral diversity", "Hedgerow* \n floral diversity",
-           "Semi-natural* \n floral diversity", "Diet breadth",
+           "Floral diversity", "Hedgerow proximity* \n floral diversity",
+           "Semi-natural proximity* \n floral diversity", "Diet breadth",
            "Diet breadth* \n floral diversity",
+           "Diet breadth* \n hedgrow proximity",
+           "Diet breadth* \n semi-natural proximity",
            "Body size")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
