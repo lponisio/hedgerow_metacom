@@ -32,7 +32,7 @@ model.input <- prepOccModelInput(nzero=0,
 
 ## buffer "d2000"
 
-scale <- 1e2
+scale <- 1e3
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
@@ -55,7 +55,7 @@ ms.ms.nimble <- compareMCMCs_withMonitors(input1,
                                           monitors=model.input$monitors)
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  'runs/nimble_bees_noRain'))
+                                  'runs/nimble_bees_noRain.Rdata'))
 
 ## *****************************************************************
 ## cross level sampler

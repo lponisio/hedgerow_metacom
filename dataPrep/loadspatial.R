@@ -1,5 +1,4 @@
 rm(list=ls())
-setwd('analysis/spatial')
 ## setwd('~/Dropbox/hedgerow_metacom')
 setwd('analysis/spatial')
 source('../../dataPrep/src/misc.R')
@@ -24,34 +23,6 @@ colnames(hr.new@data) <- "site"
 
 save(hr, file=file.path(save.dir, "hr.Rdata"))
 save(hr.new, file=file.path(save.dir, "hrNew.Rdata"))
-
-## ************************************************************
-## all sites?????
-## ************************************************************
-## site.dir <- "../../../hedgerow/GIS/AllSites"
-## sites <-
-##   readOGR(file.path(site.dir, 'all_sites.shp'),
-##           'all_sites')
-
-## sites.baci <-  sites[sites@data$STUDY == "BACI",]
-
-## save(sites.baci,
-##      file=file.path(save.dir, "baciSites.Rdata"))
-
-
-## save(sites,
-##      file=file.path(save.dir, "allSites.Rdata"))
-
-
-## ************************************************************
-## another version...
-## ************************************************************
-## load('../../data/spatial/sites.Rdata')
-
-## sites <- sites[!duplicated(sites@data$site),]
-
-## save(sites, file='../../data/spatial/sites.Rdata')
-
 
 ## ************************************************************
 ## leithen's version
@@ -97,13 +68,17 @@ landcover <-
     readOGR(path.expand("~/Dropbox/hedgerow/spatialData/yoloLandCover/YoloCounty_RegionalVegetation_July08"),
             "YoloCounty_RegionalVegetation_July08")
 
+
 landcover <- spTransform(landcover, CRS(proj4string(all.sites.pt)))
 
-non.natural <- c("Water", "Vineyards", "Urban or Built-up",
+non.natural <- c("Water", "Vineyards",
+                 "Urban or Built-up",
                  "Truck/Nursery/Berry Crops",
                  "Semiagricultural/Incidental to Agriculture",
                  "Rice",
-                 "Pasture", "Levee", "Field Crops",
+                 "Pasture",
+                 "Levee",
+                 "Field Crops",
                  "Deciduous Fruits/Nuts",
                  "Citrus/Subtropical",
                  "Barren - Anthropogenic",
@@ -111,7 +86,13 @@ non.natural <- c("Water", "Vineyards", "Urban or Built-up",
                  "Barren - Gravel and Sand Bars",
                  "Grain/Hay Crops", "Rock Outcrop",
                  "Serpentine Barren",
-                 "Tamarisk Alliance", "Eucalyptus Alliance")
+                 "Tamarisk Alliance",
+                 "Perennial pepperweed (Lepidium latifolium) Alliance",
+                 "Eucalyptus Alliance", "Acacia - Robinia Alliance",
+                 "Giant Reed Series",
+                 "Upland Annual Grasslands & Forbs Formation",
+                 "California Annual Grasslands Alliance")
+
 
 landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
 
@@ -134,17 +115,26 @@ f <- function(){
 pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
 
 ## make a raster
-ill.dim <- ceiling(apply(bbox(landcover.nat), 1, diff)/30)
-r <- raster(nrow=ill.dim[1], ncol=ill.dim[2],
-            xmn=bbox(landcover.nat)[1,1],
-              xmx=bbox(landcover.nat)[1,2],
-              ymn=bbox(landcover.nat)[2,1],
-              ymx=bbox(landcover.nat)[2,2],
-            crs=CRS(proj4string(landcover.nat)))
+## ill.dim <- ceiling(apply(bbox(landcover.nat), 1, diff)/30)
+## r <- raster(nrow=ill.dim[1], ncol=ill.dim[2],
+##             xmn=bbox(landcover.nat)[1,1],
+##               xmx=bbox(landcover.nat)[1,2],
+##               ymn=bbox(landcover.nat)[2,1],
+##               ymx=bbox(landcover.nat)[2,2],
+##             crs=CRS(proj4string(landcover.nat)))
 
-landcover.r <- rasterize(landcover.nat, r, 'VegCode')
+## landcover.r <- rasterize(landcover.nat, r, 'VegCode')
 
-landcover.r <- projectRaster(landcover.r, CRS(proj4string(all.sites.pt)))
+## landcover.r <- projectRaster(landcover.r, CRS(proj4string(all.sites.pt)))
 
-save(landcover.r,
-     file=file.path(save.dir, "landcoverNat_raster.Rdata"))
+## save(landcover.r,
+##      file=file.path(save.dir, "landcoverNat_raster.Rdata"))
+
+
+## plot map to drop far away sites?
+plot(landcover.nat)
+points(sites.pt, col = "red")
+text(x=coordinates(sites.pt)[,1], y=coordinates(sites.pt)[,2], labels=sites.pt@data$site,
+     cex=0.5, col="blue")
+
+

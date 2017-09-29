@@ -1,5 +1,5 @@
 rm(list=ls())
-##setwd('~/Dropbox/hedgerow_metacom/analysis/spatial')
+## setwd('~/Dropbox/hedgerow_metacom')
 setwd('analysis/spatial')
 library(sp)
 library(maptools)

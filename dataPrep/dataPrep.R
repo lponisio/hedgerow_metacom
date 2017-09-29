@@ -99,10 +99,10 @@ spec <- spec[spec$Site %in% names(samples[samples > sample.min]),]
 
 
 to.drop.status <- c('forb', 'natural')
-## sites.to.drop <- c('RLong', 'Johnston', 'Gilmer')
+sites.to.drop <- c('Martinez', 'PutahCreekForb', 'PutahCreek', 'RSlough')
 
 spec <- spec[!spec$SiteStatus %in% to.drop.status,]
-## spec <- spec[!spec$Site %in% sites.to.drop,]
+spec <- spec[!spec$Site %in% sites.to.drop,]
 
 ## total specimens
 nrow(spec)
