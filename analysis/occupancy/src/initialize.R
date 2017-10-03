@@ -35,7 +35,7 @@ all.traits$BodyLength[!is.na(all.traits$MeanITD)] <-
 
 ## area of hedgerow in buffers
 load('../../data/spatial/HRarea.Rdata')
-## area wieghted by log distance
+## area weighted by log distance
 load('../../data/spatial/HRareaDist.Rdata')
 ## area of different landcovers
 load('../../data/spatial/natcover_decay_yolo.Rdata')

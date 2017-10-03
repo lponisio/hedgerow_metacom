@@ -255,7 +255,9 @@ spec.for.nets <- spec[spec$Site %in% sites.to.keep,]
 
 nets <- breakNet(spec.dat=spec.for.nets, 'Site', 'Year')
 
+## within a year, the network of shared species across sites
 nets.year <- breakNetSpTemp(spec.dat=spec.for.nets, 'Year', 'Site')
+## within a site, the network of shared species across years
 nets.site <- breakNetSpTemp(spec.dat=spec.for.nets, 'Site', 'Year')
 
 ## save networks for each site, timeframe
@@ -271,7 +273,9 @@ specs <- calcSpec(nets, spec, spec.metric = 'd', 0.3)
 specs$closeness[specs$closeness == 0] <- 1*10^-6
 specs$closeness.log <- log(specs$closeness)
 
+## within a year, across sites
 specs.years <- calcSpec(nets.year, spec, spec.metric = 'd', 0.3)
+## within a site across years
 specs.site <- calcSpec(nets.site, spec, spec.metric = 'd', 0.3)
 
 specs.save.path <- '../analysis/speciesLevel/saved'

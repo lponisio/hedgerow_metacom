@@ -2,41 +2,82 @@ rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom')
 setwd('analysis/speciesLevel')
 
-xvar <- c("r.degree", "BodyLength")
+xvar.species <- c("r.degree", "BodyLength")
+
+xvar.site <- c("Div", "natArea", "hrArea")
+
+natural.decay <- "350" ## match with occupancy model
 
 source('src/initialize.R')
 
 ## **********************************************************
-## species level metrics
+## pollinators
 ## **********************************************************
 
 ## anything outputted by specieslevel
 ys <- c("proportional.generality.x",  "degree.x", "k", "betweenness", "closeness")
 
-formulas <-lapply(ys, function(x) {
+
+formulas.species <-lapply(ys, function(x) {
     as.formula(paste(x, "~",
-                     paste(paste(xvar, collapse="+"),
+                     paste(paste(xvar.species, collapse="+"),
                            "(1|Site)",
                            "(1|GenusSpecies)",
                            sep="+")))
 })
 
-mod.sites <- lapply(formulas, function(x){
+## within a site across years
+mod.sites.pol <- lapply(formulas.species, function(x){
     lmer(x, data=specs.site.pol)
 })
 
-
-mod.years <- lapply(formulas, function(x){
+## within a year, across sites
+mod.years.pol <- lapply(formulas.species, function(x){
     lmer(x, data=specs.years.pol)
 })
 
 
-names(mod.years) <- names(mod.sites) <- ys
+names(mod.years.pol) <- names(mod.sites.pol) <- ys
 
-## floral degree positivly related to all measures of centrality in
-## space/time
-lapply(mod.years, summary)
-lapply(mod.sites, summary)
+## floral degree positivly related to all measures of network
+## importance in space/time
+lapply(mod.years.pol, summary)
+lapply(mod.sites.pol, summary)
 
-save(mod.years, mod.sites,
+## **********************************************************
+## sites
+## **********************************************************
+
+ys.site <- c("proportional.generality",  "degree", "k", "betweenness", "closeness")
+
+
+formulas.site <-lapply(ys.site, function(x) {
+    as.formula(paste(x, "~",
+                     paste(paste(xvar.site, collapse="+"),
+                           "(1|Site)",
+                           "(1|GenusSpecies)",
+                           sep="+")))
+})
+
+## within a site across years
+mod.sites.site <- lapply(formulas.site, function(x){
+    lmer(x, data=specs.site.site)
+})
+
+## within a year across sites
+mod.years.site <- lapply(formulas.site, function(x){
+    lmer(x, data=specs.years.site)
+})
+
+
+## name them the same as the pollinators
+names(mod.years.site) <- names(mod.sites.site) <- ys
+
+## natural area and floral div are sig for the degree-like measures of
+## importance, but not the centrality
+lapply(mod.years.site, summary)
+lapply(mod.sites.site, summary)
+
+
+save(mod.years.pol, mod.sites.pol, mod.years.site, mod.sites.site,
      file='saved/mods/specmetrics.Rdata')
