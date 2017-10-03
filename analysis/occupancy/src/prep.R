@@ -380,7 +380,15 @@ getParams <- function(){
       'phi.site.mean',
       'gam.site.mean',
       'phi.sp.mean',
-      'gam.sp.mean')
+      'gam.sp.mean',
+
+      ## site level effects
+      'phi.nat.area',
+      'phi.hr.area',
+      'phi.hr.area.fra',
+      'phi.nat.area.fra',
+      'phi.hr.area.k'
+      )
 }
 
 getInits <- function(nsp){

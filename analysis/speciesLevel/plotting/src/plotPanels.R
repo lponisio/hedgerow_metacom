@@ -5,12 +5,12 @@ plot.panels <- function(){
         col.white <- add.alpha("white", alpha=0)
         names(col.lines) <- names(col.fill) <- "all"
         layout(matrix(1:4, nrow=2, byrow=TRUE))
-        par(oma=c(4, 6.5, 0.5, 1),
+        par(oma=c(4, 7, 0.5, 1),
             mar=c(1, 0, 0, 1.5), cex.axis=1.2)
 
-        ys <- c("k")
+        ys <- c("closeness")
         xvar <- c("r.degree", "BodyLength")
-        ylabs <- c("K")
+        ylabs <- c("Centrality")
 
         dd.degree <- cbind(r.degree.dd, 0)
         colnames(dd.degree) <- c(colnames(r.degree.dd), ys)
@@ -49,9 +49,9 @@ plot.panels <- function(){
                    treatments="all",
                    agg.col="GenusSpecies")
 
-        mtext("Space", 2, line=3.5, cex=1.2)
-        mtext("K", 2,
-              line=2, cex=1.2)
+        mtext("Space", 2, line=5.5, cex=1.2)
+        mtext(ylabs, 2,
+              line=4, cex=1.2)
 
         ## space body size
         plot.panel(new.dd=dd.pi.body.space,
@@ -83,11 +83,11 @@ plot.panels <- function(){
                    treatments="all",
                    agg.col="GenusSpecies")
 
-        mtext("Time", 2, line=3.5, cex=1.2)
+        mtext("Time", 2, line=5.5, cex=1.2)
 
-        mtext("Floral Degree", 1, line=3, cex=1.2)
-        mtext("K", 2,
-              line=2, cex=1.2)
+        mtext("Diet breadth", 1, line=3, cex=1.2)
+        mtext(ylabs, 2,
+              line=4, cex=1.2)
 
 
         ## degree plants
@@ -107,7 +107,7 @@ plot.panels <- function(){
                    agg.col="GenusSpecies")
         mtext("Body size", 1, line=3, cex=1.2)
     }
-    path <- 'figures'
+    path <- '../../../hedgerow_metacom_saved/occupancy/figures/ms'
     pdf.f(f, file=file.path(path,
                             sprintf("%s.pdf", "degree_bodysize")),
           width=5, height=4)

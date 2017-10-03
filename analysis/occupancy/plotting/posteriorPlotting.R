@@ -14,7 +14,7 @@ source('../../../occupancy/analysis/all/plotting.R')
 ## comparisons
 ## *****************************************************************
 ## load(file=file.path(save.dir, 'runs/crosslevel.Rdata'))
-load(file=file.path(save.dir, 'runs/nimble_bees_noRain.Rdata'))
+load(file=file.path(save.dir, 'runs/nimble_bees_noRain_short.Rdata'))
 
 
 ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
@@ -57,16 +57,15 @@ nimble.summary <- ms.ms.occ.all$ms.ms$summary["nimble",,]
 
 mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
-wanted.order <- c("hr.area", "nat.area", "fra", "hr.area.fra",
-                  "nat.area.fra", "k",
-                  "hr.area.k", "nat.area.k", "B")
+wanted.order <- c("hr.area", "nat.area", "fra", "k", "B", "hr.area.fra",
+                  "nat.area.fra",
+                  "hr.area.k", "nat.area.k")
 
 xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
-           "Floral diversity", "Hedgerow proximity* \n floral diversity",
-           "Semi-natural proximity* \n floral diversity", "Diet breadth",
-           "Diet breadth* \n hedgrow proximity",
-           "Diet breadth* \n semi-natural proximity",
-           "Body size")
+           "Floral diversity", "Diet breadth", "Body size", "Hedgerow proximity* \n floral diversity",
+           "Semi-natural proximity* \n floral diversity",
+           "Hedgrow proximity* \n diet breadth",
+           "Semi-natural proximity* \n diet breadth")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 
@@ -79,16 +78,20 @@ pdf.f(f,
 ## *****************************************************************
 ## persistence vs. hr and nat habitat effects
 ## *****************************************************************
-load(file.path(save.dir,
-               'runs/nimble_bees_noRain_allparam_short.Rdata'))
+load(file=file.path(save.dir,
+                    'runs/nimble_bees_noRain_short.Rdata'))
 
 load(file.path(save.dir,
                '5-0-all.Rdata'))
 
 nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
 
-params.to.get <- c("phi.sp.mean", "gam.sp.mean", "phi.nat.area",
-                   "gam.nat.area", "phi.hr.area", "gam.hr.area")
+params.to.get <- c("phi.sp.mean", "gam.sp.mean",
+                   'phi.nat.area',
+                   'phi.hr.area',
+                   'phi.hr.area.fra',
+                   'phi.nat.area.fra',
+                   'phi.hr.area.k')
 
 params <- lapply(params.to.get, function(x){
     nimble.sum[, grep(x,
@@ -99,13 +102,4 @@ names(params) <- params.to.get
 params <- lapply(params, function(x){
     x[, !grepl("^mu|^sigma", colnames(x))]
 })
-
-## no relationships between persistence/colonization and hedgerow/nat
-## habtiat proximity effect
-layout(matrix(1:4, byrow=TRUE, nrow=2))
-plot(params$phi.sp.mean["mean",], params$phi.hr.area["mean",])
-plot(params$gam.sp.mean["mean",], params$gam.hr.area["mean",])
-
-plot(params$phi.sp.mean["mean",], params$phi.nat.area["mean",])
-plot(params$gam.sp.mean["mean",], params$gam.nat.area["mean",])
 

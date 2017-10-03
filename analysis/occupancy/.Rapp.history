@@ -1,0 +1,58 @@
+324/12
+library(paralell)
+library(paralel)
+library(parallel)
+?mclapply
+600*1200
+(600*1200)/12
+(600+1200)/12
+## ************************************************************#
+rm(list=ls())#
+setwd('~/Dropbox/hedgerow_metacom/analysis/occupancy')#
+library('abind')#
+library('nimble')#
+library('R2jags')#
+source('src/misc.R')#
+source('src/plotting.R')#
+source('src/prep.R')#
+source('src/initialize.R')#
+w.ypr <- FALSE
+model.input <- prepOccModelInput(nzero=0,#
+                    threshold=5,#
+                    save.dir=save.dir,#
+                    spec,#
+                    sr.sched,#
+                    all.traits,#
+                    col.name.trait1 = "r.degree",#
+                    col.name.trait2 = "BodyLength",#
+                    HRarea=sum.dist.area, ##spstats#
+                    natural.mat=nat.area.sum,#
+                    natural.decay="350",#
+                    veg=by.site,#
+                    w.ypr=w.ypr,#
+                    load.inits=FALSE)
+scale <- 1e2#
+burnin <- 1e1*scale#
+niter <- (1e3)*scale#
+nthin <- 5#
+#
+source('src/complete_noRain.R')#
+#
+input1 <- c(code=ms.ms.occ,#
+            model.input)
+## *****************************************************************#
+ms.ms.nimble <- compareMCMCs_withMonitors(input1,#
+                                          MCMCs=c('nimble'),#
+                                          niter=niter,#
+                                          burnin = burnin,#
+                                          thin=nthin,#
+                                          summary=FALSE,#
+                                          check=FALSE,#
+                                          monitors=model.input$monitors)#
+#
+save(ms.ms.nimble, file=file.path(save.dir,#
+                                  'runs/nimble_bees_noRain_short.Rdata'))
+library(igraph)
+?beweenness
+betweenness
+?betweenness

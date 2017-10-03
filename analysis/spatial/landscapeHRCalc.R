@@ -38,7 +38,6 @@ save(spstats, file="../../data/spatial/HRarea.Rdata")
 samp.site <- spstats[rownames(spstats) %in% spec$Site,]
 write.csv(samp.site, file="../../data/spatial/hrarea.csv")
 
-
 ## *************************************************************
 ## natural using yolo county data source, buffers
 ## *************************************************************
@@ -50,8 +49,6 @@ write.csv(samp.site, file="../../data/spatial/hrarea.csv")
 
 ## colnames(spstats) <- paste("d", buff, sep="")
 ## rownames(spstats) <- all.sites.pt@data$df0
-
-
 
 ## *************************************************************
 ## natural using kremen lab digitized data, decay method

@@ -14,9 +14,10 @@ source('src/initialize.R')
 
 load(file=file.path(save.path, "mods/specmetrics.Rdata"))
 
-ys <- c("proportional.generality.x", "degree.x", "k")
+ys <- c("proportional.generality.x", "degree.x", "k", "betweenness", "closeness")
 
-ylabs <- c("Proportional Generality", "Degree", "K")
+ylabs <- c("Proportional Generality", "Degree", "K",
+           "Betweenness centrality", "Closeness centrality")
 
 r.degree.dd <- expand.grid(r.degree=seq(from= min(all.specs[[1]]$r.degree,
                                                   na.rm=TRUE),
@@ -59,3 +60,7 @@ makePlots(pp=pp, xvar=xvar,
 
 
 plot.panels()
+
+
+
+
