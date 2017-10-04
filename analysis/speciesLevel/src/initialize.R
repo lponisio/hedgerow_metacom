@@ -28,7 +28,7 @@ by.site$hrArea <- sum.dist.area[match(by.site$Site,
                                                        names(sum.dist.area))]
 
 save.path <- 'saved'
-load(file='saved/specs.Rdata')
+load(file=file.path(save.path, 'specs.Rdata'))
 
 ## specs.year is within a year across sites
 ## specs.site is within a site across years
@@ -86,3 +86,6 @@ specs.years.pol[, xvar.species] <- apply(specs.years.pol[, xvar.species], 2,
                                  standardize)
 
 
+save(specs.years.pol, specs.sites.pol, specs.sites.site,
+     specs.years.site,
+     file=file.path(save.path, 'specs_site_pol.Rdata'))

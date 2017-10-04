@@ -1,3 +1,4 @@
+## rm(list=ls())
 library(vegan)
 library(dismo)
 library(rgdal)
@@ -39,13 +40,16 @@ bbox.nat <- bbox(landcover.nat)
 bbox.all <- matrix(c(bbox.nat[1,1],
                      bbox.nat[2,1],
                      bbox.nat[1,2],
-                     bbox.nat[2,2]), ncol=2)
-
-## + c(0, -0.001, -0.01, -0.15)
+                     bbox.nat[2,2])
+                   + c(0.3, 0.25, -0.2,-0.1),
+                   ncol=2)
 
 sys <- gmap(x=bbox.all,
             scale=2,
             type="satellite")
+quartz()
+plot(sys)
+
 all.sites.pt <- spTransform(all.sites.pt,
                             sys@crs)
 lat.long <- coordinates(all.sites.pt)
@@ -58,6 +62,8 @@ nets.year.sp <- lapply(nets.year, t)
 landcover.nat <- spTransform(landcover.nat,
                              sys@crs)
 
+## use the phi and gamma data from the occupancy model to make the
+## figures
 
 load('../../../hedgerow_metacom_saved/occupancy/5-0-all.RData')
 load('../../../hedgerow_metacom_saved/occupancy/runs/nimble_bees_noRain.Rdata')
@@ -84,3 +90,6 @@ gam.site.ave <- getSiteAve("gam.site.mean", nimble.sum, model.input)
 
 
 phi.gam <- list(phi.site.ave, gam.site.ave*3)
+
+
+## use the centrality scores
