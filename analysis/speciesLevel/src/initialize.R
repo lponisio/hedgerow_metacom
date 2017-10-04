@@ -86,6 +86,6 @@ specs.years.pol[, xvar.species] <- apply(specs.years.pol[, xvar.species], 2,
                                  standardize)
 
 
-save(specs.years.pol, specs.sites.pol, specs.sites.site,
+save(specs.years.pol, specs.sites.pol, specs.site.site,
      specs.years.site,
      file=file.path(save.path, 'specs_site_pol.Rdata'))
