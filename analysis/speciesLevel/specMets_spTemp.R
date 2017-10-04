@@ -48,10 +48,7 @@ lapply(mod.sites.pol, summary)
 ## sites
 ## **********************************************************
 
-ys.site <- c("proportional.generality",  "degree", "k", "betweenness", "closeness")
-
-
-formulas.site <-lapply(ys.site, function(x) {
+formulas.site <-lapply(ys, function(x) {
     as.formula(paste(x, "~",
                      paste(paste(xvar.site, collapse="+"),
                            "(1|Site)",
@@ -59,7 +56,8 @@ formulas.site <-lapply(ys.site, function(x) {
                            sep="+")))
 })
 
-## within a site across years
+## within a site across years. This is not really that
+## interesting. Why is it imporant to know what year is most central?
 mod.sites.site <- lapply(formulas.site, function(x){
     lmer(x, data=specs.site.site)
 })
@@ -69,12 +67,12 @@ mod.years.site <- lapply(formulas.site, function(x){
     lmer(x, data=specs.years.site)
 })
 
-
 ## name them the same as the pollinators
 names(mod.years.site) <- names(mod.sites.site) <- ys
 
 ## natural area and floral div are sig for the degree-like measures of
 ## importance, but not the centrality
+
 lapply(mod.years.site, summary)
 lapply(mod.sites.site, summary)
 

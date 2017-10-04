@@ -14,7 +14,7 @@ source('../../../occupancy/analysis/all/plotting.R')
 ## comparisons
 ## *****************************************************************
 ## load(file=file.path(save.dir, 'runs/crosslevel.Rdata'))
-load(file=file.path(save.dir, 'runs/nimble_bees_noRain_short.Rdata'))
+load(file=file.path(save.dir, 'runs/nimble_bees_noRain.Rdata'))
 
 
 ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
@@ -26,8 +26,8 @@ ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
 ##                            dir=file.path(save.dir, "figures/comparisons"))
 
 ## takes forever with a lot of params
-## checkChains(ms.ms.occ.all$ms.ms$samples,
-##             f.path = file.path(save.dir, "figures/chains/%s.pdf"))
+checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
+            f.path = file.path(save.dir, "figures/chains/%s.pdf"))
 
 ## *****************************************************************
 ## paramter groups
@@ -62,10 +62,12 @@ wanted.order <- c("hr.area", "nat.area", "fra", "k", "B", "hr.area.fra",
                   "hr.area.k", "nat.area.k")
 
 xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
-           "Floral diversity", "Diet breadth", "Body size", "Hedgerow proximity* \n floral diversity",
+           "Floral diversity", "Floral diet breadth",
+           "Body size",
+           "Hedgerow proximity* \n floral diversity",
            "Semi-natural proximity* \n floral diversity",
-           "Hedgrow proximity* \n diet breadth",
-           "Semi-natural proximity* \n diet breadth")
+           "Hedgrow proximity* \n floral diet breadth",
+           "Semi-natural proximity* \n floral diet breadth")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 

@@ -56,6 +56,15 @@ specs.years.site[, xvar.site] <- apply(specs.years.site[, xvar.site], 2,
 specs.years.site$Site <- specs.years.site$Site.x
 specs.site.site$Site <- specs.site.site$Site.x
 
+## use the name naming as the pollinator dataset
+specs.years.site$proportional.generality.x <-
+    specs.years.site$proportional.generality
+specs.site.site$proportional.generality.x <-
+    specs.site.site$proportional.generality
+
+specs.years.site$degree.x <- specs.years.site$degree
+specs.site.site$degree.x <- specs.site.site$degree
+
 ## trait data
 traits$Nestuse <- paste(traits$NestLoc, traits$Excavate)
 traits$Nestuse[traits$Nestuse == "NA NA"] <- NA
@@ -75,7 +84,5 @@ specs.site.pol[, xvar.species] <- apply(specs.site.pol[, xvar.species], 2,
                                  standardize)
 specs.years.pol[, xvar.species] <- apply(specs.years.pol[, xvar.species], 2,
                                  standardize)
-
-
 
 

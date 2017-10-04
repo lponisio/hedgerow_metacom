@@ -122,6 +122,7 @@ breakNetSpTemp <- function(spec.dat, site, year){
                                Site=spec.dat[,site],
                                Year=spec.dat[,year]),
                           length)
+    ## take the mean acoss sampling rounds to account for unequal sampling
     agg.spec <- aggregate(list(abund=agg.spec$abund),
                           list(GenusSpecies=agg.spec$GenusSpecies,
                                Site=agg.spec$Site,

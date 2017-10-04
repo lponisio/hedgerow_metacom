@@ -7,7 +7,6 @@ library(igraph)
 source('src/misc.R')
 source('plotting/src/makeNetworkFig.R')
 
-
 load('../../data/networks/allSpecimens.Rdata')
 load('../../data/networks/years_networks.Rdata')
 load('../../data/networks/sites_networks.Rdata')
@@ -21,7 +20,6 @@ spec$SiteStatus[spec$Site == 'Barger' |
                 spec$Site == 'Sperandio'] <- 'mature'
 
 spec$SiteStatus[spec$SiteStatus == "maturing"] <- "mature"
-
 
 ## prep map and site data
 all.sites.pt <- spTransform(all.sites.pt,

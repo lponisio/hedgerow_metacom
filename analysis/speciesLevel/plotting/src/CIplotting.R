@@ -52,7 +52,7 @@ plot.panel <- function(dats,
          ylim=range(c(new.dd$phi,  new.dd$plo, y2,
                       quantile(dats[,y1],
                                na.rm=TRUE,
-                               probs=c(0.025, 0.975))[c("2.5%","97.5%")]),
+                               probs=c(0.025, 1))[c("2.5%","100%")]),
                     na.rm=TRUE),
          xlab="",
          ylab="",
@@ -64,7 +64,7 @@ plot.panel <- function(dats,
              pretty(range(c(new.dd$phi,  new.dd$plo, y2,
                             quantile(dats[,y1],
                                      na.rm=TRUE,
-                                     probs=c(0.025, 0.975))[c("2.5%","97.5%")]),
+                                     probs=c(0.025, 1))[c("2.5%","100%")]),
                           na.rm=TRUE),
                     min.n=3),
              las=1)
@@ -117,7 +117,8 @@ plot.predict.ypr <- function(new.dd,
 }
 
 
-makePlots <- function(pp, xvar, ys, dd, mods, ylabs, all.specs, xs, xlab){
+makePlots <- function(pp, xvar, ys, dd, mods, ylabs, all.specs, xs,
+    xlab, agg.col="GenusSpecies"){
     for(j in pp){
         for(i in 1:length(ys)){
             dd1 <- cbind(dd, 0)
@@ -126,13 +127,12 @@ makePlots <- function(pp, xvar, ys, dd, mods, ylabs, all.specs, xs, xlab){
                                  dd=dd1,
                                  y=ys[i],
                                  family="gaussian")
-
             plot.predict.ypr(new.dd=dd.pi,
                              ylabel=ylabs[i],
                              dats=all.specs[[j]],
                              y1=ys[i],
                              extinction.method=j,
-                             agg.col="GenusSpecies",
+                             agg.col=agg.col,
                              xs=xs,
                              xlabel= xlab)
         }
