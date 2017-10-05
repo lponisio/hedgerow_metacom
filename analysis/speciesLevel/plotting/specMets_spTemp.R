@@ -12,9 +12,12 @@ xvar.site <- c("Div", "natArea", "hrArea")
 source('src/initialize.R')
 load(file=file.path(save.path, "mods/specmetrics.Rdata"))
 
-ys <- c("proportional.generality.x", "degree.x", "k", "betweenness", "closeness")
+ys <- c("proportional.generality.x", "degree.x", "k", "betweenness",
+        "closeness", "normalised.degree", "weighted.betweenness")
+
 ylabs <- c("Proportional Generality", "Degree", "K",
-           "Betweenness centrality", "Closeness centrality")
+           "Betweenness centrality", "Closeness centrality",
+           "Degree (normalized)", "Weighted betweenness")
 
 ## ************************************************************
 ## pollinators

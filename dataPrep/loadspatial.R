@@ -39,10 +39,8 @@ mid.lines <- SpatialLinesMidPoints(line.sites)
 sites.pt <- SpatialPointsDataFrame(mid.lines, data=line.sites@data)
 proj4string(sites.pt) <- CRS(proj4string(mid.lines))
 
-
 save(sites.pt,
      file=file.path(save.dir, "sites.Rdata"))
-
 
 ## ************************************************************
 ## all hedgerows and controls
@@ -53,12 +51,23 @@ all.sites.lines <- spRbind(hr.new, line.sites)
 all.sites.pt <- SpatialLinesMidPoints(all.sites.lines)
 all.sites.pt <-  all.sites.pt[all.sites.pt@data$df0[!duplicated(all.sites.pt@data$df0)],]
 
+## drop the hedgerows that we did not samples that are very far N
+## above the others
+quartz()
+plot(all.sites.pt)
+nsites <- nrow(all.sites.pt@data)
+
+too.far.N <- all.sites.pt@data$df0[order(coordinates(all.sites.pt)[,2])][nsites:(nsites-5)]
+
+all.sites.pt <-  all.sites.pt[!all.sites.pt@data$df0 %in% too.far.N,]
+
+points(all.sites.pt, col="red")
+
 save(all.sites.lines,
      file=file.path(save.dir, "sitesAllLines.Rdata"))
 
 save(all.sites.pt,
      file=file.path(save.dir, "sitesAll.Rdata"))
-
 
 ## ************************************************************
 ## yolo landcover
@@ -86,18 +95,19 @@ non.natural <- c("Water", "Vineyards",
                  "Barren - Gravel and Sand Bars",
                  "Grain/Hay Crops", "Rock Outcrop",
                  "Serpentine Barren",
-                 "Tamarisk Alliance",
+                 "Giant Reed Series")
+
+kinda.natural <- c("Tamarisk Alliance",
                  "Perennial pepperweed (Lepidium latifolium) Alliance",
                  "Eucalyptus Alliance", "Acacia - Robinia Alliance",
-                 "Giant Reed Series",
                  "Upland Annual Grasslands & Forbs Formation",
                  "California Annual Grasslands Alliance")
 
-
 landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
 
+landcover.kinda.nat <- landcover[!landcover@data$VegName %in% kinda.natural,]
 
-save(landcover.nat,
+save(landcover.nat, landcover.kinda.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
 
 
@@ -114,7 +124,7 @@ f <- function(){
 
 pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
 
-## make a raster
+## make a raster, takes FOREVER
 ## ill.dim <- ceiling(apply(bbox(landcover.nat), 1, diff)/30)
 ## r <- raster(nrow=ill.dim[1], ncol=ill.dim[2],
 ##             xmn=bbox(landcover.nat)[1,1],
@@ -130,11 +140,5 @@ pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
 ## save(landcover.r,
 ##      file=file.path(save.dir, "landcoverNat_raster.Rdata"))
 
-
-## plot map to drop far away sites?
-plot(landcover.nat)
-points(sites.pt, col = "red")
-text(x=coordinates(sites.pt)[,1], y=coordinates(sites.pt)[,2], labels=sites.pt@data$site,
-     cex=0.5, col="blue")
 
 

@@ -32,11 +32,6 @@ landcover.nat <- spTransform(landcover.nat,
 bbox.sites <- bbox(all.sites.pt)
 bbox.nat <- bbox(landcover.nat)
 
-## bbox.all <- matrix(c(min(bbox.sites[1,1], bbox.nat[1,1]),
-##                    min(bbox.sites[2,1], bbox.nat[2,1]),
-##                    max(bbox.sites[1,2], bbox.nat[1,2]),
-##                    max(bbox.sites[2,2], bbox.nat[2,2])), ncol=2)
-
 bbox.all <- matrix(c(bbox.nat[1,1],
                      bbox.nat[2,1],
                      bbox.nat[1,2],
@@ -89,8 +84,18 @@ phi.site.ave <- getSiteAve("phi.site.mean", nimble.sum, model.input)
 gam.site.ave <- getSiteAve("gam.site.mean", nimble.sum, model.input)
 
 
-phi.gam <- list(phi.site.ave, gam.site.ave*3)
+phi.gam <- list(phi.site.ave, gam.site.ave*4)
 
 
 ## use the centrality scores
+
+## maybe not very interesting given was not significant?
+load('../speciesLevel/saved/specs_site_pol.Rdata')
+
+
+site.between.mean <- tapply(specs.years.site$betweenness,
+                            specs.years.site$GenusSpecies, mean)*20
+
+
+
 

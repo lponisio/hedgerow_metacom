@@ -12,15 +12,51 @@ for(i in 1:length(phi.gam)){
 
     pdf.f(plotAllStatuses,
           file=file.path(save.dir,
-                         sprintf("figures/networks/%s_spatial.pdf", file.name)),
+                         sprintf("figures/networks/%s_spatial.pdf",
+                                 file.name)),
           height=6, width=4)
 
     pdf.f(plotbyStatus,
           file=file.path(save.dir,
-                         sprintf("figures/networks/%s_bystatus.pdf", file.name)),
+                         sprintf("figures/networks/%s_bystatus.pdf",
+                                 file.name)),
           height=6, width=8)
 
     ## pdf.f(plotbySpecies,
     ##       file=file.path(save.dir, "figures/networks/byspecies.pdf"),
     ##       height=6, width=6)
 }
+
+
+this.site.ave <- NULL
+file.name <- "degree"
+
+pdf.f(plotAllStatuses,
+      file=file.path(save.dir,
+                     sprintf("figures/networks/%s_spatial.pdf",
+                             file.name)),
+      height=6, width=4)
+
+pdf.f(plotbyStatus,
+      file=file.path(save.dir,
+                     sprintf("figures/networks/%s_bystatus.pdf",
+                             file.name)),
+      height=6, width=8)
+
+
+
+this.site.ave <- site.between.mean
+file.name <- "betweenness"
+
+pdf.f(plotAllStatuses,
+      file=file.path(save.dir,
+                     sprintf("figures/networks/%s_spatial.pdf",
+                             file.name)),
+      height=6, width=4)
+
+pdf.f(plotbyStatus,
+      file=file.path(save.dir,
+                     sprintf("figures/networks/%s_bystatus.pdf",
+                             file.name)),
+      height=6, width=8)
+

@@ -3,11 +3,8 @@ rm(list=ls())
 setwd('analysis/speciesLevel')
 
 xvar.species <- c("r.degree", "BodyLength")
-
 xvar.site <- c("Div", "natArea", "hrArea")
-
 natural.decay <- "350" ## match with occupancy model
-
 source('src/initialize.R')
 
 ## **********************************************************
@@ -15,7 +12,8 @@ source('src/initialize.R')
 ## **********************************************************
 
 ## anything outputted by specieslevel
-ys <- c("proportional.generality.x",  "degree.x", "k", "betweenness", "closeness")
+ys <- c("proportional.generality.x",  "degree.x", "k", "betweenness",
+        "closeness", "normalised.degree", "weighted.betweenness")
 
 
 formulas.species <-lapply(ys, function(x) {

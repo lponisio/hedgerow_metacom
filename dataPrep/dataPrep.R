@@ -1,22 +1,19 @@
 rm(list=ls())
 setwd('~/Dropbox/hedgerow_metacom/')
 setwd('dataPrep')
-load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')
 source('src/misc.R')
 source('src/prepNets.R')
 source('src/specialization.R')
 library(bipartite)
 library(fossil)
-load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')
 
+## load all the datasets
+load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')
+load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')
 trait.dir <- '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'
 bee.trait <-
     read.csv(file.path(trait.dir, 'bee.csv'),
              row.names=1)
-## syr.trait <-
-##   read.csv(file.path(trait.dir, 'syr.csv'),
-##            row.names=1)
-
 both.trait <-
     read.csv(file.path(trait.dir, 'bee.syr.csv'))
 
@@ -99,6 +96,8 @@ spec <- spec[spec$Site %in% names(samples[samples > sample.min]),]
 
 
 to.drop.status <- c('forb', 'natural')
+
+## drop the sites outside of Yolo C because there is not natural data
 sites.to.drop <- c('Martinez', 'PutahCreekForb', 'PutahCreek', 'RSlough')
 
 spec <- spec[!spec$SiteStatus %in% to.drop.status,]
@@ -119,7 +118,6 @@ length(unique(spec$Genus))
 
 ## interactions
 length(unique(paste(spec$GenusSpecies, spec$PlantGenusSpecies)))
-
 
 ## *************************************************
 ## thermal traits
@@ -218,8 +216,6 @@ traits$occ.date <- occ.all[match(traits$GenusSpecies,
                                  names(occ.all))]
 
 ## functional traits
-## traits <- merge(traits, syr.trait[,c(5:7,10,33)], all.x=TRUE)
-
 traits <- merge(traits, bee.trait[,c(1:5,27)], all.x=TRUE)
 
 traits <- merge(traits, both.trait[,c(2:3,7)], all.x=TRUE)

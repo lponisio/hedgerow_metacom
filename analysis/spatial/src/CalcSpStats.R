@@ -2,7 +2,6 @@ library(rgdal)
 library(raster)
 library(rgeos)
 
-
 calcSpStats <- function(i,
                         d, ## buffer RADIUS
                         plt, ## plot data
@@ -33,3 +32,10 @@ calcSpStats <- function(i,
 }
 
 
+applyDecay <- function(dist.tab, decay){
+    dist.tab <- dist.tab[[1]]
+    areas <- c(dist.tab$area[1], diff(dist.tab$area))
+    rads <- c(0, dist.tab$radius[1:(nrow(dist.tab)-1)])
+    decay.area <- sum(exp(-(rads-0)^2/(2*decay^2)) * areas)
+    return(decay.area)
+}
