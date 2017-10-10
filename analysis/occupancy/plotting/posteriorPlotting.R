@@ -18,7 +18,6 @@ load(file=file.path(save.dir, 'runs/nimble_bees_noRain.Rdata'))
 
 
 ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
-                                                 ## ms.ms.crosslevel[[1]],
                                                  name = "ms.ms")
 
 ## doesn't really work with a lot of params
@@ -26,8 +25,8 @@ ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
 ##                            dir=file.path(save.dir, "figures/comparisons"))
 
 ## takes forever with a lot of params
-checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
-            f.path = file.path(save.dir, "figures/chains/%s.pdf"))
+## checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
+##             f.path = file.path(save.dir, "figures/chains/%s.pdf"))
 
 ## *****************************************************************
 ## paramter groups
@@ -59,7 +58,8 @@ mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
 wanted.order <- c("hr.area", "nat.area", "fra", "k", "B", "hr.area.fra",
                   "nat.area.fra",
-                  "hr.area.k", "nat.area.k")
+                  "hr.area.k", "nat.area.k",
+                  "hr.area.B", "nat.area.B")
 
 xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
            "Floral diversity", "Floral diet breadth",
@@ -67,7 +67,9 @@ xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
            "Hedgerow proximity* \n floral diversity",
            "Semi-natural proximity* \n floral diversity",
            "Hedgrow proximity* \n floral diet breadth",
-           "Semi-natural proximity* \n floral diet breadth")
+           "Semi-natural proximity* \n floral diet breadth",
+           "Hedgrow proximity* \n body size",
+           "Semi-natural proximity* \n body size")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 
@@ -80,28 +82,28 @@ pdf.f(f,
 ## *****************************************************************
 ## persistence vs. hr and nat habitat effects
 ## *****************************************************************
-load(file=file.path(save.dir,
-                    'runs/nimble_bees_noRain_short.Rdata'))
+## load(file=file.path(save.dir,
+##                     'runs/nimble_bees_noRain_short.Rdata'))
 
-load(file.path(save.dir,
-               '5-0-all.Rdata'))
+## load(file.path(save.dir,
+##                '5-0-all.Rdata'))
 
-nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
+## nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
 
-params.to.get <- c("phi.sp.mean", "gam.sp.mean",
-                   'phi.nat.area',
-                   'phi.hr.area',
-                   'phi.hr.area.fra',
-                   'phi.nat.area.fra',
-                   'phi.hr.area.k')
+## params.to.get <- c("phi.sp.mean", "gam.sp.mean",
+##                    'phi.nat.area',
+##                    'phi.hr.area',
+##                    'phi.hr.area.fra',
+##                    'phi.nat.area.fra',
+##                    'phi.hr.area.k')
 
-params <- lapply(params.to.get, function(x){
-    nimble.sum[, grep(x,
-                      colnames(nimble.sum))]
-})
-names(params) <- params.to.get
+## params <- lapply(params.to.get, function(x){
+##     nimble.sum[, grep(x,
+##                       colnames(nimble.sum))]
+## })
+## names(params) <- params.to.get
 
-params <- lapply(params, function(x){
-    x[, !grepl("^mu|^sigma", colnames(x))]
-})
+## params <- lapply(params, function(x){
+##     x[, !grepl("^mu|^sigma", colnames(x))]
+## })
 

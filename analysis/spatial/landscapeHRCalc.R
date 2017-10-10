@@ -49,19 +49,27 @@ save(natural.land,
 samp.site.nat.krem <- natural.land[natural.land$Site %in%
                                    spec$Site,]
 
-write.csv(samp.site.nat.krem, file="../../data/spatial/natarea_kremen.csv")
+write.csv(samp.site.nat.krem,
+          file="../../data/spatial/natarea_kremen.csv")
 
 ## *************************************************************
 ## natural using yolo county data source, decay method
 ## *************************************************************
-landcover.nat@data$type <- "natural"
-
 radii <- round(exp(seq(from=log(10), to=log(1500), length=20)))
+
+landcover.nat@data$type <- "natural"
+landcover.nat <- unionSpatialPolygons(landcover.nat,
+                                      landcover.nat@data$type)
+
+dats <- data.frame(type="natural")
+rownames(dats) <- "natural"
+landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
+                                          data=dats)
 
 nat.area <- makeDistanceTable(dd.lc=landcover.nat,
                               dd.h=all.sites.pt,
                                         radii=radii,
-                              num.cores=2,
+                              num.cores=8,
                               type.col="type")
 
 save(nat.area, file="../../data/spatial/natcover_yolo.Rdata")
@@ -76,7 +84,8 @@ in.nat <- all.sites.pt@data$df0[all.sites.pt@data$df0 %in%
                                 only.nat.sites@data$df0]
 nat.area.sum[!rownames(nat.area.sum) %in% in.nat] <- NA
 
-save(nat.area.sum, file="../../data/spatial/natcover_decay_yolo.Rdata")
+save(nat.area.sum,
+     file="../../data/spatial/natcover_decay_yolo.Rdata")
 
 samp.site.nat <- nat.area.sum[rownames(nat.area.sum) %in% spec$Site,]
 
@@ -86,12 +95,21 @@ write.csv(samp.site.nat,
 ## *************************************************************
 ## kinda natural using yolo county data source, decay method
 ## *************************************************************
-landcover.kinda.nat@data$type <- "natural"
+landcover.kinda.nat@data$type <- "kinda.natural"
+landcover.kinda.nat <- unionSpatialPolygons(landcover.kinda.nat, landcover.kinda.nat@data$type)
+
+landcover.kinda.nat <- unionSpatialPolygons(landcover.kinda.nat,
+                                      landcover.kinda.nat@data$type)
+
+rownames(dats) <- "kinda.natural"
+landcover.kinda.nat <- SpatialPolygonsDataFrame(landcover.kinda.nat,
+                                          data=dats)
+
 
 kinda.nat.area <- makeDistanceTable(dd.lc=landcover.kinda.nat,
                               dd.h=all.sites.pt,
                                         radii=radii,
-                              num.cores=2,
+                              num.cores=10,
                               type.col="type")
 
 save(kinda.nat.area, file="../../data/spatial/kinda_natcover_yolo.Rdata")
@@ -101,12 +119,8 @@ kinda.nat.area.sum <- sapply(decays, function(x) {
 })
 colnames(kinda.nat.area.sum) <- decays
 
-## only.kinda.nat.sites <- crop(all.sites.pt, extent(landcover.kinda.nat))
-## in.kinda.nat <- all.sites.pt@data$df0[all.sites.pt@data$df0 %in%
-##                                 only.kinda.nat.sites@data$df0]
-## kinda.nat.area.sum[!rownames(kinda.nat.area.sum) %in% in.kinda.nat] <- NA
-
-save(kinda.nat.area.sum, file="../../data/spatial/kinda_natcover_decay_yolo.Rdata")
+save(kinda.nat.area.sum,
+     file="../../data/spatial/kinda_natcover_decay_yolo.Rdata")
 
 samp.site.kinda.nat <- kinda.nat.area.sum[rownames(kinda.nat.area.sum) %in% spec$Site,]
 

@@ -1,5 +1,6 @@
 rm(list=ls())
-setwd('~/Dropbox/hedgerow_metacom/analysis/occupancy')
+## setwd('~/Dropbox/hedgerow_metacom')
+setwd('analysis/occupancy')
 library(igraph)
 library(bipartite)
 library(RColorBrewer)

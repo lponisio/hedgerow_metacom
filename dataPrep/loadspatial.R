@@ -57,7 +57,7 @@ quartz()
 plot(all.sites.pt)
 nsites <- nrow(all.sites.pt@data)
 
-too.far.N <- all.sites.pt@data$df0[order(coordinates(all.sites.pt)[,2])][nsites:(nsites-5)]
+too.far.N <- all.sites.pt@data$df0[order(coordinates(all.sites.pt)[,2])][nsites:(nsites-14)]
 
 all.sites.pt <-  all.sites.pt[!all.sites.pt@data$df0 %in% too.far.N,]
 
@@ -103,9 +103,10 @@ kinda.natural <- c("Tamarisk Alliance",
                  "Upland Annual Grasslands & Forbs Formation",
                  "California Annual Grasslands Alliance")
 
-landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
+landcover.nat <- landcover[!landcover@data$VegName %in% non.natural &
+                          !landcover@data$VegName %in% kinda.natural,]
 
-landcover.kinda.nat <- landcover[!landcover@data$VegName %in% kinda.natural,]
+landcover.kinda.nat <- landcover[landcover@data$VegName %in% kinda.natural,]
 
 save(landcover.nat, landcover.kinda.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
@@ -123,22 +124,3 @@ f <- function(){
 }
 
 pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
-
-## make a raster, takes FOREVER
-## ill.dim <- ceiling(apply(bbox(landcover.nat), 1, diff)/30)
-## r <- raster(nrow=ill.dim[1], ncol=ill.dim[2],
-##             xmn=bbox(landcover.nat)[1,1],
-##               xmx=bbox(landcover.nat)[1,2],
-##               ymn=bbox(landcover.nat)[2,1],
-##               ymx=bbox(landcover.nat)[2,2],
-##             crs=CRS(proj4string(landcover.nat)))
-
-## landcover.r <- rasterize(landcover.nat, r, 'VegCode')
-
-## landcover.r <- projectRaster(landcover.r, CRS(proj4string(all.sites.pt)))
-
-## save(landcover.r,
-##      file=file.path(save.dir, "landcoverNat_raster.Rdata"))
-
-
-

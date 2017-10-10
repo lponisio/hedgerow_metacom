@@ -32,16 +32,25 @@ landcover.nat <- spTransform(landcover.nat,
 bbox.sites <- bbox(all.sites.pt)
 bbox.nat <- bbox(landcover.nat)
 
-bbox.all <- matrix(c(bbox.nat[1,1],
-                     bbox.nat[2,1],
-                     bbox.nat[1,2],
-                     bbox.nat[2,2])
-                   + c(0.3, 0.25, -0.2,-0.1),
+## bbox.all <- matrix(c(bbox.nat[1,1],
+##                      bbox.nat[2,1],
+##                      bbox.nat[1,2],
+##                      bbox.nat[2,2])
+##                    + c(0.3, 0.25, -0.2,-0.1),
+##                    ncol=2)
+
+
+
+bbox.all <- matrix(c(bbox.sites[1,1],
+                     bbox.sites[2,1],
+                     bbox.sites[1,2],
+                     bbox.sites[2,2]),
                    ncol=2)
+
 
 sys <- gmap(x=bbox.all,
             scale=2,
-            type="satellite")
+            type="satellite", zoom=11)
 quartz()
 plot(sys)
 

@@ -82,13 +82,12 @@ makeNetworkFig <- function(spec,
         names(cols.edges) <- unique(edge.types)
         E(gs)$color <- cols.edges[edge.types]
 
-        plot(sys)
         dims <- bbox(sys)
         rect(xleft=dims[1,1],ybottom=dims[2,1],
              xright=dims[1,2],ytop=dims[2,2],
              col= rgb(1,1,1, alpha=0.3))
         if(!is.null(natural.cover)){
-
+            natural.cover <- crop(natural.cover,  bbox(sys))
             poly.cols <- add.alpha("black",
                                    alpha=0.1)
             plot(natural.cover,

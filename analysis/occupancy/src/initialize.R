@@ -39,6 +39,7 @@ load('../../data/spatial/HRarea.Rdata')
 load('../../data/spatial/HRareaDist.Rdata')
 ## area of different landcovers
 load('../../data/spatial/natcover_decay_yolo.Rdata')
+load('../../data/spatial/kinda_natcover_decay_yolo.Rdata')
 ## veg data
 load('../../data/veg.Rdata')
 
