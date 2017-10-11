@@ -25,17 +25,19 @@ model.input <- prepOccModelInput(nzero=0,
                     col.name.trait2 = "BodyLength",
                     HRarea=sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
-                    kinda.natural.mat=kinda.nat.area.sum, ## kinda natural
+                    kinda.natural.mat=NULL, ## kinda natural
                     natural.decay="350",
                     veg=by.site,
                     w.ypr=w.ypr,
                     load.inits=FALSE)
 
-scale <- 1e1
+scale <- 1e3
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
 nchain <- 3
+
+model.input$data$kinda.natural <- NULL
 
 source('src/complete_noRain.R')
 
@@ -55,7 +57,7 @@ ms.ms.nimble <- compareMCMCs_withMonitors(input1,
                                           monitors=model.input$monitors)
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  'runs/nimble_bees_noRain.Rdata'))
+                                  'runs/nimble_bees.Rdata'))
 
 ## *****************************************************************
 ## cross level sampler

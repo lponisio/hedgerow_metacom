@@ -61,15 +61,15 @@ wanted.order <- c("hr.area", "nat.area", "fra", "k", "B", "hr.area.fra",
                   "hr.area.k", "nat.area.k",
                   "hr.area.B", "nat.area.B")
 
-xlabs <- c("Hedgerow proximity", "Semi-natural \n habitat proximity",
+xlabs <- c("Hedgerow proximity", "Non-crop \n habitat proximity",
            "Floral diversity", "Floral diet breadth",
            "Body size",
            "Hedgerow proximity* \n floral diversity",
-           "Semi-natural proximity* \n floral diversity",
+           "Non-crop proximity* \n floral diversity",
            "Hedgrow proximity* \n floral diet breadth",
-           "Semi-natural proximity* \n floral diet breadth",
+           "Non-crop proximity* \n floral diet breadth",
            "Hedgrow proximity* \n body size",
-           "Semi-natural proximity* \n body size")
+           "Non-crop proximity* \n body size")
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 

@@ -238,7 +238,7 @@ plot.panels.sites <- function(){
                    plot.x=TRUE,
                    treatments="all",
                    agg.col="Site")
-        mtext("Semi-natural habitat \n proximity", 1, line=4, cex=1.2)
+        mtext("Non-crop habitat \n proximity", 1, line=4, cex=1.2)
     }
     path <- '../../../hedgerow_metacom_saved/occupancy/figures/ms'
     pdf.f(f, file=file.path(path,

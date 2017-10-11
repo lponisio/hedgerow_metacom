@@ -1,5 +1,5 @@
 rm(list=ls())
-setwd('~/Dropbox/hedgerow_metacom/')
+## setwd('~/Dropbox/hedgerow_metacom/')
 setwd('dataPrep')
 source('src/misc.R')
 source('src/prepNets.R')
@@ -49,6 +49,7 @@ if(!inherits(occ.data, "try-error")){
     keep.sites <- dimnames(model.input$data$X)[[1]]
     spec <- spec[spec$Site %in% keep.sites,]
 }
+
 
 ## *************************************************
 ## create a giant network to calculate specialization
@@ -104,20 +105,63 @@ spec <- spec[!spec$SiteStatus %in% to.drop.status,]
 spec <- spec[!spec$Site %in% sites.to.drop,]
 
 ## total specimens
-nrow(spec)
+paste0("specimens=", nrow(spec))
 
 ## total species
-length(unique(spec$GenusSpecies))
+paste0("species=",length(unique(spec$GenusSpecies)))
 
 ## sampling dates
-length(unique(paste(spec$Site, spec$Date)))
+paste0("samples=", length(unique(paste(spec$Site, spec$Date))))
 
 ## families and genera
-length(unique(spec$Family))
-length(unique(spec$Genus))
+paste0("family=",length(unique(spec$Family)))
+paste0("genus=", length(unique(spec$Genus)))
 
 ## interactions
-length(unique(paste(spec$GenusSpecies, spec$PlantGenusSpecies)))
+paste0("interactions=", length(unique(paste(spec$GenusSpecies, spec$PlantGenusSpecies))))
+
+
+## *************************************************
+## sampling table for manuscript
+## *************************************************
+
+site.table <- aggregate(list(Samples=spec$Date),
+                        list(Year=spec$Year, Site=spec$Site),
+                        function(x) length(unique(x)))
+
+ms.table <- samp2site.spp(site=site.table$Site,
+                          spp=site.table$Year,
+                          abund=site.table$Samples,
+                          FUN=sum)
+
+write.csv(ms.table, file="../data/samples.csv")
+
+BACI.site <- c('Barger', 'Butler', 'Hrdy', 'MullerB', 'Sperandio')
+spec$SiteStatus[spec$Site %in% BACI.site] <- "maturing"
+
+ms.table <- cbind(spec$SiteStatus[match(rownames(ms.table),
+                                        spec$Site)], ms.table)
+
+colnames(ms.table) <- c("Site type", colnames(ms.table)[-1])
+
+ms.table <- ms.table[order(ms.table[, "Site type"], decreasing=TRUE),]
+
+ms.table[, "Site type"][ms.table[, "Site type"] == "maturing" |
+  ms.table[, "Site type"] == "mature" | ms.table[, "Site type"] == "restored"] <-
+  "Hedgerow"
+
+ms.table[, "Site type"][ms.table[, "Site type"] == "control"] <-
+    "Field margin"
+
+rownames(ms.table) <- paste0("HR", 1:nrow(ms.table))
+
+rownames(ms.table)[ms.table[, "Site type"] == "Field margin"] <-
+    paste0("FM", 1:sum(ms.table[, "Site type"] == "Field margin"))
+
+write.table(ms.table, file="~/Dropbox/hedgerow_metacom_saved/occupancy/table/samples.txt",
+            sep=" & ")
+
+
 
 ## *************************************************
 ## thermal traits
@@ -278,21 +322,5 @@ specs.save.path <- '../analysis/speciesLevel/saved'
 save(specs, specs.years, specs.site,
      file=file.path(specs.save.path, 'specs.Rdata'))
 
-## *****************************************************************
-## veg
-## *****************************************************************
-
-## richness <- aggregate(list(Richness=veg$PlantGenusSpecies),
-##                            list(Site=veg$Site,
-##                                 Year=veg$Year),
-##                            function(x) length(unique(x)))
 
 
-## diversity <- aggregate(list(Diversity=veg$NumQuads),
-##                            list(Site=veg$Site,
-##                                 Year=veg$Year),
-##                        function(x) diversity(x, index="simpson"))
-
-## veg.div <- merge(richness, diversity)
-
-## save(veg.div, file="../data/veg.Rdata")

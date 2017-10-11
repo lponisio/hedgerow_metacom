@@ -62,7 +62,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
         natural.mat <- natural.mat[!is.na(natural.mat)]
         natural.mat <- standardize(natural.mat)
         natural.sites <- names(natural.mat)
-
+    }
+    if(!is.null(kinda.natural.mat)){
         kinda.natural.mat <- kinda.natural.mat[, natural.decay]
         kinda.natural.mat <- kinda.natural.mat[!is.na(kinda.natural.mat)]
         kinda.natural.mat <- standardize(kinda.natural.mat)
@@ -214,6 +215,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     } else {
         natural.mat <- natural.mat[names(natural.mat) %in%
                                    dimnames(X)[[1]]]
+    }
+    if(!is.null(kinda.natural.mat)){
         kinda.natural.mat <- kinda.natural.mat[names(kinda.natural.mat) %in%
                                    dimnames(X)[[1]]]
     }
@@ -350,8 +353,8 @@ getParams <- function(){
       'mu.phi.nat.area',
       'sigma.phi.nat.area',
 
-      'mu.phi.kinda.nat.area',
-      'sigma.phi.kinda.nat.area',
+      ## 'mu.phi.kinda.nat.area',
+      ## 'sigma.phi.kinda.nat.area',
 
       'mu.phi.fra',
       'sigma.phi.fra',
@@ -379,8 +382,8 @@ getParams <- function(){
       'mu.gam.nat.area',
       'sigma.gam.nat.area',
 
-      'mu.gam.kinda.nat.area',
-      'sigma.gam.kinda.nat.area',
+      ## 'mu.gam.kinda.nat.area',
+      ## 'sigma.gam.kinda.nat.area',
 
       'mu.gam.fra',
       'sigma.gam.fra',
@@ -430,8 +433,8 @@ getInits <- function(nsp){
       mu.phi.nat.area = rnorm(1),
       sigma.phi.nat.area = runif(1),
 
-      mu.phi.kinda.nat.area = rnorm(1),
-      sigma.phi.kinda.nat.area = runif(1),
+      ## mu.phi.kinda.nat.area = rnorm(1),
+      ## sigma.phi.kinda.nat.area = runif(1),
 
       mu.phi.fra = rnorm(1),
       sigma.phi.fra = runif(1),
@@ -457,8 +460,8 @@ getInits <- function(nsp){
       mu.gam.hr.area = rnorm(1),
       sigma.gam.hr.area = runif(1),
 
-      mu.gam.kinda.nat.area = rnorm(1),
-      sigma.gam.kinda.nat.area = runif(1),
+      ## mu.gam.kinda.nat.area = rnorm(1),
+      ## sigma.gam.kinda.nat.area = runif(1),
 
       mu.gam.nat.area = rnorm(1),
       sigma.gam.nat.area = runif(1),
@@ -489,7 +492,7 @@ getInits <- function(nsp){
       phi.hr.area = rnorm(nsp),
       phi.nat.area = rnorm(nsp),
 
-      phi.kinda.nat.area = rnorm(nsp),
+      ## phi.kinda.nat.area = rnorm(nsp),
 
       phi.fra = rnorm(nsp),
       phi.k = rnorm(nsp),
@@ -505,7 +508,7 @@ getInits <- function(nsp){
       gam.hr.area = rnorm(nsp),
       gam.nat.area = rnorm(nsp),
 
-      gam.kinda.nat.area = rnorm(nsp),
+      ## gam.kinda.nat.area = rnorm(nsp),
 
       gam.fra = rnorm(nsp),
       gam.k = rnorm(nsp),

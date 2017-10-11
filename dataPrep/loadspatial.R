@@ -103,8 +103,19 @@ kinda.natural <- c("Tamarisk Alliance",
                  "Upland Annual Grasslands & Forbs Formation",
                  "California Annual Grasslands Alliance")
 
-landcover.nat <- landcover[!landcover@data$VegName %in% non.natural &
-                          !landcover@data$VegName %in% kinda.natural,]
+
+## vegtype <- data.frame(Classification=sort(as.character(unique(landcover@data$VegName))))
+## vegtype$Bee.resources <- "yes"
+## vegtype$Bee.resources[vegtype$Classification %in% non.natural] <- "no"
+
+## write.table(vegtype,
+##             file="~/Dropbox/hedgerow_metacom_saved/occupancy/table/vegtype.txt",
+##             sep=" & ", row.names=FALSE)
+
+
+landcover.nat <- landcover[!landcover@data$VegName %in% non.natural
+                          ## & !landcover@data$VegName %in% kinda.natural,]
+## include kinda natural components????
 
 landcover.kinda.nat <- landcover[landcover@data$VegName %in% kinda.natural,]
 
@@ -124,3 +135,4 @@ f <- function(){
 }
 
 pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
+
