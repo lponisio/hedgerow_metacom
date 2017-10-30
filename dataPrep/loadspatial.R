@@ -1,5 +1,5 @@
-rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom')
+rm(list=ls())
 setwd('analysis/spatial')
 source('../../dataPrep/src/misc.R')
 library(rgdal)
@@ -49,7 +49,7 @@ save(sites.pt,
 all.sites.lines <- spRbind(hr.new, line.sites)
 
 all.sites.pt <- SpatialLinesMidPoints(all.sites.lines)
-all.sites.pt <-  all.sites.pt[all.sites.pt@data$df0[!duplicated(all.sites.pt@data$df0)],]
+all.sites.pt <-  all.sites.pt[!duplicated(all.sites.pt@data$df0),]
 
 ## drop the hedgerows that we did not samples that are very far N
 ## above the others
@@ -57,6 +57,7 @@ quartz()
 plot(all.sites.pt)
 nsites <- nrow(all.sites.pt@data)
 
+## cannot think of anyway but hardcoding this
 too.far.N <- all.sites.pt@data$df0[order(coordinates(all.sites.pt)[,2])][nsites:(nsites-14)]
 
 all.sites.pt <-  all.sites.pt[!all.sites.pt@data$df0 %in% too.far.N,]
