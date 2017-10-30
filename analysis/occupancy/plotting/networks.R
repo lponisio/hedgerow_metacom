@@ -1,11 +1,12 @@
-rm(list=ls())
+## rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom')
 setwd('analysis/occupancy')
 library(igraph)
 library(bipartite)
 library(RColorBrewer)
-source('src/initialize.R')
-source('plotting/src/initialize.R')
+source('plotting/src/makeNetworkFig.R')
+## source('src/initialize.R')
+## source('plotting/src/initialize.R')
 
 for(i in 1:length(phi.gam)){
     this.site.ave <- phi.gam[[i]]

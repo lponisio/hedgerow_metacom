@@ -6,7 +6,6 @@ library(RColorBrewer)
 library(maptools)
 library(igraph)
 source('src/misc.R')
-source('plotting/src/makeNetworkFig.R')
 
 load('../../data/networks/allSpecimens.Rdata')
 load('../../data/networks/years_networks.Rdata')
@@ -51,8 +50,6 @@ bbox.all <- matrix(c(bbox.sites[1,1],
 sys <- gmap(x=bbox.all,
             scale=2,
             type="satellite", zoom=11)
-quartz()
-plot(sys)
 
 all.sites.pt <- spTransform(all.sites.pt,
                             sys@crs)

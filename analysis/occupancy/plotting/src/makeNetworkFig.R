@@ -6,8 +6,8 @@ makeNetworkFig <- function(spec,
                            cols,
                            nets,
                            weight.edge.colors=FALSE,
-                           cols.vertex=brewer.pal(11, 'RdGy')[c(1,10)],
-                           cols.edges=add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.5),
+                           cols.vertex,
+                           cols.edges,
                            vertex.names = c("control", "mature"),
                            natural.cover=NULL,
                            site.ave=NULL, ...){
@@ -83,13 +83,14 @@ makeNetworkFig <- function(spec,
         E(gs)$color <- cols.edges[edge.types]
 
         dims <- bbox(sys)
+        plot(sys)
         rect(xleft=dims[1,1],ybottom=dims[2,1],
              xright=dims[1,2],ytop=dims[2,2],
              col= rgb(1,1,1, alpha=0.3))
         if(!is.null(natural.cover)){
-            natural.cover <- crop(natural.cover,  bbox(sys))
+            natural.cover <- crop(natural.cover,  dims)
             poly.cols <- add.alpha("black",
-                                   alpha=0.1)
+                                   alpha=0.2)
             plot(natural.cover,
                  col=poly.cols, border=poly.cols, add=TRUE)
         }
@@ -114,6 +115,13 @@ makeNetworkFig <- function(spec,
     plot(gs, vertex.label="",
          vertex.frame.color=v.boarders,
          edge.curved=0.4,...)
+    legend("bottomright", legend=c("Surveyed field margin", "Surveyed hedgerow",
+                                   "Unsurveyed hedgerow"),
+           col=c(cols.vertex, "goldenrod2"),
+           pch=c(16,16,15), cex=0.75, bg="white", inset=c(0.036,0.04))
+    legend("bottomright", legend=c("Surveyed field margin", "Surveyed Hedgerow",
+                                   "Unsurveyed hedgerow"),
+           col="black", pch=c(1,1,0), cex=0.75,inset=c(0.036,0.04))
 
     if(!is.null(lat.long)){
         points(latex, col=V(gs)$color, pch=16, cex=importance)
@@ -130,6 +138,8 @@ makeNetworkFig <- function(spec,
 }
 
 plotAllStatuses <- function(){
+    cols.vertex <- brewer.pal(11, 'RdGy')[c(1,10)]
+    cols.edges <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.5)
     makeNetworkFig(spec, sys, lat.long=lat.long,
                    rows="Site",
                    cols="GenusSpecies",
@@ -137,7 +147,10 @@ plotAllStatuses <- function(){
                    natural.cover=landcover.nat,
                    add=TRUE,
                    rescale = FALSE,
-                   site.ave=this.site.ave)
+                   site.ave=this.site.ave,
+                   cols.vertex=cols.vertex,
+                   cols.edges=cols.edges)
+
 }
 
 
@@ -155,7 +168,6 @@ plotbySpecies <- function(){
 
 
 plotbyStatus <- function(){
-    layout(matrix(1:3, ncol=3))
     cols.e <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)],
                         alpha=0.5)
     cols.v <- brewer.pal(11, 'RdGy')[c(1,10)]

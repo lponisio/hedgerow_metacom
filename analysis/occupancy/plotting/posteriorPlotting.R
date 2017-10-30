@@ -1,9 +1,8 @@
 ## ************************************************************
+setwd('~/Dropbox/hedgerow_metacom/')
 rm(list=ls())
-setwd('~/Dropbox/hedgerow_metacom/analysis/occupancy')
-library('abind')
+setwd('analysis/occupancy')
 library('nimble')
-library('R2jags')
 source('src/misc.R')
 source('src/plotting.R')
 source('src/prep.R')
@@ -13,8 +12,7 @@ source('../../../occupancy/analysis/all/plotting.R')
 ## *****************************************************************
 ## comparisons
 ## *****************************************************************
-## load(file=file.path(save.dir, 'runs/crosslevel.Rdata'))
-load(file=file.path(save.dir, 'runs/nimble_bees_noRain.Rdata'))
+load(file=file.path(save.dir, 'runs/nimble_bees.Rdata'))
 
 
 ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
@@ -25,8 +23,8 @@ ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
 ##                            dir=file.path(save.dir, "figures/comparisons"))
 
 ## takes forever with a lot of params
-## checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
-##             f.path = file.path(save.dir, "figures/chains/%s.pdf"))
+checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
+            f.path = file.path(save.dir, "figures/chains/%s.pdf"))
 
 ## *****************************************************************
 ## paramter groups
@@ -76,8 +74,14 @@ f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 pdf.f(f,
       file=file.path(save.dir,
                      "figures/ms/mus.pdf"),
-      height=8, width=6)
+      height=7, width=9)
 
+## calculate some thigns for the ms
+mus["mean","mu.phi.nat.area.fra"] + mus["mean","mu.phi.nat.area"]
+
+
+save(mus, file=file.path(save.dir,
+                     "runs/mus.Rdata"))
 
 ## *****************************************************************
 ## persistence vs. hr and nat habitat effects

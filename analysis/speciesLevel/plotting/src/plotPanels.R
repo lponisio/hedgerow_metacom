@@ -156,7 +156,8 @@ plot.panels.sites <- function(){
         col.fill <- add.alpha(col.lines, alpha=0.2)
         col.white <- add.alpha("white", alpha=0)
         names(col.lines) <- names(col.fill) <- "all"
-        layout(matrix(1:4, nrow=2, byrow=TRUE))
+        ## layout(matrix(1:4, nrow=2, byrow=TRUE))
+        layout(matrix(1, nrow=1, byrow=TRUE))
         par(oma=c(4.5, 7, 2.5, 1),
             mar=c(1, 0, 0, 1.5), cex.axis=1.2)
 
@@ -182,66 +183,66 @@ plot.panels.sites <- function(){
                    col.fill=col.fill,
                    col.lines=col.lines,
                    plot.y=TRUE,
-                   plot.x=FALSE,
+                   plot.x=TRUE,
                    treatments="all",
                    agg.col="Site")
         mtext(ylabs[1], 2,
               line=4, cex=1.2)
         ## space nat area-degree
-        plot.panel(new.dd=dd.pi.natArea.degree$space,
-                   dats=specs,
-                   y1=ys[1],
-                   y2= range(c(dd.pi.frd.degree$space$plo,
-                               dd.pi.frd.degree$space$phi,
-                               dd.pi.natArea.degree$space$plo,
-                               dd.pi.natArea.degree$space$phi)),
-                   xs="natArea",
-                   col.fill=col.fill,
-                   col.lines=col.lines,
-                   plot.y=FALSE,
-                   plot.x=FALSE,
-                   treatments="all",
-                   agg.col="Site")
+        ## plot.panel(new.dd=dd.pi.natArea.degree$space,
+        ##            dats=specs,
+        ##            y1=ys[1],
+        ##            y2= range(c(dd.pi.frd.degree$space$plo,
+        ##                        dd.pi.frd.degree$space$phi,
+        ##                        dd.pi.natArea.degree$space$plo,
+        ##                        dd.pi.natArea.degree$space$phi)),
+        ##            xs="natArea",
+        ##            col.fill=col.fill,
+        ##            col.lines=col.lines,
+        ##            plot.y=FALSE,
+        ##            plot.x=FALSE,
+        ##            treatments="all",
+        ##            agg.col="Site")
 
         ## space frd-betweenness
-        plot.panel(new.dd=dd.pi.frd.between$space,
-                   dats=specs,
-                   y1=ys[2],
-                   y2= range(c(dd.pi.frd.between$space$plo,
-                               dd.pi.frd.between$space$phi,
-                               dd.pi.natArea.between$space$plo,
-                               dd.pi.natArea.between$space$phi)),
-                   xs="Div",
-                   col.fill=col.white,
-                   col.lines=col.white,
-                   col.points=col.fill,
-                   plot.y=TRUE,
-                   plot.x=TRUE,
-                   treatments="all",
-                   agg.col="Site")
-        mtext(ylabs[2], 2,
-              line=4, cex=1.2)
+        ## plot.panel(new.dd=dd.pi.frd.between$space,
+        ##            dats=specs,
+        ##            y1=ys[2],
+        ##            y2= range(c(dd.pi.frd.between$space$plo,
+        ##                        dd.pi.frd.between$space$phi,
+        ##                        dd.pi.natArea.between$space$plo,
+        ##                        dd.pi.natArea.between$space$phi)),
+        ##            xs="Div",
+        ##            col.fill=col.white,
+        ##            col.lines=col.white,
+        ##            col.points=col.fill,
+        ##            plot.y=TRUE,
+        ##            plot.x=TRUE,
+        ##            treatments="all",
+        ##            agg.col="Site")
+        ## mtext(ylabs[2], 2,
+        ##       line=4, cex=1.2)
         mtext("Floral diversity", 1, line=3, cex=1.2)
         ## space nat hab-betweenness
-        plot.panel(new.dd=dd.pi.natArea.between$space,
-                   dats=specs,
-                   y1=ys[2],
-                   y2= range(c(dd.pi.natArea.between$space$plo,
-                               dd.pi.natArea.between$space$phi,
-                               dd.pi.frd.between$space$plo,
-                               dd.pi.frd.between$space$phi)),
-                   xs="natArea",
-                   col.fill=col.white,
-                   col.lines=col.white,
-                   col.points=col.fill,
-                   plot.y=FALSE,
-                   plot.x=TRUE,
-                   treatments="all",
-                   agg.col="Site")
-        mtext("Non-crop habitat \n proximity", 1, line=4, cex=1.2)
+        ##     plot.panel(new.dd=dd.pi.natArea.between$space,
+        ##                dats=specs,
+        ##                y1=ys[2],
+        ##                y2= range(c(dd.pi.natArea.between$space$plo,
+        ##                            dd.pi.natArea.between$space$phi,
+        ##                            dd.pi.frd.between$space$plo,
+        ##                            dd.pi.frd.between$space$phi)),
+        ##                xs="natArea",
+        ##                col.fill=col.white,
+        ##                col.lines=col.white,
+        ##                col.points=col.fill,
+        ##                plot.y=FALSE,
+        ##                plot.x=TRUE,
+        ##                treatments="all",
+        ##                agg.col="Site")
+        ##     mtext("Non-crop habitat \n proximity", 1, line=4, cex=1.2)
     }
     path <- '../../../hedgerow_metacom_saved/occupancy/figures/ms'
     pdf.f(f, file=file.path(path,
                             sprintf("%s.pdf", "betweenness_degree_sites")),
-          width=5, height=4)
+          width=4, height=3.5)
 }
