@@ -201,14 +201,14 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     ## drop last year of flower data, standardize
     flower.mat <- flower.mat[rownames(flower.mat) %in%
                              dimnames(X)$site,]
-    flower.mat <- flower.mat[, colnames(flower.mat) !=
+    flower.mat <- flower.mat[, colnames(flower.mat) >=
                                max(dimnames(X)$year)]
-    flower.mat <- apply(flower.mat, 2, standardize)
+    flower.mat <- standardize(flower.mat)
 
 
     ## drop last year of natural data
     if(is.null(natural.mat)){
-        natural.mat <- natural.mat[, colnames(natural.mat) !=
+        natural.mat <- natural.mat[, colnames(natural.mat) >=
                                      max(dimnames(X)$year)]
         natural.mat <- natural.mat[rownames(natural.mat) %in%
                                    dimnames(X)[[1]],]
@@ -257,7 +257,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
     site.status.mat <- site.status.mat[rownames(site.status.mat) %in%
                                        dimnames(X)$site,
-                                       colnames(site.status.mat) !=
+                                       colnames(site.status.mat) >=
                                        max(dimnames(X)$year)]
 
     ## specify the initial values
@@ -309,10 +309,10 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                  day=day,
                  day.2=day.2,
                  ypr = site.status.mat,
-                 HRarea=d.area[names(d.area) %in% dimnames(X)[[1]]],
-                 natural=natural.mat,
-                 kinda.natural=kinda.natural.mat,
-                 fra = flower.mat)
+                 HRarea=d.area[names(d.area) %in% dimnames(X)$site][dimnames(X)$site],
+                 natural=natural.mat[dimnames(X)$site],
+                 kinda.natural=kinda.natural.mat[dimnames(X)$site],
+                 fra = flower.mat[dimnames(X)$site,])
 
     ## remove ypr and inits if not in model
     if(!w.ypr){
