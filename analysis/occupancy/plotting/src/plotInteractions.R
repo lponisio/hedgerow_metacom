@@ -251,3 +251,76 @@ plotAllInteractions <- function(){
 
 }
 
+
+
+plotHRInteractions <- function(){
+    layout(matrix(c(1,1,1, 2:4), nrow=2, byrow=TRUE), heights=c(0.25,1,1,1))
+    par(oma=c(6, 7, 2.5, 1),
+        mar=c(1, 0, 0, 1.5), cex.axis=1.5)
+
+    plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n", bty="n" )
+    legend("center", legend=c("min", "5%", "25%", "median", "75%", "95%", "max"),
+           pch=16, col=cols, bty="n", cex=1.5, ncol=7)
+
+
+    ## interactions of floral resources and hedgerow proximity
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="")
+    mtext("Persistence", 2, line=4, cex=1.3)
+    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(probs)){
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['mu.phi.fra'] * quantiles$fra[i] +
+                        means['mu.phi.hr.area.fra'] * x * quantiles$fra[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+    legend("topright", legend="Floral diversity (a)", bty="n", cex=1.2)
+
+    ## interactions of floral resources and non crop habitat prox
+
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="", yaxt="n")
+    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(probs)){
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['mu.phi.k'] * quantiles$k[i] +
+                        means['mu.phi.hr.area.k'] * x * quantiles$k[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+    legend("bottomleft", legend="Diet breadth (b)", bty="n", cex=1.2)
+
+    ## intearction betwen non crop habitat and body size
+    plot(NA, ylim=c(0, 1),
+         xlim=range(model.input$data$HRarea),
+         yaxt="n", ylab="", xlab="")
+    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(probs)){
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['mu.phi.B'] * quantiles$B[i] +
+                        means['mu.phi.hr.area.B'] * x * quantiles$B[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+    legend("topright", legend="Body size (c)", bty="n", cex=1.2)
+}
+
+
+
+

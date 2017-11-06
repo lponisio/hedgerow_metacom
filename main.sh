@@ -20,6 +20,6 @@ Rscript analysis/spatial/landscapeHRcalc.R
 ##***************************************************************
 Rscript analysis/occupancy/main.R
 
-Rscript analysis/occupancy/plotting/networks.R
+## visualize results
 Rscript analysis/occupancy/plotting/posteriorPlotting.R
-
+Rscript analysis/occupancy/plotting/networks.R

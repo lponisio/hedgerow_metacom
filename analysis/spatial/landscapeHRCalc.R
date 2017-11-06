@@ -1,5 +1,5 @@
-rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom')
+rm(list=ls())
 setwd('analysis/spatial')
 library(sp)
 library(maptools)
@@ -66,6 +66,14 @@ rownames(dats) <- "natural"
 landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
                                           data=dats)
 
+
+plot(landcover.nat, col="lightgreen")
+new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
+points(new.hr, col="red")
+surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
+    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
+points(surveyed.hr, col="dodgerblue")
+
 nat.area <- makeDistanceTable(dd.lc=landcover.nat,
                               dd.h=all.sites.pt,
                                         radii=radii,
@@ -83,6 +91,8 @@ only.nat.sites <- crop(all.sites.pt, extent(landcover.nat))
 in.nat <- all.sites.pt@data$df0[all.sites.pt@data$df0 %in%
                                 only.nat.sites@data$df0]
 nat.area.sum[!rownames(nat.area.sum) %in% in.nat] <- NA
+
+hist(nat.area.sum)
 
 save(nat.area.sum,
      file="../../data/spatial/natcover_decay_yolo.Rdata")
@@ -118,6 +128,8 @@ kinda.nat.area.sum <- sapply(decays, function(x) {
     sapply(kinda.nat.area, applyDecay, decay=x)
 })
 colnames(kinda.nat.area.sum) <- decays
+
+hist(kinda.nat.area.sum)
 
 save(kinda.nat.area.sum,
      file="../../data/spatial/kinda_natcover_decay_yolo.Rdata")

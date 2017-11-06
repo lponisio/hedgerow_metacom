@@ -119,7 +119,7 @@ makeNetworkFig <- function(spec,
                                    "Unsurveyed hedgerow"),
            col=c(cols.vertex, "goldenrod2"),
            pch=c(16,16,15), cex=0.75, bg="white", inset=c(0.036,0.04))
-    legend("bottomright", legend=c("Surveyed field margin", "Surveyed Hedgerow",
+    legend("bottomright", legend=c("Surveyed field margin", "Surveyed hedgerow",
                                    "Unsurveyed hedgerow"),
            col="black", pch=c(1,1,0), cex=0.75,inset=c(0.036,0.04))
 

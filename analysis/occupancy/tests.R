@@ -29,8 +29,9 @@ model.input <- prepOccModelInput(nzero=0,
                                  load.inits=FALSE)
 
 
-
+## ************************************************************
 ## check all the dimensions of the data and the names line up
+## ************************************************************
 
 print(paste("natural sites match X matrix",
             all(dimnames(model.input$data$X)$site ==
@@ -59,8 +60,9 @@ print(paste("species body sizes match X matrix",
             all(dimnames(model.input$data$X)$species ==
                                             names(model.input$data$B))))
 
-
+## ************************************************************
 ## check x matrix against raw data
+## ************************************************************
 
 raw.check1 <- unique(spec$GenusSpecies[spec$Site == dimnames(model.input$data$X)$site[1]&
                                        spec$Year == dimnames(model.input$data$X)$year[1] &
@@ -91,3 +93,18 @@ model.check3 <- names(model.input$data$X[15,5,1,][ model.input$data$X[15,5,1,] =
 
 print(paste("random raw, model data match 3", all(raw.check3 %in%
                                                   model.check3)))
+
+
+## ************************************************************
+## colinearily?
+## ************************************************************
+
+cor.test(model.input$data$natural, model.input$data$HRarea)
+
+apply(model.input$data$fra, 2,
+      function(x) cor.test(x, model.input$data$natural))
+
+apply(model.input$data$fra, 2,
+      function(x) cor.test(x, model.input$data$HRarea))
+
+## nothing raises any red flags

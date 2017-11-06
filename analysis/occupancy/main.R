@@ -11,6 +11,7 @@ source('src/prep.R')
 source('src/initialize.R')
 w.ypr <- FALSE
 
+natural.decay <- "1000"
 ## ************************************************************
 ## prep data
 ## ************************************************************
@@ -26,19 +27,18 @@ model.input <- prepOccModelInput(nzero=0,
                     HRarea=sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
                     kinda.natural.mat=NULL, ## kinda natural
-                    natural.decay="350",
+                    natural.decay=natural.decay,
                     veg=by.site,
                     w.ypr=w.ypr,
                     load.inits=FALSE)
 
-scale <- 1e3
+scale <- 5e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
 nchain <- 3
 
 model.input$data$kinda.natural <- NULL
-
 source('src/complete_noRain.R')
 
 input1 <- c(code=ms.ms.occ,
@@ -57,7 +57,10 @@ ms.ms.nimble <- compareMCMCs_withMonitors(input1,
                                           monitors=model.input$monitors)
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  'runs/nimble_bees.Rdata'))
+                                  sprintf('runs/nimble_bees_%s.Rdata',
+                                          natural.decay)))
+
+
 
 ## *****************************************************************
 ## cross level sampler

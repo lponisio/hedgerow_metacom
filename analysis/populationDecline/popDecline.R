@@ -2,15 +2,15 @@ rm(list=ls())
 library(plyr)
 library(lme4)
 library(lmerTest)
-setwd('~/Dropbox/collapse/analysis')
-load('../../hedgerow_assembly/data/species/allsamples.Rdata')
-load('../../hedgerow_assembly/data/networks/allSpecimens.Rdata')
-traits <- read.csv("../data/traits.csv")
+setwd('~/Dropbox/hedgerow_metacom/analysis/populationDecline')
+load('../../../hedgerow_assembly/data/species/allsamples.Rdata')
+load('../../../hedgerow_assembly/data/networks/allSpecimens.Rdata')
+traits <- read.csv("../../data/traits.csv")
 source("src/runModels.R")
 
 drought.yrs <- 2013:2015
 
-## pollinators 
+## pollinators
 pol <- calcDroughtvar(pol.mat, drought.yrs, traits, spec=spec)
 plant <- calcDroughtvar(plant.mat, drought.yrs, traits, spec=spec)
 
@@ -24,14 +24,14 @@ fams <- rep("gaussian", length(xvars))
 ## full models
 formulas <- list()
 for(i in xvars){
-  formulas[[i]] <- lapply(ys, function(x) {
-    as.formula(paste(x, "~",
-                     paste(paste(i,
-                                 "*drought", sep=""),
-                           "(1|site)",
-                           "(1|species)",
-                           sep="+")))
-  })
+    formulas[[i]] <- lapply(ys, function(x) {
+        as.formula(paste(x, "~",
+                         paste(paste(i,
+                                     "*drought", sep=""),
+                               "(1|site)",
+                               "(1|species)",
+                               sep="+")))
+    })
 }
 formulas <- unlist(formulas)
 
@@ -48,28 +48,28 @@ this.dats <- vector("list",
                     length=combins)
 
 for (i in 1:length(dats)){
-  for(j in metrics){
-    print(j)
-    for(k in site.type){
-      print(k)
-      this.dats[[i]][[j]][[k]] <- dats[[i]][!is.na(dats[[i]]$SiteStatus),]
-      this.dats[[i]][[j]][[k]] <- this.dats[[i]][[j]][[k]][this.dats[[i]][[j]][[k]][,"SiteStatus"] == k,] 
-      this.dats[[i]][[j]][[k]] <- this.dats[[i]][[j]][[k]][this.dats[[i]][[j]][[k]][,"metric"] == j,]
-      out.mods[[i]][[j]][[k]] <- mapply(function(a, b)
-                                   runMod(forms= a,
-                                          fam= b,
-                                          dats=this.dats[[i]][[j]][[k]]),
-                                   a=formulas,
-                                   b=fams,
-                                   SIMPLIFY=FALSE)
-      out.sums[[i]][[j]][[k]] <- lapply(out.mods[[i]][[j]][[k]], summary)
+    for(j in metrics){
+        print(j)
+        for(k in site.type){
+            print(k)
+            this.dats[[i]][[j]][[k]] <- dats[[i]][!is.na(dats[[i]]$SiteStatus),]
+            this.dats[[i]][[j]][[k]] <- this.dats[[i]][[j]][[k]][this.dats[[i]][[j]][[k]][,"SiteStatus"] == k,]
+            this.dats[[i]][[j]][[k]] <- this.dats[[i]][[j]][[k]][this.dats[[i]][[j]][[k]][,"metric"] == j,]
+            out.mods[[i]][[j]][[k]] <- mapply(function(a, b)
+                runMod(forms= a,
+                       fam= b,
+                       dats=this.dats[[i]][[j]][[k]]),
+                a=formulas,
+                b=fams,
+                SIMPLIFY=FALSE)
+            out.sums[[i]][[j]][[k]] <- lapply(out.mods[[i]][[j]][[k]], summary)
+        }
     }
-  }
 }
 
 
 save(out.sums, out.mods, file="saved/mods.Rdata")
-
+=
 ## pollinators
 ## [1] "mean.abund"
 ## [1] "control"
@@ -99,7 +99,7 @@ save(out.sums, out.mods, file="saved/mods.Rdata")
 ## plants
 ## [1] "mean.abund"
 ## [1] "control"
-## 1) degree*drought, 2) prop.gen*drought, 3) uniq*drought 
+## 1) degree*drought, 2) prop.gen*drought, 3) uniq*drought
 ## [1] "mature"
 ## 1) degree*drought 2) prop.gen*drought 3) uniq*drought
 

@@ -5,8 +5,8 @@ library(igraph)
 library(bipartite)
 library(RColorBrewer)
 source('plotting/src/makeNetworkFig.R')
-## source('src/initialize.R')
-## source('plotting/src/initialize.R')
+source('src/initialize.R')
+source('plotting/src/initialize.R')
 
 for(i in 1:length(phi.gam)){
     this.site.ave <- phi.gam[[i]]

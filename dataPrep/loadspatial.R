@@ -5,7 +5,9 @@ source('../../dataPrep/src/misc.R')
 library(rgdal)
 library(maptools)
 library(raster)
+library(spectralGP)
 save.dir <- '../../data/spatial'
+load('../../data/networks/allSpecimens.Rdata')
 
 ## ************************************************************
 ## load and prepare data
@@ -50,6 +52,12 @@ all.sites.lines <- spRbind(hr.new, line.sites)
 
 all.sites.pt <- SpatialLinesMidPoints(all.sites.lines)
 all.sites.pt <-  all.sites.pt[!duplicated(all.sites.pt@data$df0),]
+dists <- rdist.earth(coordinates(all.sites.pt), miles=FALSE)
+
+## any sites within 10 m of each other?
+apply(dists < 0.01, 1, sum)
+## only the diagonal...
+
 
 ## drop the hedgerows that we did not samples that are very far N
 ## above the others
@@ -114,7 +122,7 @@ kinda.natural <- c("Tamarisk Alliance",
 ##             sep=" & ", row.names=FALSE)
 
 
-landcover.nat <- landcover[!landcover@data$VegName %in% non.natural
+landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
                           ## & !landcover@data$VegName %in% kinda.natural,]
 ## include kinda natural components????
 
@@ -124,13 +132,20 @@ save(landcover.nat, landcover.kinda.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
 
 
+new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
+surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
+    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
+
 
 ## find out which classes look like they are really ag
 f <- function(){
-    layout(matrix(1:4, nrow=2))
+    ## layout(matrix(1:4, nrow=2))
     for(vegName in unique(landcover.nat$VegName)){
         this.veg <- landcover.nat[landcover.nat$VegName == vegName,]
         plot(this.veg, main=vegName)
+        points(new.hr, col="red")
+        points(surveyed.hr, col="dodgerblue")
+
 
     }
 }

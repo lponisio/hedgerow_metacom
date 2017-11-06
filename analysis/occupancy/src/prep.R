@@ -55,7 +55,6 @@ prepOccModelInput <- function(nzero, ## if augmenting data
         natural.mat <- samp2site.spp(natural$Site,
                                      natural$Year, natural[,
                                                            natural.decay])
-        natural.mat <- apply(natural.mat, 2, standardize)
         natural.sites <- rownames(natural.mat)
     } else{ ## for yolo landcover data
         natural.mat <- natural.mat[, natural.decay]
@@ -66,7 +65,6 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     if(!is.null(kinda.natural.mat)){
         kinda.natural.mat <- kinda.natural.mat[, natural.decay]
         kinda.natural.mat <- kinda.natural.mat[!is.na(kinda.natural.mat)]
-        kinda.natural.mat <- standardize(kinda.natural.mat)
         natural.sites <- names(kinda.natural.mat)
     }
 
@@ -150,7 +148,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
             X[,i,j,] <- tmp[[i]][[j]]
 
     ## only keep sites with some positive number of reps
-    no.reps <- apply(mat, 1, function(x) sum( x>= 0, na.rm=TRUE))==0
+    no.reps <- apply(mat, 1, function(x) sum(x >= 0, na.rm=TRUE))==0
     X <- X[!no.reps,,,,drop=FALSE]
 
     ## create an array of day of the year
@@ -201,24 +199,26 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     ## drop last year of flower data, standardize
     flower.mat <- flower.mat[rownames(flower.mat) %in%
                              dimnames(X)$site,]
-    flower.mat <- flower.mat[, colnames(flower.mat) >=
+    flower.mat <- flower.mat[, as.numeric(colnames(flower.mat)) <
                                max(dimnames(X)$year)]
     flower.mat <- standardize(flower.mat)
 
 
     ## drop last year of natural data
     if(is.null(natural.mat)){
-        natural.mat <- natural.mat[, colnames(natural.mat) >=
+        natural.mat <- natural.mat[, as.numeric(colnames(natural.mat)) <
                                      max(dimnames(X)$year)]
         natural.mat <- natural.mat[rownames(natural.mat) %in%
-                                   dimnames(X)[[1]],]
+                                   dimnames(X)$site,]
+        natural.mat <- standardize(log(natural.mat))
     } else {
         natural.mat <- natural.mat[names(natural.mat) %in%
-                                   dimnames(X)[[1]]]
+                                   dimnames(X)$site]
     }
     if(!is.null(kinda.natural.mat)){
         kinda.natural.mat <- kinda.natural.mat[names(kinda.natural.mat) %in%
-                                   dimnames(X)[[1]]]
+                                               dimnames(X)$site]
+         kinda.natural.mat <- standardize(log(kinda.natural.mat))
     }
     site.status <- unique(cbind(Site=spec$Site,
                                 Year=spec$Year,
@@ -257,7 +257,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
     site.status.mat <- site.status.mat[rownames(site.status.mat) %in%
                                        dimnames(X)$site,
-                                       colnames(site.status.mat) >=
+                                       as.numeric(colnames(site.status.mat)) <
                                        max(dimnames(X)$year)]
 
     ## specify the initial values
@@ -289,7 +289,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
     save.path <- file.path(save.dir,
                            sprintf('%s-%s-%s.RData',
-                                   threshold, nzero, buffer))
+                                   threshold, nzero, natural.decay))
     constants <-  list(nrep=apply(X, c(1,2,4),
                                   function(x) sum(x >= 0,na.rm=TRUE)),
                        nsp=dim(X)[4],
@@ -353,9 +353,6 @@ getParams <- function(){
       'mu.phi.nat.area',
       'sigma.phi.nat.area',
 
-      ## 'mu.phi.kinda.nat.area',
-      ## 'sigma.phi.kinda.nat.area',
-
       'mu.phi.fra',
       'sigma.phi.fra',
       'mu.phi.k',
@@ -381,9 +378,6 @@ getParams <- function(){
       'sigma.gam.hr.area',
       'mu.gam.nat.area',
       'sigma.gam.nat.area',
-
-      ## 'mu.gam.kinda.nat.area',
-      ## 'sigma.gam.kinda.nat.area',
 
       'mu.gam.fra',
       'sigma.gam.fra',
@@ -433,9 +427,6 @@ getInits <- function(nsp){
       mu.phi.nat.area = rnorm(1),
       sigma.phi.nat.area = runif(1),
 
-      ## mu.phi.kinda.nat.area = rnorm(1),
-      ## sigma.phi.kinda.nat.area = runif(1),
-
       mu.phi.fra = rnorm(1),
       sigma.phi.fra = runif(1),
       mu.phi.k = rnorm(1),
@@ -460,8 +451,6 @@ getInits <- function(nsp){
       mu.gam.hr.area = rnorm(1),
       sigma.gam.hr.area = runif(1),
 
-      ## mu.gam.kinda.nat.area = rnorm(1),
-      ## sigma.gam.kinda.nat.area = runif(1),
 
       mu.gam.nat.area = rnorm(1),
       sigma.gam.nat.area = runif(1),
@@ -492,8 +481,6 @@ getInits <- function(nsp){
       phi.hr.area = rnorm(nsp),
       phi.nat.area = rnorm(nsp),
 
-      ## phi.kinda.nat.area = rnorm(nsp),
-
       phi.fra = rnorm(nsp),
       phi.k = rnorm(nsp),
       phi.B = rnorm(nsp),
@@ -507,8 +494,6 @@ getInits <- function(nsp){
       gam.0 = rnorm(nsp),
       gam.hr.area = rnorm(nsp),
       gam.nat.area = rnorm(nsp),
-
-      ## gam.kinda.nat.area = rnorm(nsp),
 
       gam.fra = rnorm(nsp),
       gam.k = rnorm(nsp),
