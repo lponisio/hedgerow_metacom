@@ -81,7 +81,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                                  natural.sites])
 
     ## veg diversity
-    veg$Site <- gsub(":.*", "", veg$Site)
+    ## veg$Site <- gsub(":.*", "", veg$Site)
     flower.mat <- samp2site.ypr(site=veg$Site,
                                 yr=veg$Year,
                                 abund=veg[, col.name.div.type])

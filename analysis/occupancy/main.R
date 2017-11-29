@@ -28,7 +28,8 @@ model.input <- prepOccModelInput(nzero=0,
                     veg=by.site,
                     w.ypr=w.ypr,
                     load.inits=FALSE,
-                    model.type=include.int)
+                    model.type=include.int,
+                    col.name.div.type = "div.visits") ## Div, or median.div.visits
 
 scale <- 1e1
 burnin <- 1e1*scale
@@ -46,7 +47,6 @@ source(sprintf('src/models/complete_%s.R', include.int))
 install_github("nimble-dev/nimble",
                ref = "devel",
                subdir = "packages/nimble")
-
 
 ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            constants=model.input$constants,
@@ -70,9 +70,14 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
                         nburnin=burnin)
 
-waic <- C.mcmc$calculateWAIC(nburnIn = 100)
 
 save(ms.ms.nimble, file=file.path(save.dir,
+                                  sprintf('runs/nimble_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
+
+waic <- C.mcmc$calculateWAIC(nburnIn = 1000)
+
+save(ms.ms.nimble, waic, file=file.path(save.dir,
                                   sprintf('runs/nimble_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
 
@@ -112,13 +117,14 @@ likeDiscFuncGenerator <- nimbleFunction(
 samples.4.cppp <- do.call(rbind, ms.ms.nimble)
 
 ## drop things ther were monitored that were not parameters
-samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in% ms.ms.model$getNodeNames(includeData=FALSE,
+samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
+                                   ms.ms.model$getNodeNames(includeData=FALSE,
                                               stochOnly=TRUE)]
 
 model.cppp <- runCPPP(ms.ms.model,
                       dataNames= "X",
                       discrepancyFunction= likeDiscFuncGenerator,
-                      nCores=2,
+                      nCores=1,
                       origMCMCOutput= samples.4.cppp)
 
 ## ability to deal with a multi chain input

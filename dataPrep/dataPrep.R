@@ -1,5 +1,5 @@
-rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom/')
+rm(list=ls())
 setwd('dataPrep')
 source('src/misc.R')
 source('src/prepNets.R')
@@ -43,7 +43,7 @@ spec$doy <- as.numeric(strftime(spec$Date, format='%j'))
 
 
 occ.data <-
-    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/5-0-all.RData'),
+    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/5-0-350.RData'),
         silent=TRUE)
 if(!inherits(occ.data, "try-error")){
     keep.sites <- dimnames(model.input$data$X)[[1]]
@@ -162,54 +162,6 @@ write.table(ms.table, file="~/Dropbox/hedgerow_metacom_saved/occupancy/table/sam
             sep=" & ")
 
 
-
-## *************************************************
-## thermal traits
-## *************************************************
-spec$AverageTemp <- apply(spec, 1, function(x){
-    mean(as.numeric(c(x['TempStart'], x['TempEnd'])),
-         na.rm=TRUE)
-})
-
-temp.tol <- do.call(rbind, tapply(spec$AverageTemp, spec$GenusSpecies,
-                                  function(x){
-                                      temp.mean <- mean(x, na.rm=TRUE)
-                                      temp.range <- range(x, na.rm=TRUE)
-                                      max.temp <- temp.range[2]
-                                      temp.range <- temp.range[2] - temp.range[1]
-                                      return(c(temp.mean=temp.mean,
-                                               max.temp=max.temp,
-                                               temp.range=temp.range))
-                                  }))
-temp.tol <- as.data.frame(temp.tol)
-temp.tol$GenusSpecies <- rownames(temp.tol)
-rownames(temp.tol) <- NULL
-
-traits <- merge(traits, temp.tol, all.x=TRUE)
-
-
-## *************************************************
-## phenology traits
-## *************************************************
-
-doy.tol <- do.call(rbind, tapply(spec$doy, spec$GenusSpecies,
-                                 function(x){
-                                     doy.mean <- mean(x, na.rm=TRUE)
-                                     doy.range <- range(x, na.rm=TRUE)
-                                     max.doy <- doy.range[2]
-                                     doy.range <- (doy.range[2] -
-                                                   doy.range[1]) +1
-                                     return(c(doy.mean=doy.mean,
-                                              max.doy=max.doy,
-                                              doy.range=doy.range))
-                                 }))
-doy.tol <- as.data.frame(doy.tol)
-doy.tol$GenusSpecies <- rownames(doy.tol)
-rownames(doy.tol) <- NULL
-
-traits <- merge(traits, doy.tol, all.x=TRUE)
-
-
 ## *************************************************
 ## add various traits
 ## *************************************************
@@ -220,7 +172,7 @@ spec$degree <- traits$degree[match(spec$GenusSpecies,
 spec$plant.degree <- traits$degree[match(spec$PlantGenusSpecies,
                                          traits$GenusSpecies)]
 
-## occurence
+## occurrence
 occ <- apply(mat, c(3,1), calcOccArray)
 spec$occ.date <- apply(spec, 1, findOcc)
 traits$occ.date <- spec$occ.date[match(traits$GenusSpecies,
@@ -284,7 +236,7 @@ save(spec, file='../data/networks/allSpecimens.Rdata')
 write.csv(traits, file='../data/traits.csv', row.names=FALSE)
 
 
-site.years <- aggregate(Year~ Site, data=spec,
+site.years <- aggregate(Year ~ Site, data=spec,
                         function(x) length(unique(x)))
 
 sites.to.keep <- site.years$Site[site.years$Year >= 1]
@@ -322,5 +274,71 @@ specs.save.path <- '../analysis/speciesLevel/saved'
 save(specs, specs.years, specs.site,
      file=file.path(specs.save.path, 'specs.Rdata'))
 
+## *************************************************
+## veg data based on visitation
+## *************************************************
+load("../data/veg.Rdata")
+
+abund.visits <- lapply(nets, function(x) apply(x, 1, sum))
+plant.div.visits <- sapply(abund.visits, diversity)
 
 
+div.visits <- lapply(nets, function(x) apply(x, 1, diversity))
+plant.median.div.visits <- sapply(div.visits, median)
+
+by.site$Site <- sapply(strsplit(by.site$Site, ":"), function(x) x[1])
+by.site$div.visits <- plant.div.visits[match(paste(by.site$Site,
+                                                   by.site$Year, sep="."),
+                                             names(nets))]
+
+by.site$median.div.visits <- plant.median.div.visits[match(paste(by.site$Site,
+                                                   by.site$Year, sep="."),
+                                             names(nets))]
+
+save(by.site, file="../data/veg.Rdata")
+
+## ## *************************************************
+## ## thermal traits
+## ## *************************************************
+## spec$AverageTemp <- apply(spec, 1, function(x){
+##     mean(as.numeric(c(x['TempStart'], x['TempEnd'])),
+##          na.rm=TRUE)
+## })
+
+## temp.tol <- do.call(rbind, tapply(spec$AverageTemp, spec$GenusSpecies,
+##                                   function(x){
+##                                       temp.mean <- mean(x, na.rm=TRUE)
+##                                       temp.range <- range(x, na.rm=TRUE)
+##                                       max.temp <- temp.range[2]
+##                                       temp.range <- temp.range[2] - temp.range[1]
+##                                       return(c(temp.mean=temp.mean,
+##                                                max.temp=max.temp,
+##                                                temp.range=temp.range))
+##                                   }))
+## temp.tol <- as.data.frame(temp.tol)
+## temp.tol$GenusSpecies <- rownames(temp.tol)
+## rownames(temp.tol) <- NULL
+
+## traits <- merge(traits, temp.tol, all.x=TRUE)
+
+
+## ## *************************************************
+## ## phenology traits
+## ## *************************************************
+
+## doy.tol <- do.call(rbind, tapply(spec$doy, spec$GenusSpecies,
+##                                  function(x){
+##                                      doy.mean <- mean(x, na.rm=TRUE)
+##                                      doy.range <- range(x, na.rm=TRUE)
+##                                      max.doy <- doy.range[2]
+##                                      doy.range <- (doy.range[2] -
+##                                                    doy.range[1]) +1
+##                                      return(c(doy.mean=doy.mean,
+##                                               max.doy=max.doy,
+##                                               doy.range=doy.range))
+##                                  }))
+## doy.tol <- as.data.frame(doy.tol)
+## doy.tol$GenusSpecies <- rownames(doy.tol)
+## rownames(doy.tol) <- NULL
+
+## traits <- merge(traits, doy.tol, all.x=TRUE)
