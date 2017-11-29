@@ -2,16 +2,13 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
 rm(list=ls())
 setwd('analysis/occupancy')
-library('abind')
-library('nimble')
-library('R2jags')
-source('src/misc.R')
-source('src/plotting.R')
-source('src/prep.R')
 source('src/initialize.R')
 w.ypr <- FALSE
+## allInt, "no_noncrop"
+include.int <- "allInt"
+## 350, 1000, 2500
+natural.decay <- "350"
 
-natural.decay <- "1000"
 ## ************************************************************
 ## prep data
 ## ************************************************************
@@ -30,93 +27,124 @@ model.input <- prepOccModelInput(nzero=0,
                     natural.decay=natural.decay,
                     veg=by.site,
                     w.ypr=w.ypr,
-                    load.inits=FALSE)
+                    load.inits=FALSE,
+                    model.type=include.int)
 
-scale <- 5e2
+scale <- 1e1
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
 nchain <- 3
 
-model.input$data$kinda.natural <- NULL
-source('src/complete_noRain.R')
+source(sprintf('src/models/complete_%s.R', include.int))
 
-input1 <- c(code=ms.ms.occ,
-            model.input)
+## ## ****************************************************************
+## ## not using mcmc suite
+## ##
+## *****************************************************************
+## until next release
+install_github("nimble-dev/nimble",
+               ref = "devel",
+               subdir = "packages/nimble")
 
-## *****************************************************************
-## run in nimble using mcmc suite
-## *****************************************************************
-ms.ms.nimble <- compareMCMCs_withMonitors(input1,
-                                          MCMCs=c('nimble'),
-                                          niter=niter,
-                                          burnin = burnin,
-                                          thin=nthin,
-                                          summary=FALSE,
-                                          check=FALSE,
-                                          monitors=model.input$monitors)
+
+ms.ms.model <- nimbleModel(code=ms.ms.occ,
+                           constants=model.input$constants,
+                           data=model.input$data,
+                           inits=model.input$inits,
+                           check=FALSE,
+                           calculate=FALSE)
+
+## configure and build mcmc
+mcmc.spec <- configureMCMC(ms.ms.model,
+                           print=FALSE,
+                           monitors = model.input$monitors)
+mcmc <- buildMCMC(mcmc.spec)
+
+## compile model in C++
+C.model <- compileNimble(ms.ms.model)
+C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
+
+## run model
+ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
+                        nchains=nchain,
+                        nburnin=burnin)
+
+waic <- C.mcmc$calculateWAIC(nburnIn = 100)
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  sprintf('runs/nimble_bees_%s.Rdata',
-                                          natural.decay)))
+                                  sprintf('runs/nimble_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
 
 
-
+## ## ****************************************************************
+## ## runn cppp on model
+## ##
 ## *****************************************************************
-## cross level sampler
-## *****************************************************************
-## source('../../../occupancy/analysis/all/samplers/sampler_crossLevel_new.R')
+install_github("nimble-dev/nimble",
+               ref = "add_CPPP_etc",
+               subdir = "packages/nimble")
 
-## MCMCdefs.crosslevel <- list('nimbleCrosslevel' = quote({
-##     customSpec <- configureMCMC(Rmodel)
-##     customSpec$removeSamplers('Z')
-##     ## find node names of each species for random effects
-##     base.names <- c(p.0,
-##       p.day.1,
-##       p.day.2,
-##       phi.0,
-##       phi.hr.area,
-##       phi.nat.area,
-##       phi.kinda.nat.area,
-##       phi.fra,
-##       phi.k,
-##       phi.B,
-##       phi.nat.area.fra,
-##       phi.hr.area.fra,
-##       phi.nat.area.k,
-##       phi.hr.area.k,
-##       gam.0,
-##       gam.hr.area,
-##       gam.nat.area,
-##       gam.kinda.nat.area,
-##       gam.fra,
-##       gam.k,
-##       gam.B,
-##       gam.hr.area.fra,
-##       gam.nat.area.fra,
-##       gam.hr.area.k,
-##       gam.nat.area.k)
+source(sprintf('src/models/complete_%s_cppp.R', include.int))
 
-##     customSpec$removeSamplers(base.names)
-##     customSpec$addSampler(target = base.names,
-##                           type ='sampler_crossLevelBinary',
-##                           print=FALSE)
-##     customSpec
-## }))
+load(file=file.path(save.dir,
+                    sprintf('runs/nimble_bees_%s_%s.Rdata',
+                            natural.decay, include.int)))
+
+ms.ms.model <- nimbleModel(code=ms.ms.occ,
+                           constants=model.input$constants,
+                           data=model.input$data,
+                           inits=model.input$inits,
+                           check=FALSE,
+                           calculate=FALSE)
 
 
-## ms.ms.crosslevel <- compareMCMCs_withMonitors(input1,
-##                                               MCMCs=c('nimbleCrosslevel'),
-##                                               MCMCdefs = MCMCdefs.crosslevel,
-##                                               niter= niter,
-##                                               burnin = burnin,
-##                                               thin=nthin,
-##                                               summary=FALSE,
-##                                               check=FALSE,
-##                                               monitors=model.input$monitors)
+likeDiscFuncGenerator <- nimbleFunction(
+    setup = function(model, ...){},
+    run = function(){
+        output <- -calculate(model)
+        returnType(double(0))
+        return(output)
+    },
+    contains = discrepancyFunction_BASE
+)
 
-## save(ms.ms.crosslevel, file=file.path(save.dir,
-##                                       'runs/crosslevel.Rdata'))
+samples.4.cppp <- do.call(rbind, ms.ms.nimble)
+
+## drop things ther were monitored that were not parameters
+samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in% ms.ms.model$getNodeNames(includeData=FALSE,
+                                              stochOnly=TRUE)]
+
+model.cppp <- runCPPP(ms.ms.model,
+                      dataNames= "X",
+                      discrepancyFunction= likeDiscFuncGenerator,
+                      nCores=2,
+                      origMCMCOutput= samples.4.cppp)
+
+## ability to deal with a multi chain input
+## catch unpassed arguments eariler, origMCMCOutput, discFunction,
+## dataNames
+## breaks if you monitor things other than parameters, why?
+
+## ## *****************************************************************
+## ## run in nimble using mcmc suite
+## ## *****************************************************************
+## input1 <- c(code=ms.ms.occ,
+##             model.input)
+
+## ms.ms.nimble <- compareMCMCs_withMonitors(input1,
+##                                           MCMCs=c('nimble'),
+##                                           niter=niter,
+##                                           burnin = burnin,
+##                                           thin=nthin,
+##                                           summary=FALSE,
+##                                           check=FALSE,
+##                                           monitors=model.input$monitors)
+
+## save(ms.ms.nimble, file=file.path(save.dir,
+##                                   sprintf('runs/nimble_bees_%s.Rdata',
+##                                           natural.decay)))
+
 
 ## ## *****************************************************************
 ## ## run in jags as a check
@@ -126,32 +154,3 @@ save(ms.ms.nimble, file=file.path(save.dir,
 ## ms.ms.jags <- ms.ms(d=model.input)
 
 
-
-
-## ## *****************************************************************
-## ## not using mcmc suite
-## ## *****************************************************************
-
-## ms.ms.model <- nimbleModel(code=ms.ms.occ,
-##                            constants=model.input$constants,
-##                            data=model.input$data,
-##                            inits=model.input$inits,
-##                            check=FALSE,
-##                            calculate=FALSE)
-
-## ## configure and build mcmc
-## mcmc.spec <- configureMCMC(ms.ms.model,
-##                            print=FALSE,
-##                            monitors = model.input$monitors)
-## mcmc <- buildMCMC(mcmc.spec)
-
-## ## compile model in C++
-## C.model <- compileNimble(ms.ms.model)
-## C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
-
-## ## run model
-## C.mcmc$run(niter)
-
-## samples <- as.matrix(C.mcmc$mvSamples)
-
-## means <- apply(samples, 2, mean)

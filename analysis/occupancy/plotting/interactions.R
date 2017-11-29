@@ -14,7 +14,17 @@ source('../../../occupancy/analysis/all/plotting.R')
 ## *****************************************************************
 ## interaction plots
 ## *****************************************************************
-natural.decay <- 350
+
+## include.int <- "allInt"
+include.int <- "no_noncrop"
+## 350, 1000, 2500
+natural.decay <- "350"
+
+load(file=file.path(save.dir,
+                      sprintf('runs/mus_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
+
+
 
 load(file=file.path(save.dir,
                     "runs/mus.Rdata"))

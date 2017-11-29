@@ -31,7 +31,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               ## the metric of floral availability
                               load.inits.name='nimble', ## file name
                               ## of the model to load inits from
-                              jags=FALSE) { ## prep input for jags?
+                              jags=FALSE, ## prep input for jags?
+                              model.type="allInt") {
 
     ## this function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
@@ -218,7 +219,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     if(!is.null(kinda.natural.mat)){
         kinda.natural.mat <- kinda.natural.mat[names(kinda.natural.mat) %in%
                                                dimnames(X)$site]
-         kinda.natural.mat <- standardize(log(kinda.natural.mat))
+        kinda.natural.mat <- standardize(log(kinda.natural.mat))
     }
     site.status <- unique(cbind(Site=spec$Site,
                                 Year=spec$Year,
@@ -271,7 +272,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
     nsp <- dim(X)[4]
     inits <- c(list(Z=zinits),
-                  getInits(nsp))
+               getInits(nsp))
 
     ## load initial conditions from a previous run
     if(load.inits){
@@ -311,13 +312,21 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                  ypr = site.status.mat,
                  HRarea=d.area[names(d.area) %in% dimnames(X)$site][dimnames(X)$site],
                  natural=natural.mat[dimnames(X)$site],
-                 kinda.natural=kinda.natural.mat[dimnames(X)$site],
+                 ## kinda.natural=kinda.natural.mat[dimnames(X)$site],
                  fra = flower.mat[dimnames(X)$site,])
+
+     monitors <- getParams()
 
     ## remove ypr and inits if not in model
     if(!w.ypr){
         data$ypr <- NULL
         inits <- inits[!grepl("ypr", names(inits))]
+        monitors <- monitors[!grepl("ypr", monitors)]
+    }
+    if(model.type == "no_noncrop"){
+        data$natural <- NULL
+        inits <- inits[!grepl("nat", names(inits))]
+        monitors <- monitors[!grepl("nat", monitors)]
     }
 
     if(jags){
@@ -327,7 +336,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     }
 
     model.input <- list(data=data,
-                        monitors=getParams(),
+                        monitors=monitors,
                         constants=constants,
                         inits=my.inits)
     save(model.input, file=save.path)

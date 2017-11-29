@@ -1,6 +1,12 @@
 ## ************************************************************
 ## load needed data sets
 ## ************************************************************
+library(devtools)
+library('abind')
+library('nimble')
+library('R2jags')
+source('src/misc.R')
+source('src/prep.R')
 source('src/make-matrix.R')
 source('src/comparMCMCs_withMonitors.R')
 load('../../data/networks/allSpecimens.Rdata')

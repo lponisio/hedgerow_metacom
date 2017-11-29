@@ -1,56 +1,30 @@
 ## ************************************************************
-setwd('~/Dropbox/hedgerow_metacom/')
+## setwd('~/Dropbox/hedgerow_metacom/')
 rm(list=ls())
 setwd('analysis/occupancy')
 library('nimble')
 source('src/misc.R')
-source('src/plotting.R')
+source('plotting/src/plotting.R')
+source('plotting/src/checkChains.R')
 source('src/prep.R')
 source('src/initialize.R')
-source('../../../occupancy/analysis/all/plotting.R')
+## include.int <- "allInt"
+include.int <- "no_noncrop"
+## 350, 1000, 2500
+natural.decay <- "350"
 
-## *****************************************************************
-## comparisons
-## *****************************************************************
-load(file=file.path(save.dir, 'runs/nimble_bees.Rdata'))
+load(file=file.path(save.dir,
+                    sprintf('runs/nimble_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
 
+all.samples <- do.call(rbind, ms.ms.nimble)
 
-ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
-                                                 name = "ms.ms")
-
-## doesn't really work with a lot of params
-## make_MCMC_comparison_pages(ms.ms.occ.all,
-##                            dir=file.path(save.dir, "figures/comparisons"))
-
-## takes forever with a lot of params
-checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
-            f.path = file.path(save.dir, "figures/chains/%s.pdf"))
-
-## *****************************************************************
-## paramter groups
-## *****************************************************************
-
-params <- dimnames(ms.ms.occ.all$ms.ms$summary)[[3]]
-groups <- list()
-i <- 1
-while(length(params) > 0){
-    id <- agrep(params[1], params, max.distance = 0.3)
-    groups[[i]] <- params[id]
-    params <- params[-id]
-    i <- i + 1
-}
-
-pdf.f(plotComparisons,
-      file=file.path(save.dir,
-                     "figures/comparisons/allparams.pdf"),
-      height=10, width=8.5 )
-
-
-## *****************************************************************
-## posterior plots for ms
-## *****************************************************************
-
-nimble.summary <- ms.ms.occ.all$ms.ms$summary["nimble",,]
+nimble.summary <- apply(all.samples, 2, function(x){
+    means <- mean(x)
+    CI95_upp <- 1.96*sd(x) + means
+    CI95_low <-  means - 1.96*sd(x)
+    return(c(mean=means, CI95_upp=CI95_upp, CI95_low=CI95_low ))
+})
 
 mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
@@ -69,45 +43,26 @@ xlabs <- c("Hedgerow proximity", "Non-crop \n habitat proximity",
            "Hedgrow proximity* \n body size",
            "Non-crop proximity* \n body size")
 
+
+if(include.int == "no_noncrop"){
+    wanted.order <- wanted.order[!grepl("nat", wanted.order)]
+    xlabs <- xlabs[!grepl("Non-crop", xlabs)]
+}
+
+
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 
 pdf.f(f,
       file=file.path(save.dir,
-                     "figures/ms/mus.pdf"),
+                       sprintf('figures/posterior/mus_bees_%s_%s.pdf',
+                                          natural.decay, include.int)),
       height=7, width=9)
 
-## calculate some thigns for the ms
-mus["mean","mu.phi.nat.area.fra"] + mus["mean","mu.phi.nat.area"]
-
-
 save(mus, file=file.path(save.dir,
-                     "runs/mus.Rdata"))
+                      sprintf('runs/mus_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
 
-## *****************************************************************
-## persistence vs. hr and nat habitat effects
-## *****************************************************************
-## load(file=file.path(save.dir,
-##                     'runs/nimble_bees_noRain_short.Rdata'))
 
-## load(file.path(save.dir,
-##                '5-0-all.Rdata'))
-
-## nimble.sum <- ms.ms.nimble$model1$summary["nimble",,]
-
-## params.to.get <- c("phi.sp.mean", "gam.sp.mean",
-##                    'phi.nat.area',
-##                    'phi.hr.area',
-##                    'phi.hr.area.fra',
-##                    'phi.nat.area.fra',
-##                    'phi.hr.area.k')
-
-## params <- lapply(params.to.get, function(x){
-##     nimble.sum[, grep(x,
-##                       colnames(nimble.sum))]
-## })
-## names(params) <- params.to.get
-
-## params <- lapply(params, function(x){
-##     x[, !grepl("^mu|^sigma", colnames(x))]
-## })
-
+runMCMCcheckChains(ms.ms.nimble, f.path=file.path(save.dir,
+                                                  "figures/chains"),
+                                                  natural.decay, include.int)
