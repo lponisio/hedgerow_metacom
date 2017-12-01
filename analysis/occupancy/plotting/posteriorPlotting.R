@@ -8,8 +8,8 @@ source('plotting/src/plotting.R')
 source('plotting/src/checkChains.R')
 source('src/prep.R')
 source('src/initialize.R')
-## include.int <- "allInt"
-include.int <- "no_noncrop"
+include.int <- "allInt"
+## include.int <- "no_noncrop"
 ## 350, 1000, 2500
 natural.decay <- "350"
 

@@ -10,7 +10,7 @@ pdf.f <- function(f, file, ...) {
 
 runMCMCcheckChains <- function(all.chains.samps, f.path,
                                natural.decay, include.int,
-                               params=NULL){
+                               params=NULL, num.samps=1000){
     ## function to plot values of parameters as a function of
     ## iterations. Input is the output of runMCMC
     if(class(all.chains.samps) != "list"){
@@ -25,13 +25,13 @@ runMCMCcheckChains <- function(all.chains.samps, f.path,
         cols <- c("dodgerblue", "darkolivegreen","goldenrod")
         layout(matrix(1:4, ncol=2))
         for(j in params){
-            plot(NA, xlim=c(0,1000),
+            plot(NA, xlim=c(0,num.samps),
                  ylim=range(do.call(rbind, all.chains.samps)[,j]),
-                 xlab = 'iteration', ylab="")
+                 xlab = 'iteration', ylab="", main=j)
             for(i in 1:length(all.chains.samps)){
                 this.chain <- all.chains.samps[[i]][,j]
                 points(this.chain[seq(from=1, to=length(this.chain),
-                                      length.out=1000)],
+                                      length.out=num.samps)],
                        type="l",
                        col=cols[i]
                        )

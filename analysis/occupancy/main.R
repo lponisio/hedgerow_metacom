@@ -8,6 +8,7 @@ w.ypr <- FALSE
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "350"
+filtering <- TRUE
 
 ## ************************************************************
 ## prep data
@@ -29,7 +30,7 @@ model.input <- prepOccModelInput(nzero=0,
                     w.ypr=w.ypr,
                     load.inits=FALSE,
                     model.type=include.int,
-                    col.name.div.type = "div.visits") ## Div, or median.div.visits
+                    col.name.div.type = "div.visits") ## div.visits, Div
 
 scale <- 1e1
 burnin <- 1e1*scale
@@ -38,6 +39,14 @@ nthin <- 2
 nchain <- 3
 
 source(sprintf('src/models/complete_%s.R', include.int))
+
+if(filtering){
+    source('src/dynamicOcc.R')
+    model.input$constants$max.nreps <- dim(model.input$data$X)[3]
+    model.input$data$Z <- NULL
+    model.input$inits$Z <- NULL
+    source(sprintf('src/models/complete_%s_filter.R', include.int))
+}
 
 ## ## ****************************************************************
 ## ## not using mcmc suite
@@ -54,33 +63,25 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            inits=model.input$inits,
                            check=FALSE,
                            calculate=FALSE)
+C.model <- compileNimble(ms.ms.model)
 
 ## configure and build mcmc
 mcmc.spec <- configureMCMC(ms.ms.model,
                            print=FALSE,
                            monitors = model.input$monitors)
 mcmc <- buildMCMC(mcmc.spec)
-
-## compile model in C++
-C.model <- compileNimble(ms.ms.model)
 C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
 
 ## run model
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
-                        nburnin=burnin)
+                        nburnin=burnin,
+                        WAIC=TRUE)
 
 
 save(ms.ms.nimble, file=file.path(save.dir,
                                   sprintf('runs/nimble_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
-
-waic <- C.mcmc$calculateWAIC(nburnIn = 1000)
-
-save(ms.ms.nimble, waic, file=file.path(save.dir,
-                                  sprintf('runs/nimble_bees_%s_%s.Rdata',
-                                          natural.decay, include.int)))
-
 
 ## ## ****************************************************************
 ## ## runn cppp on model
