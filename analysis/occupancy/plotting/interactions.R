@@ -5,7 +5,7 @@ setwd('analysis/occupancy')
 library('nimble')
 library('RColorBrewer')
 source('src/misc.R')
-source('src/plotting.R')
+source('plotting/src/plotting.R')
 source('src/prep.R')
 source('src/initialize.R')
 source('plotting/src/plotInteractions.R')
@@ -15,8 +15,8 @@ source('../../../occupancy/analysis/all/plotting.R')
 ## interaction plots
 ## *****************************************************************
 
-## include.int <- "allInt"
-include.int <- "no_noncrop"
+include.int <- "allInt"
+## include.int <- "no_noncrop"
 ## 350, 1000, 2500
 natural.decay <- "350"
 
@@ -25,9 +25,6 @@ load(file=file.path(save.dir,
                                           natural.decay, include.int)))
 
 
-
-load(file=file.path(save.dir,
-                    "runs/mus.Rdata"))
 load(file=file.path(save.dir, sprintf("5-0-%s.Rdata", natural.decay)))
 
 means <- mus["mean",]
@@ -49,7 +46,7 @@ pdf.f(plotInteractions, file=file.path(save.dir,
 pdf.f(plotHRInteractions, file=file.path(save.dir,
                                          sprintf("figures/ms/HRinteractions-%s.pdf",
                                                  natural.decay)),
-      width=9, height=4)
+      width=9, height=8)
 
 
 

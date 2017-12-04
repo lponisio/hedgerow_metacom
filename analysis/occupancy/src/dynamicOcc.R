@@ -53,10 +53,10 @@ rDynamicOccupancy <- nimbleFunction(
                    gamma = double(1),
                    p = double(2),
                    log = double(0, default = 0)) {
-        nyear <- length(p)
-        nreps <- length(p)
+        nyear <- dim(p)[1]
+        nreps <- dim(p)[2]
         ans <- matrix()
-        setSize(ans, nreps, nyear)
+        setSize(ans, nyear, nreps)
         returnType(double(2))
         return(ans)
     }

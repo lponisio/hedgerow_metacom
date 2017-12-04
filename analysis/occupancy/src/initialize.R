@@ -12,7 +12,8 @@ source('src/comparMCMCs_withMonitors.R')
 load('../../data/networks/allSpecimens.Rdata')
 save.dir <- "../../../hedgerow_metacom_saved/occupancy"
 
-hedgerow.dir <- "../../../hedgerow/data_sets"
+## hedgerow.dir <- "../../../hedgerow/data_sets"
+hedgerow.dir <- "../../data"
 ## spatial data
 geo <- read.csv(file.path(hedgerow.dir, 'tables/geography.csv'),
                 as.is=TRUE)
@@ -26,10 +27,10 @@ sr.sched$Site <- geo$Site[match(sr.sched$GeographyFK,
                                 geo$GeographyPK)]
 
 ## precip data
-precip <- read.csv(file.path(hedgerow.dir,
-                             'misc/precip_between_season_winters.csv'))
-rain <- as.numeric(precip$precip)
-names(rain) <- precip$year
+## precip <- read.csv(file.path(hedgerow.dir,
+##                              'misc/precip_between_season_winters.csv'))
+## rain <- as.numeric(precip$precip)
+## names(rain) <- precip$year
 
 ## trait data
 all.traits <- read.csv("../../data/traits.csv")

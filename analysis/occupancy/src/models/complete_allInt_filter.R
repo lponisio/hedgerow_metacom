@@ -251,8 +251,8 @@ ms.ms.occ <- nimbleCode({
             X[site, 1:nyear, 1:max.nreps, sp] ~
                 dDynamicOccupancy(nrep=nrep[site, 1:nyear, sp],
                                   psi1=psi[site,1,sp],
-                                  phi=phi[site,1:nyear,sp],
-                                  gamma=gamma[site,1:nyear,sp],
+                                  phi=phi[site,1:(nyear-1),sp],
+                                  gamma=gamma[site,1:(nyear-1),sp],
                                   p=p[site, 1:nyear, 1:max.nreps, sp])
 
         }
