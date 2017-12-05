@@ -281,7 +281,7 @@ ms.ms.occ <- nimbleCode({
     for(sp in 1:nsp) {
         logit(phi.sp.mean[sp]) <- mean(phi[1:nsite, 1:(nyear-1), sp])
         logit(gam.sp.mean[sp]) <- mean(gam[1:nsite, 1:(nyear-1), sp])
-         psi.star <- mean(psi.1[1:site,sp])
+         psi.star <- mean(psi.1[1:nsite,sp])
     }
 
 

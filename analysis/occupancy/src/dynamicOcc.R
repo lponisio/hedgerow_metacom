@@ -1,9 +1,7 @@
 
-
 dDynamicOccupancy <- nimbleFunction(
     ## DynamicOccupancy removes the z's and muZ's from the model and computes
     ## the probability of all reps over all years for one site, species
-
     run = function(x = double(2),
                    nrep = double(1),
                    psi1 = double(0),
@@ -15,7 +13,7 @@ dDynamicOccupancy <- nimbleFunction(
         ## prob of the occupied given p
         numObs1 <- sum(x[1,])
         ## prob of observation given occupided
-        ProbOccAndCount <- psi1 * prod(dbinom(x[1,], size = 1, p = p[1,], log = 0))
+        ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,], size = 1, p = p[1,], log = 1)))
         ## prob of the empty site
         ProbUnoccAndCount <- (1 - psi1) * (numObs1 == 0)
         ## probably of the observed states
@@ -29,7 +27,7 @@ dDynamicOccupancy <- nimbleFunction(
         for(t in 2:nyears) {
             numObs <- sum(x[t,])
             ProbOccAndCount <- ProbOccNextTime *
-                prod(dbinom(x[t,], size = 1, p = p[t,], log = 0))
+                exp(sum(dbinom(x[t,], size = 1, p = p[t,], log = 1)))
             ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
             ProbCount <- ProbOccAndCount + ProbUnoccAndCount
             ProbOccGivenCount <- ProbOccAndCount / ProbCount
@@ -55,8 +53,7 @@ rDynamicOccupancy <- nimbleFunction(
                    log = double(0, default = 0)) {
         nyear <- dim(p)[1]
         nreps <- dim(p)[2]
-        ans <- matrix()
-        setSize(ans, nyear, nreps)
+        ans <- matrix(1, nrow=nyear, ncol=nreps)
         returnType(double(2))
         return(ans)
     }

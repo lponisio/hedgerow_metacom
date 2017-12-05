@@ -417,7 +417,10 @@ getParams <- function(){
       'phi.hr.area',
       'phi.hr.area.fra',
       'phi.nat.area.fra',
-      'phi.hr.area.k'
+      'phi.hr.area.k',
+
+      ## equilibrium
+      'psi.star', 't.star'
       )
 }
 

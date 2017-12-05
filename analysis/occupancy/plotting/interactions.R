@@ -29,6 +29,8 @@ load(file=file.path(save.dir, sprintf("5-0-%s.Rdata", natural.decay)))
 
 means <- mus["mean",]
 
+inv.logit(means)
+
 save(means, file=file.path(save.dir, "means.Rdata"))
 
 probs <- c(0, 0.025, 0.25, 0.5, 0.75, 0.95, 1)

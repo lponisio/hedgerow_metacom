@@ -8,7 +8,7 @@ w.ypr <- FALSE
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "350"
-filtering <- TRUE
+filtering <- FALSE
 
 ## ************************************************************
 ## prep data
@@ -30,13 +30,13 @@ model.input <- prepOccModelInput(nzero=0,
                     w.ypr=w.ypr,
                     load.inits=FALSE,
                     model.type=include.int,
-                    col.name.div.type = "div.visits") ## div.visits, Div
+                    col.name.div.type = "Div") ## div.visits, Div
 
-scale <- 1e1
+scale <- 1e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
-nchain <- 3
+nchain <- 1
 
 source(sprintf('src/models/complete_%s.R', include.int))
 
