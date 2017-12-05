@@ -275,13 +275,13 @@ ms.ms.occ <- nimbleCode({
         logit(phi.site.mean[site]) <- mean(phi[site, 1:(nyear-1),1:nsp])
         logit(gam.site.mean[site]) <-
             mean(gam[site,1:(nyear-1),1:nsp])
-        t.star <- 2*gam.site.mean[site]*(1-phi.site.mean[site])/(1-phi.site.mean[site] + gam.site.mean[site])
+        t.star[site] <- 2*gam.site.mean[site]*(1-phi.site.mean[site])/(1-phi.site.mean[site] + gam.site.mean[site])
     }
 
     for(sp in 1:nsp) {
         logit(phi.sp.mean[sp]) <- mean(phi[1:nsite, 1:(nyear-1), sp])
         logit(gam.sp.mean[sp]) <- mean(gam[1:nsite, 1:(nyear-1), sp])
-         psi.star <- mean(psi.1[1:nsite,sp])
+         psi.star[sp] <- mean(psi.1[1:nsite,sp])
     }
 
 
