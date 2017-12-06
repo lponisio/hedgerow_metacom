@@ -91,7 +91,7 @@ ms.ms.occ <- nimbleCode({
         1/(sigma.phi.nat.area.k*sigma.phi.nat.area.k)
     tau.gam.nat.area.k <-
         1/(sigma.gam.nat.area.k*sigma.gam.nat.area.k)
-      ## interaction between hedgerow proximity and species body size
+    ## interaction between hedgerow proximity and species body size
     mu.phi.hr.area.B  ~ dnorm(0,0.01)
     mu.gam.hr.area.B  ~ dnorm(0,0.01)
     sigma.phi.hr.area.B ~ dunif(0,10)
@@ -142,15 +142,15 @@ ms.ms.occ <- nimbleCode({
 
         ## diet breadth
         phi.k[sp] ~ dnorm(mu.phi.k,
-                                tau.phi.k)
+                          tau.phi.k)
         gam.k[sp] ~ dnorm(mu.gam.k,
-                                tau.gam.k)
+                          tau.gam.k)
 
         ## body size
         phi.B[sp] ~ dnorm(mu.phi.B,
-                                tau.phi.B)
+                          tau.phi.B)
         gam.B[sp] ~ dnorm(mu.gam.B,
-                                tau.gam.B)
+                          tau.gam.B)
 
         ## hr area * fra interaction
         phi.hr.area.fra[sp] ~ dnorm(mu.phi.hr.area.fra,
@@ -166,43 +166,38 @@ ms.ms.occ <- nimbleCode({
 
         ## hr area * diet breadth interaction
         phi.hr.area.k[sp] ~ dnorm(mu.phi.hr.area.k,
-                                        tau.phi.hr.area.k)
+                                  tau.phi.hr.area.k)
         gam.hr.area.k[sp] ~ dnorm(mu.gam.hr.area.k,
-                                        tau.gam.hr.area.k)
+                                  tau.gam.hr.area.k)
 
         ## nat area * diet breadth interaction
         phi.nat.area.k[sp] ~ dnorm(mu.phi.nat.area.k,
-                                         tau.phi.nat.area.k)
+                                   tau.phi.nat.area.k)
         gam.nat.area.k[sp] ~ dnorm(mu.gam.nat.area.k,
                                    tau.gam.nat.area.k)
 
 
         ## hr area * body size interaction
         phi.hr.area.B[sp] ~ dnorm(mu.phi.hr.area.B,
-                                        tau.phi.hr.area.B)
+                                  tau.phi.hr.area.B)
         gam.hr.area.B[sp] ~ dnorm(mu.gam.hr.area.B,
-                                        tau.gam.hr.area.B)
+                                  tau.gam.hr.area.B)
 
         ## nat area * body size interaction
         phi.nat.area.B[sp] ~ dnorm(mu.phi.nat.area.B,
-                                         tau.phi.nat.area.B)
+                                   tau.phi.nat.area.B)
         gam.nat.area.B[sp] ~ dnorm(mu.gam.nat.area.B,
-                                         tau.gam.nat.area.B)
+                                   tau.gam.nat.area.B)
 
-        for(site in 1:nsite) {
-            for(yr in 1:nyear) {
-                for(rep in 1:nrep[site,yr,sp]) {
-                    logit(p[site,yr,rep,sp]) <-
-                        p.0[sp] +
-                        p.day.1[sp]*day[site,yr,rep,sp] +
-                        p.day.2[sp]*day.2[site,yr,rep,sp]
-                }
-            }
-        }
     }
 
     for(sp in 1:nsp) {
         for(site in 1:nsite) {
+
+            logit(p[site, 1:nyear, 1:max.nreps, sp]) <- p.0[sp] +
+                p.day.1[sp]*day[site, 1:nyear, 1:max.nreps,sp] +
+                p.day.2[sp]*day.2[site,1:nyear,1:max.nreps,sp]
+
             ## start off at the average for each species, site across years
             logit(phi.site.sp.mean[site,sp]) <- mean(phi[site, 1:(nyear-1),sp])
             logit(gam.site.sp.mean[site,sp]) <- mean(gam[site,1:(nyear-1),sp])
@@ -212,6 +207,7 @@ ms.ms.occ <- nimbleCode({
 
             ## occupancy in year 1
             psi[site,1,sp] <- psi.1[site,sp]
+
 
             ## occupancy in subsequent years
             for(yr in 1:(nyear-1)) {
@@ -242,10 +238,13 @@ ms.ms.occ <- nimbleCode({
                     gam.nat.area.k[sp]*k[sp]*natural[site] +
                     gam.hr.area.B[sp]*B[sp]*HRarea[site] +
                     gam.nat.area.B[sp]*B[sp]*natural[site]
+                }
 
-            }
         }
     }
+
+
+
     for(site in 1:nsite) {
         for(sp in 1:nsp) {
             X[site, 1:nyear, 1:max.nreps, sp] ~
@@ -257,16 +256,17 @@ ms.ms.occ <- nimbleCode({
 
         }
     }
-
-
     for(site in 1:nsite){
         logit(phi.site.mean[site]) <- mean(phi[site, 1:(nyear-1),1:nsp])
-        logit(gam.site.mean[site]) <- mean(gam[site,1:(nyear-1),1:nsp])
+        logit(gam.site.mean[site]) <-
+            mean(gam[site,1:(nyear-1),1:nsp])
+        t.star[site] <- 2*gam.site.mean[site]*(1-phi.site.mean[site])/(1-phi.site.mean[site] + gam.site.mean[site])
     }
 
     for(sp in 1:nsp) {
         logit(phi.sp.mean[sp]) <- mean(phi[1:nsite, 1:(nyear-1), sp])
         logit(gam.sp.mean[sp]) <- mean(gam[1:nsite, 1:(nyear-1), sp])
+        psi.star[sp] <- mean(psi.1[1:nsite,sp])
     }
 
 

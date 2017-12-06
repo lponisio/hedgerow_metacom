@@ -8,7 +8,7 @@ w.ypr <- FALSE
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "350"
-filtering <- FALSE
+filtering <- TRUE
 
 ## ************************************************************
 ## prep data
@@ -32,7 +32,7 @@ model.input <- prepOccModelInput(nzero=0,
                     model.type=include.int,
                     col.name.div.type = "Div") ## div.visits, Div
 
-scale <- 1e2
+scale <- 1e1
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
@@ -42,7 +42,6 @@ source(sprintf('src/models/complete_%s.R', include.int))
 
 if(filtering){
     source('src/dynamicOcc.R')
-    model.input$constants$max.nreps <- dim(model.input$data$X)[3]
     model.input$data$Z <- NULL
     model.input$inits$Z <- NULL
     source(sprintf('src/models/complete_%s_filter.R', include.int))
@@ -52,7 +51,7 @@ if(filtering){
 ## ## not using mcmc suite
 ## ##
 ## *****************************************************************
-## until next release
+## until next release so can use waic
 install_github("nimble-dev/nimble",
                ref = "devel",
                subdir = "packages/nimble")
@@ -76,7 +75,7 @@ C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
                         nburnin=burnin,
-                        WAIC=TRUE)
+                        WAIC=FALSE)
 
 
 save(ms.ms.nimble, file=file.path(save.dir,

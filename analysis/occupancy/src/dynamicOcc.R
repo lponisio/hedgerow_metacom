@@ -11,9 +11,9 @@ dDynamicOccupancy <- nimbleFunction(
                    log = double(0, default = 0)) {
         ## x is a year by rep matix
         ## prob of the occupied given p
-        numObs1 <- sum(x[1,])
+        numObs1 <- sum(x[1,1:nrep[1]])
         ## prob of observation given occupided
-        ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,], size = 1, p = p[1,], log = 1)))
+        ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,1:nrep[1]], size = 1, p = p[1,1:nrep[1]], log = 1)))
         ## prob of the empty site
         ProbUnoccAndCount <- (1 - psi1) * (numObs1 == 0)
         ## probably of the observed states
@@ -25,9 +25,9 @@ dDynamicOccupancy <- nimbleFunction(
         ll <- log(ProbCount)
         nyears <- dim(x)[1]
         for(t in 2:nyears) {
-            numObs <- sum(x[t,])
+            numObs <- sum(x[t,1:nrep[t]])
             ProbOccAndCount <- ProbOccNextTime *
-                exp(sum(dbinom(x[t,], size = 1, p = p[t,], log = 1)))
+                exp(sum(dbinom(x[t,1:nrep[t]], size = 1, p = p[t,1:nrep[t]], log = 1)))
             ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
             ProbCount <- ProbOccAndCount + ProbUnoccAndCount
             ProbOccGivenCount <- ProbOccAndCount / ProbCount
@@ -45,7 +45,7 @@ dDynamicOccupancy <- nimbleFunction(
 ## and check UserManual for non-needed "r" functions
 rDynamicOccupancy <- nimbleFunction(
     run = function(n = double(),
-                   nrep = double(1),
+                  nrep = double(1),
                    psi1 = double(0),
                    phi = double(1),
                    gamma = double(1),
@@ -79,24 +79,24 @@ registerDistributions(list(
 ##                      phi,
 ##                      gamma,
 ##                      p){
-##     browser()
-##     ## prob of the occupied sites out of the total sites given p
+##     ## prob of the occupied given p
 ##     numObs1 <- sum(x[1,], na.rm=TRUE)
-##     ProbOccAndCount <- psi1 * prod(dbinom(x[1,], size = 1, p = p[1,], log = 0))
-##     ## prob of the empty sites
+##     ## prob of observation given occupided
+##     ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,], size = 1, p = p[1,], log = 1)))
+##     ## prob of the empty site
 ##     ProbUnoccAndCount <- (1 - psi1) * (numObs1 == 0)
 ##     ## probably of the observed states
 ##     ProbCount <- ProbOccAndCount + ProbUnoccAndCount
 ##     ProbOccGivenCount <- ProbOccAndCount / ProbCount
+##     ## occupided and persists, or unoccupied and colonizes
 ##     ProbOccNextTime <- ProbOccGivenCount * phi[1] +
 ##         (1-ProbOccGivenCount) * gamma[1]
 ##     ll <- log(ProbCount)
 ##     nyears <- dim(x)[1]
 ##     for(t in 2:nyears) {
 ##         numObs <- sum(x[t,])
-##         ## similar change to this dbinom
 ##         ProbOccAndCount <- ProbOccNextTime *
-##             prod(dbinom(x[t,], size = 1, p = p[t,], log = 0))
+##             exp(sum(dbinom(x[t,], size = 1, p = p[t,], log = 1)))
 ##         ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
 ##         ProbCount <- ProbOccAndCount + ProbUnoccAndCount
 ##         ProbOccGivenCount <- ProbOccAndCount / ProbCount
@@ -105,8 +105,6 @@ registerDistributions(list(
 ##                            (1-ProbOccGivenCount) * gamma[t]
 ##     }
 ## }
-## }
-
 
 ## nsite <- model.input$constants$nsite
 ## nsp <- model.input$constants$nsp

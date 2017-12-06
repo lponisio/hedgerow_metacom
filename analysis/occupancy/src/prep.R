@@ -295,7 +295,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                                   function(x) sum(x >= 0,na.rm=TRUE)),
                        nsp=dim(X)[4],
                        nsite=dim(X)[1],
-                       nyear=dim(X)[2])
+                       nyear=dim(X)[2],
+                       max.nreps = dim(X)[3])
 
     ## create polynomial terms
     day <- day.2 <- date.mat
