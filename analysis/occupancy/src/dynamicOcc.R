@@ -11,9 +11,9 @@ dDynamicOccupancy <- nimbleFunction(
                    log = double(0, default = 0)) {
         ## x is a year by rep matix
         ## prob of the occupied given p
-        numObs1 <- sum(x[1,1:nrep[1]])
+        numObs1 <- sum(x[1,])
         ## prob of observation given occupided
-        ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,1:nrep[1]], size = 1, p = p[1,1:nrep[1]], log = 1)))
+        ProbOccAndCount <- psi1 * exp(sum(dbinom(x[1,], size = 1, p = p[1,], log = 1)))
         ## prob of the empty site
         ProbUnoccAndCount <- (1 - psi1) * (numObs1 == 0)
         ## probably of the observed states
@@ -25,9 +25,9 @@ dDynamicOccupancy <- nimbleFunction(
         ll <- log(ProbCount)
         nyears <- dim(x)[1]
         for(t in 2:nyears) {
-            numObs <- sum(x[t,1:nrep[t]])
+            numObs <- sum(x[t,])
             ProbOccAndCount <- ProbOccNextTime *
-                exp(sum(dbinom(x[t,1:nrep[t]], size = 1, p = p[t,1:nrep[t]], log = 1)))
+                exp(sum(dbinom(x[t,], size = 1, p = p[t,], log = 1)))
             ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
             ProbCount <- ProbOccAndCount + ProbUnoccAndCount
             ProbOccGivenCount <- ProbOccAndCount / ProbCount
