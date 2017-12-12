@@ -251,7 +251,8 @@ ms.ms.occ <- nimbleCode({
                 dDynamicOccupancy(nrep=nrep[site, 1:nyear, sp],
                                   psi1=psi[site,1,sp],
                                   phi=phi[site,1:(nyear-1),sp],
-                                  gamma=gamma[site,1:(nyear-1),sp],
+                                  ## This had a typo of "gamma" on RHS:
+                                  gamma=gam[site,1:(nyear-1),sp],
                                   p=p[site, 1:nyear, 1:max.nreps, sp])
 
         }
