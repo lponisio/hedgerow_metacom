@@ -210,6 +210,7 @@ ms.ms.occ <- nimbleCode({
 
 
             ## occupancy in subsequent years
+            ## phi and gam are on a linear scale
             for(yr in 1:(nyear-1)) {
                 phi[site,yr,sp] <-
                     phi.0[sp] +
@@ -238,7 +239,7 @@ ms.ms.occ <- nimbleCode({
                     gam.nat.area.k[sp]*k[sp]*natural[site] +
                     gam.hr.area.B[sp]*B[sp]*HRarea[site] +
                     gam.nat.area.B[sp]*B[sp]*natural[site]
-                }
+            }
 
         }
     }
@@ -250,9 +251,8 @@ ms.ms.occ <- nimbleCode({
             X[site, 1:nyear, 1:max.nreps, sp] ~
                 dDynamicOccupancy(nrep=nrep[site, 1:nyear, sp],
                                   psi1=psi[site,1,sp],
-                                  phi=phi[site,1:(nyear-1),sp],
-                                  ## This had a typo of "gamma" on RHS:
-                                  gamma=gam[site,1:(nyear-1),sp],
+                                  phi=logit(phi[site,1:(nyear-1),sp]),
+                                  gamma=logit(gam[site,1:(nyear-1),sp]),
                                   p=p[site, 1:nyear, 1:max.nreps, sp])
 
         }
