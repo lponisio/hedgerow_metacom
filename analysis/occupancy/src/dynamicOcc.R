@@ -51,6 +51,7 @@ dDynamicOccupancy <- nimbleFunction(
     }
 )
 
+
 ## make matching changes here (at least to the input arguments)
 ## and check UserManual for non-needed "r" functions
 rDynamicOccupancy <- nimbleFunction(
