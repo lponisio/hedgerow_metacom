@@ -340,6 +340,13 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                         monitors=monitors,
                         constants=constants,
                         inits=my.inits)
+    if(!dir.exists(save.dir)) {
+        cat(paste("Needed dir", save.dir, "does not exist. OK to create? (Type 'yes' if ok.)"))
+        okToMakeDir <- readlines()
+        if(!identical(okToMakeDir, "yes"))
+            stop("Stopping because permission to make save.dir denied.")
+        dir.create(save.dir, showWarnings = FALSE)
+    }
     save(model.input, file=save.path)
     return(model.input)
 }

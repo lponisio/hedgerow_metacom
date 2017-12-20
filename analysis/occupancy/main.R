@@ -8,7 +8,7 @@ w.ypr <- FALSE
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "350"
-filtering <- FALSE
+filtering <- TRUE
 
 ## ************************************************************
 ## prep data
@@ -44,6 +44,9 @@ if(filtering){
     source('src/dynamicOcc.R')
     model.input$data$Z <- NULL
     model.input$inits$Z <- NULL
+    ## We do not want any X element equal to NA or they will not be considered data and
+    ## will be sampled.
+    model.input$data$X[ is.na(model.input$data$X) ] <- -1000
     source(sprintf('src/models/complete_%s_filter.R', include.int))
 }
 
@@ -64,6 +67,64 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            calculate=FALSE)
 C.model <- compileNimble(ms.ms.model)
 
+C.model$calculate() ## NA!
+dim(C.model$logProb_X)
+C.model$logProb_X[, 1, 1, ] ## All NA
+XnodeNames <- C.model$expandNodeNames('X')
+C.model$getLogProb(XnodeNames[1])
+dim(C.model$phi)
+C.model$X[1, , , 1] ## This has ragged entries, so nrep may be important
+C.model$phi[, 1, ]
+C.model$gam[, 1, ]
+## Focus on site 1, sp 1:
+C.model$nrep[1, , 1] ## Hmmm, I wonder if 0 trips at error
+C.model$psi[1, 1, 1] ## This has ragged entries too.
+C.model$phi[1, , 1]
+C.model$gamma[1, , 1] ## NA! There is no gamma!  It should be gam.
+C.model$gam[1, , 1] 
+C.model$p[1, , , 1]
+C.model$calculate("psi[1,1,1]")
+C.model$calculate("psi.1[1,1]")
+nonXnodes <- ms.ms.model$getNodeNames(includeData = FALSE)
+C.model$calculate(nonXnodes)
+site <- 1
+sp <- 1
+nyear <- 10
+max.nreps <- 7
+with(C.model,
+     dDynamicOccupancy(X[site, 1:nyear, 1:max.nreps, sp],
+                       nrep=nrep[site, 1:nyear, sp],
+                       psi1=psi[site,1,sp],
+                       phi=phi[site,1:(nyear-1),sp],
+                       gamma=gam[site,1:(nyear-1),sp],
+                       p=p[site, 1:nyear, 1:max.nreps, sp])
+     ) ## Produces NaNs, so let's debug
+
+debugonce(dDynamicOccupancy)
+with(C.model,
+     dDynamicOccupancy(X[site, 1:nyear, 1:max.nreps, sp],
+                       nrep=nrep[site, 1:nyear, sp],
+                       psi1=psi[site,1,sp],
+                       phi=phi[site,1:(nyear-1),sp],
+                       gamma=gam[site,1:(nyear-1),sp],
+                       p=p[site, 1:nyear, 1:max.nreps, sp])
+     ) ## Produces NaNs, so let's debug
+
+## There are phi's greater than 1 and gam's less than 0.
+## I think these are supposed to be expit()ed, right?
+## I am just going to do this to see if dDynamicOccupancy works
+## when given reasonable values.
+with(C.model,
+     dDynamicOccupancy(X[site, 1:nyear, 1:max.nreps, sp],
+                       nrep=nrep[site, 1:nyear, sp],
+                       psi1=expit(psi[site,1,sp]),
+                       phi=expit(phi[site,1:(nyear-1),sp]),
+                       gamma=expit(gam[site,1:(nyear-1),sp]),
+                       p=p[site, 1:nyear, 1:max.nreps, sp],
+                       log = TRUE)
+     ) ## Oh, log = TRUE is how it will be called from MCMC
+
+ms.ms.model$expandNodeNames("nrep")
 ## configure and build mcmc
 mcmc.spec <- configureMCMC(ms.ms.model,
                            print=FALSE,
