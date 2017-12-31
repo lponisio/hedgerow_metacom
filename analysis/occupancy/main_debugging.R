@@ -67,6 +67,15 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            calculate=FALSE)
 C.model <- compileNimble(ms.ms.model)
 
+## This steps through the calculations in order
+for(node in C.model$getMaps('nodeNamesLHSall')) {
+    writeLines(node)
+    C.model$calculate(node)
+}
+## It crashes on X[2, 1:10, 1:7, 1]
+## Now I've reloaded and will look at X[2, 1:10, 1:7, 1]
+C.model$X[2, 1:10, 1:7, 1] ## This does have missing data from row 1.
+
 C.model$calculate() ## NA!
 dim(C.model$logProb_X)
 C.model$logProb_X[, 1, 1, ] ## All NA
@@ -132,6 +141,9 @@ mcmc.spec <- configureMCMC(ms.ms.model,
 mcmc <- buildMCMC(mcmc.spec)
 C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
 
+niter <- 11
+burnin <- 1
+nchains <- 1
 ## run model
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
