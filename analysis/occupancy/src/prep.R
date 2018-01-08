@@ -471,7 +471,6 @@ getInits <- function(nsp){
       mu.gam.hr.area = rnorm(1),
       sigma.gam.hr.area = runif(1),
 
-
       mu.gam.nat.area = rnorm(1),
       sigma.gam.nat.area = runif(1),
       mu.gam.fra = rnorm(1),

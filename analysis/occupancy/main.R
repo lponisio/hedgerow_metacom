@@ -30,9 +30,9 @@ model.input <- prepOccModelInput(nzero=0,
                     w.ypr=w.ypr,
                     load.inits=FALSE,
                     model.type=include.int,
-                    col.name.div.type = "div.visits") ## div.visits, Div
+                    col.name.div.type = "Div") ## div.visits, Div
 
-scale <- 1e1
+scale <- 1e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
@@ -47,7 +47,7 @@ if(filtering){
     ## We do not want any X element equal to NA or they will not be considered data and
     ## will be sampled.
     model.input$data$X[ is.na(model.input$data$X) ] <- -1000
-    source(sprintf('src/models/complete_%s_filter.R', include.int))
+    source(sprintf('src/models/complete_%s_filter_cppp.R', include.int))
 }
 
 ## ## ****************************************************************
@@ -78,7 +78,7 @@ C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
                         nburnin=burnin,
-                        WAIC=FALSE)
+                        WAIC=TRUE)
 
 
 save(ms.ms.nimble, file=file.path(save.dir,
@@ -89,15 +89,22 @@ save(ms.ms.nimble, file=file.path(save.dir,
 ## ## runn cppp on model
 ## ##
 ## *****************************************************************
-install_github("nimble-dev/nimble",
-               ref = "add_CPPP_etc",
-               subdir = "packages/nimble")
-
+## install_github("nimble-dev/nimble",
+##                ref = "add_CPPP_etc",
+##                subdir = "packages/nimble")
+## library(nimble)
 source(sprintf('src/models/complete_%s_cppp.R', include.int))
+
 
 load(file=file.path(save.dir,
                     sprintf('runs/nimble_bees_%s_%s.Rdata',
                             natural.decay, include.int)))
+
+if(is.list(ms.ms.nimble$samples)){
+    samples.4.cppp <- do.call(rbind, ms.ms.nimble$samples)
+} else{
+    samples.4.cppp <- ms.ms.nimble$samples
+}
 
 ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            constants=model.input$constants,
@@ -106,6 +113,7 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            check=FALSE,
                            calculate=FALSE)
 
+source("src/cppp.R")
 
 likeDiscFuncGenerator <- nimbleFunction(
     setup = function(model, ...){},
@@ -116,18 +124,13 @@ likeDiscFuncGenerator <- nimbleFunction(
     },
     contains = discrepancyFunction_BASE
 )
-
-samples.4.cppp <- do.call(rbind, ms.ms.nimble)
-
-## drop things ther were monitored that were not parameters
 samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
                                    ms.ms.model$getNodeNames(includeData=FALSE,
                                               stochOnly=TRUE)]
-
 model.cppp <- runCPPP(ms.ms.model,
                       dataNames= "X",
                       discrepancyFunction= likeDiscFuncGenerator,
-                      nCores=1,
+                      nCores=2,
                       origMCMCOutput= samples.4.cppp)
 
 ## ability to deal with a multi chain input

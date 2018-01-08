@@ -17,7 +17,12 @@ load(file=file.path(save.dir,
                     sprintf('runs/nimble_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
 
-all.samples <- do.call(rbind, ms.ms.nimble)
+
+if(is.list(ms.ms.nimble$samples)){
+    all.samples <- do.call(rbind, ms.ms.nimble$samples)
+} else{
+    all.samples <- ms.ms.nimble$samples
+}
 
 nimble.summary <- apply(all.samples, 2, function(x){
     means <- mean(x)
@@ -63,6 +68,6 @@ save(mus, file=file.path(save.dir,
                                           natural.decay, include.int)))
 
 
-runMCMCcheckChains(ms.ms.nimble, f.path=file.path(save.dir,
+runMCMCcheckChains(ms.ms.nimble$samples, f.path=file.path(save.dir,
                                                   "figures/chains"),
                                                   natural.decay, include.int)

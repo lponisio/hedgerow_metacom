@@ -1,88 +1,88 @@
 ms.ms.occ <- nimbleCode({
     ## multi-species priors
     ## detectablility
-    mu.p.0     ~ dnorm(0,0.001)
-    mu.p.day.1 ~ dnorm(0,0.001)
-    mu.p.day.2 ~ dnorm(0,0.001)
-    sigma.p.0     ~ dunif(0,100)
-    sigma.p.day.1 ~ dunif(0,100)
-    sigma.p.day.2 ~ dunif(0,100)
+    mu.p.0     ~ dnorm(0,0.01)
+    mu.p.day.1 ~ dnorm(0,0.01)
+    mu.p.day.2 ~ dnorm(0,0.01)
+    sigma.p.0     ~ dunif(0,10)
+    sigma.p.day.1 ~ dunif(0,10)
+    sigma.p.day.2 ~ dunif(0,10)
 
     ## phi/gam random intercepts
-    mu.phi.0  ~ dnorm(0,0.001)
-    mu.gam.0  ~ dnorm(0,0.001)
-    sigma.phi.0 ~ dunif(0,100)
-    sigma.gam.0 ~ dunif(0,100)
+    mu.phi.0  ~ dnorm(0,0.01)
+    mu.gam.0  ~ dnorm(0,0.01)
+    sigma.phi.0 ~ dunif(0,10)
+    sigma.gam.0 ~ dunif(0,10)
 
     ## hedgerow area proximity
-    mu.phi.hr.area  ~ dnorm(0,0.001)
-    mu.gam.hr.area  ~ dnorm(0,0.001)
-    sigma.phi.hr.area ~ dunif(0,100)
-    sigma.gam.hr.area ~ dunif(0,100)
+    mu.phi.hr.area  ~ dnorm(0,0.01)
+    mu.gam.hr.area  ~ dnorm(0,0.01)
+    sigma.phi.hr.area ~ dunif(0,10)
+    sigma.gam.hr.area ~ dunif(0,10)
 
     ## semi nat habitat area proximity
-    mu.phi.nat.area  ~ dnorm(0,0.001)
-    mu.gam.nat.area  ~ dnorm(0,0.001)
-    sigma.phi.nat.area ~ dunif(0,100)
-    sigma.gam.nat.area ~ dunif(0,100)
+    mu.phi.nat.area  ~ dnorm(0,0.01)
+    mu.gam.nat.area  ~ dnorm(0,0.01)
+    sigma.phi.nat.area ~ dunif(0,10)
+    sigma.gam.nat.area ~ dunif(0,10)
 
     ## floral resource diversity
-    mu.phi.fra  ~ dnorm(0,0.001)
-    mu.gam.fra  ~ dnorm(0,0.001)
-    sigma.phi.fra ~ dunif(0,100)
-    sigma.gam.fra ~ dunif(0,100)
+    mu.phi.fra  ~ dnorm(0,0.01)
+    mu.gam.fra  ~ dnorm(0,0.01)
+    sigma.phi.fra ~ dunif(0,10)
+    sigma.gam.fra ~ dunif(0,10)
 
     ## diet breadth
-    mu.phi.k  ~ dnorm(0,0.001)
-    mu.gam.k  ~ dnorm(0,0.001)
-    sigma.phi.k ~ dunif(0,100)
-    sigma.gam.k ~ dunif(0,100)
+    mu.phi.k  ~ dnorm(0,0.01)
+    mu.gam.k  ~ dnorm(0,0.01)
+    sigma.phi.k ~ dunif(0,10)
+    sigma.gam.k ~ dunif(0,10)
 
     ## body size
-    mu.phi.B  ~ dnorm(0,0.001)
-    mu.gam.B  ~ dnorm(0,0.001)
-    sigma.phi.B ~ dunif(0,100)
-    sigma.gam.B ~ dunif(0,100)
+    mu.phi.B  ~ dnorm(0,0.01)
+    mu.gam.B  ~ dnorm(0,0.01)
+    sigma.phi.B ~ dunif(0,10)
+    sigma.gam.B ~ dunif(0,10)
 
     ## interaction between hedgerow proximity and floral resources
     ## (habitat quality)
-    mu.phi.hr.area.fra  ~ dnorm(0,0.001)
-    mu.gam.hr.area.fra  ~ dnorm(0,0.001)
-    sigma.phi.hr.area.fra ~ dunif(0,100)
-    sigma.gam.hr.area.fra ~ dunif(0,100)
+    mu.phi.hr.area.fra  ~ dnorm(0,0.01)
+    mu.gam.hr.area.fra  ~ dnorm(0,0.01)
+    sigma.phi.hr.area.fra ~ dunif(0,10)
+    sigma.gam.hr.area.fra ~ dunif(0,10)
 
     ## interaction between semi nat habitat proximity and floral
     ## resources (habitat quality)
-    mu.phi.nat.area.fra  ~ dnorm(0,0.001)
-    mu.gam.nat.area.fra  ~ dnorm(0,0.001)
-    sigma.phi.nat.area.fra ~ dunif(0,100)
-    sigma.gam.nat.area.fra ~ dunif(0,100)
+    mu.phi.nat.area.fra  ~ dnorm(0,0.01)
+    mu.gam.nat.area.fra  ~ dnorm(0,0.01)
+    sigma.phi.nat.area.fra ~ dunif(0,10)
+    sigma.gam.nat.area.fra ~ dunif(0,10)
 
     ## interaction between hedgerow proximity and species diet breadth
-    mu.phi.hr.area.k  ~ dnorm(0,0.001)
-    mu.gam.hr.area.k  ~ dnorm(0,0.001)
-    sigma.phi.hr.area.k ~ dunif(0,100)
-    sigma.gam.hr.area.k ~ dunif(0,100)
+    mu.phi.hr.area.k  ~ dnorm(0,0.01)
+    mu.gam.hr.area.k  ~ dnorm(0,0.01)
+    sigma.phi.hr.area.k ~ dunif(0,10)
+    sigma.gam.hr.area.k ~ dunif(0,10)
 
     ## interaction between semi nat habitat proximity and species diet
     ## breadth
-    mu.phi.nat.area.k  ~ dnorm(0,0.001)
-    mu.gam.nat.area.k  ~ dnorm(0,0.001)
-    sigma.phi.nat.area.k ~ dunif(0,100)
-    sigma.gam.nat.area.k ~ dunif(0,100)
+    mu.phi.nat.area.k  ~ dnorm(0,0.01)
+    mu.gam.nat.area.k  ~ dnorm(0,0.01)
+    sigma.phi.nat.area.k ~ dunif(0,10)
+    sigma.gam.nat.area.k ~ dunif(0,10)
 
     ## interaction between hedgerow proximity and species body size
-    mu.phi.hr.area.B  ~ dnorm(0,0.001)
-    mu.gam.hr.area.B  ~ dnorm(0,0.001)
-    sigma.phi.hr.area.B ~ dunif(0,100)
-    sigma.gam.hr.area.B ~ dunif(0,100)
+    mu.phi.hr.area.B  ~ dnorm(0,0.01)
+    mu.gam.hr.area.B  ~ dnorm(0,0.01)
+    sigma.phi.hr.area.B ~ dunif(0,10)
+    sigma.gam.hr.area.B ~ dunif(0,10)
 
     ## interaction between semi nat habitat proximity and body size
     ## breadth
-    mu.phi.nat.area.B  ~ dnorm(0,0.001)
-    mu.gam.nat.area.B  ~ dnorm(0,0.001)
-    sigma.phi.nat.area.B ~ dunif(0,100)
-    sigma.gam.nat.area.B ~ dunif(0,100)
+    mu.phi.nat.area.B  ~ dnorm(0,0.01)
+    mu.gam.nat.area.B  ~ dnorm(0,0.01)
+    sigma.phi.nat.area.B ~ dunif(0,10)
+    sigma.gam.nat.area.B ~ dunif(0,10)
 
     ## species-specific  parameters
     for(sp in 1:nsp) {

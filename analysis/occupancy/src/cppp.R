@@ -251,63 +251,63 @@ runCPPP <-  function(model,
 
     nSimVals <- cpppControl[['nSimVals']] ## number of simulated PPP values
     if(is.null(nSimVals)){
-        print("Defaulting to 100 simulated PPP values.")
-        nSimVals <- 100
+      print("Defaulting to 100 simulated PPP values.")
+      nSimVals <- 100
     }
     nCalcSamples <- cpppControl[['nCalcSamples']] ## number of samples from posterior to use for ppp calculation
     if(is.null(nCalcSamples)){
-        nCalcSamples <- 1000
+      nCalcSamples <- 1000
     }
     nBootstrapSDReps  <- cpppControl[['nBootstrapSDReps']]
     if(is.null(nBootstrapSDReps)){
-        nBootstrapSDReps <- 200
+      nBootstrapSDReps <- 200
     }
     if(is.null(mcmcCreator)){
-        newMCMC.spec <-   configureMCMC(model,
-                                        print=FALSE,
-                                        nthin=thin)
-        newMCMC <- buildMCMC(newMCMC.spec)
+      newMCMC.spec <-   configureMCMC(model,
+                                      print=FALSE,
+                                      nthin=thin)
+      newMCMC <- buildMCMC(newMCMC.spec)
     }
     else{
-        newMCMC <- mcmcCreator(model)
+      newMCMC <- mcmcCreator(model)
     }
     thin <- newMCMC$thin
 
     nMCMCIters <- mcmcControl[['nMCMCIters']]
     if(!is.null(origMCMCOutput)){
-        origMCMCIter <- nrow(origMCMCOutput)*thin
-        if(origMCMCIter <= 1){
-            stop("origMCMCOutput has no rows!")
-        }
-        if(is.null(nMCMCIters)){
-            nMCMCIters <- origMCMCIter
-        }
-        if(nMCMCIters < 2){
-            stop("nMCMCIters must be an integer > 1")
-        }
+      origMCMCIter <- nrow(origMCMCOutput)*thin
+      if(origMCMCIter <= 1){
+        stop("origMCMCOutput has no rows!")
+      }
+      if(is.null(nMCMCIters)){
+        nMCMCIters <- origMCMCIter
+      }
+      if(nMCMCIters < 2){
+        stop("nMCMCIters must be an integer > 1")
+      }
     }
     else if(is.null(nMCMCIters)){
-        nMCMCIters <- 10000
-        warning("Defaulting to 10,000 MCMC iterations for each MCMC run.")
+      nMCMCIters <- 10000
+      warning("Defaulting to 10,000 MCMC iterations for each MCMC run.")
     }
     else{
-        origMCMCIter <- nMCMCIters
+      origMCMCIter <- nMCMCIters
     }
     burnInProp <-  mcmcControl[['burnInProp']]
     if(is.null(burnInProp)){
-        burnInProp <- 0
+      burnInProp <- 0
     }
     else if(burnInProp >= 1 | burnInProp < 0){
         stop("burnInProp needs to be between 0 and 1")
     }
     if(is.null(discrepancyFunction)){
-        stop("No discrepancy function specified.")
+      stop("No discrepancy function specified.")
     }
     if(!inherits(model, "RmodelBaseClass")){
-        stop("model is not an Rmodel")
+      stop("model is not an Rmodel")
     }
     if(is(model$CobjectInterface, "uninitializedField")){
-        compileNimble(model)
+      compileNimble(model)
     }
 
     testDataNames <- try(model[[dataNames]], silent=TRUE)
@@ -324,7 +324,7 @@ runCPPP <-  function(model,
     }
 
     if(returnSamples == TRUE){
-        warning("returnSamples = TRUE, so all posterior samples from all simulations will be returned.  This may produce
+      warning("returnSamples = TRUE, so all posterior samples from all simulations will be returned.  This may produce
               a very large return object.")
     }
 
@@ -333,28 +333,26 @@ runCPPP <-  function(model,
 
 
     if(is.null(origMCMCOutput)){
-        CnewMCMC <- compileNimble(newMCMC, project = model, resetFunctions = TRUE)
-        CnewMCMC$run(nMCMCIters)
-        origMCMCOutput <- as.matrix(CnewMCMC$mvSamples)
+      CnewMCMC <- compileNimble(newMCMC, project = model, resetFunctions = TRUE)
+      CnewMCMC$run(nMCMCIters)
+      origMCMCOutput <- as.matrix(CnewMCMC$mvSamples)
     }
     burnIn <- ceiling(burnInProp*(nMCMCIters/thin))
 
     paramNames <- colnames(origMCMCOutput)
     testParamNames <- lapply(paramNames, function(x){
-        test.this.param <- try(model[[x]], silent=TRUE)
-        if(inherits(test.this.param, "try-error")){
-            browser()
-            ## stop(paste("first stop paramNames", x,
-            ##            "are not parameters in model"))
-        }
+      test.this.param <- try(model[[x]], silent=TRUE)
+      if(inherits(test.this.param, "try-error")){
+        stop(paste("paramNames", x,
+                   "are not parameters in model"))
+      }
     })
     test2ParamNames <- all(model$expandNodeNames(paramNames) %in%
-                           model$getNodeNames(includeData=FALSE,
-                                              stochOnly=TRUE))
+                             model$getNodeNames(includeData=FALSE,
+                                                  stochOnly=TRUE))
     if(test2ParamNames == FALSE){
-        browser()
-        ## stop(paste("second stop paramNames", paramNames,
-        ##          "are not parameters in model"))
+      stop(paste("paramNames", paramNames,
+                 "are not parameters in model"))
     }
 
 
@@ -423,20 +421,20 @@ runCPPP <-  function(model,
 
     libError <-  try(library('parallel'), silent = TRUE)
     if(inherits(libError, 'try-error') && nCores > 1){
-        warning("The 'parallel' package must be installed to use multiple cores for CPPP calculation.  Defaulting to one core.")
-        nCores <- 1
+      warning("The 'parallel' package must be installed to use multiple cores for CPPP calculation.  Defaulting to one core.")
+      nCores <- 1
     }
 
     if(nCores > 1){
-        ## simulate the ppp values
-        sim.ppp.output <- mclapply(X = 1:nCores, FUN = CPPPTask,
-                                   nBootIter =
-                                       ceiling(nSimVals/nCores))
-    }
-    else{
-        sim.ppp.output <- lapply(X = 1, FUN = CPPPTask,
+    ## simulate the ppp values
+      sim.ppp.output <- mclapply(X = 1:nCores, FUN = CPPPTask,
                                  nBootIter =
                                      ceiling(nSimVals/nCores))
+    }
+    else{
+      sim.ppp.output <- lapply(X = 1, FUN = CPPPTask,
+                                 nBootIter =
+                                   ceiling(nSimVals/nCores))
     }
 
     ## extract simulated ppp and boot SDs

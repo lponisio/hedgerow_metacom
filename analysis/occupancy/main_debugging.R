@@ -32,12 +32,6 @@ model.input <- prepOccModelInput(nzero=0,
                     model.type=include.int,
                     col.name.div.type = "div.visits") ## div.visits, Div
 
-scale <- 1e2
-burnin <- 1e1*scale
-niter <- (1e3)*scale
-nthin <- 2
-nchain <- 1
-
 source(sprintf('src/models/complete_%s.R', include.int))
 
 if(filtering){
@@ -89,7 +83,6 @@ C.model$gam[, 1, ]
 C.model$nrep[1, , 1] ## Hmmm, I wonder if 0 trips at error
 C.model$psi[1, 1, 1] ## This has ragged entries too.
 C.model$phi[1, , 1]
-C.model$gamma[1, , 1] ## NA! There is no gamma!  It should be gam.
 C.model$gam[1, , 1]
 C.model$p[1, , , 1]
 C.model$calculate("psi[1,1,1]")
@@ -100,6 +93,7 @@ site <- 1
 sp <- 1
 nyear <- 10
 max.nreps <- 7
+
 with(C.model,
      dDynamicOccupancy(X[site, 1:nyear, 1:max.nreps, sp],
                        nrep=nrep[site, 1:nyear, sp],
@@ -141,8 +135,8 @@ mcmc.spec <- configureMCMC(ms.ms.model,
 mcmc <- buildMCMC(mcmc.spec)
 C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
 
-niter <- 11
-burnin <- 1
+niter <- 1
+burnin <- 0
 nchains <- 1
 ## run model
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
@@ -154,6 +148,10 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
 save(ms.ms.nimble, file=file.path(save.dir,
                                   sprintf('runs/nimble_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
+
+## checking right hand side values
+C.model$HRarea
+C.model$natural
 
 ## ## ****************************************************************
 ## ## runn cppp on model
@@ -204,32 +202,5 @@ model.cppp <- runCPPP(ms.ms.model,
 ## catch unpassed arguments eariler, origMCMCOutput, discFunction,
 ## dataNames
 ## breaks if you monitor things other than parameters, why?
-
-## ## *****************************************************************
-## ## run in nimble using mcmc suite
-## ## *****************************************************************
-## input1 <- c(code=ms.ms.occ,
-##             model.input)
-
-## ms.ms.nimble <- compareMCMCs_withMonitors(input1,
-##                                           MCMCs=c('nimble'),
-##                                           niter=niter,
-##                                           burnin = burnin,
-##                                           thin=nthin,
-##                                           summary=FALSE,
-##                                           check=FALSE,
-##                                           monitors=model.input$monitors)
-
-## save(ms.ms.nimble, file=file.path(save.dir,
-##                                   sprintf('runs/nimble_bees_%s.Rdata',
-##                                           natural.decay)))
-
-
-## ## *****************************************************************
-## ## run in jags as a check
-## ## *****************************************************************
-## source('src/complete_jags.R')
-
-## ms.ms.jags <- ms.ms(d=model.input)
 
 
