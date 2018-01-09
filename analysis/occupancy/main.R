@@ -124,13 +124,14 @@ likeDiscFuncGenerator <- nimbleFunction(
     },
     contains = discrepancyFunction_BASE
 )
+
 samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
                                    ms.ms.model$getNodeNames(includeData=FALSE,
                                               stochOnly=TRUE)]
 model.cppp <- runCPPP(ms.ms.model,
                       dataNames= "X",
                       discrepancyFunction= likeDiscFuncGenerator,
-                      nCores=2,
+                      nCores=1,
                       origMCMCOutput= samples.4.cppp)
 
 ## ability to deal with a multi chain input

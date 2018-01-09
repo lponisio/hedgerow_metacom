@@ -39,30 +39,14 @@ quantiles <- lapply(model.input$data[c("k","B", "HRarea", "natural", "fra")],
 
 cols <- brewer.pal(length(probs) + 2, "Blues")[-c(1,2)]
 
-pdf.f(plotInteractions, file=file.path(save.dir,
-                                       sprintf("figures/ms/interactions-%s.pdf",
-                                               natural.decay)),
-      width=9, height=4)
-
-
 pdf.f(plotHRInteractions, file=file.path(save.dir,
-                                         sprintf("figures/ms/HRinteractions-%s.pdf",
+                                         sprintf("figures/interactions/HRinteractions-%s.pdf",
                                                  natural.decay)),
       width=9, height=8)
 
 
 
-pdf.f(plotInteractionsLinear, file=file.path(save.dir,
-                                             sprintf("figures/ms/interactionsLinear-%s.pdf",
-                                                     natural.decay)),
+pdf.f(plotHRPersistence, file=file.path(save.dir,
+                                       sprintf("figures/interactions/HRpersistence-%s.pdf",
+                                               natural.decay)),
       width=9, height=4)
-
-
-pdf.f(plotAllInteractions, file=file.path(save.dir,
-                                          sprintf("figures/ms/all_interactions.pdf",
-                                                  natural.decay)),
-      width=9, height=8)
-
-
-
-
