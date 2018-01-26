@@ -21,7 +21,8 @@ dDynamicOccupancy <- nimbleFunction(
                         stop("Error in dDynamicOccupancy: numObs < 0 but nrep[t] > 0\n")
                     }
                     ProbOccAndCount <- ProbOccNextTime *
-                        exp(sum(dbinom(x[t,1:nrep[t]], size = 1, p = p[t,1:nrep[t]], log = 1)))
+                        exp(sum(dbinom(x[t,1:nrep[t]],
+                                       size = 1, p = p[t,1:nrep[t]], log = 1)))
                     ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
                     ProbCount <- ProbOccAndCount + ProbUnoccAndCount
                     ProbOccGivenCount <- ProbOccAndCount / ProbCount
@@ -55,9 +56,31 @@ rDynamicOccupancy <- nimbleFunction(
                    gamma = double(1),
                    p = double(2),
                    log = double(0, default = 0)) {
-        setSize(ans, nrow=dim(p)[1], ncol=dim(p)[2])
-        returnType(double(2))
-        return(ans)
+        ## x is a year by rep matix
+        ProbOccNextTime <- psi1
+        nyears <- dim(x)[1]
+        x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
+                                  p = psi1*p[1,1:nrep[1]])
+        numObs1 <- sum(x[1,1:nrep[1]])
+        if(nyears >= 1) {
+            for(t in 2:nyears) {
+                if(nrep[t] > 0) {
+                     ProbOccAndCount <- ProbOccNextTime *
+                        exp(sum(dbinom(x[t,1:nrep[t]],
+                                       size = 1, p = p[t,1:nrep[t]], log = 1)))
+                    ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
+                    ProbCount <- ProbOccAndCount + ProbUnoccAndCount
+                    ProbOccGivenCount <- ProbOccAndCount / ProbCount
+                    ll <- ll + log(ProbCount)
+                    if(t < nyears)
+                        ProbOccNextTime <- ProbOccGivenCount * phi[t] +
+                            (1-ProbOccGivenCount) * gamma[t]
+
+            }
+        }
+        if(log) return(ll)
+        else return(exp(ll))
+        returnType(double(0))
     }
 )
 
