@@ -7,8 +7,9 @@ plotHRInteractions <- function(){
         mar=c(5, 0, 0, 1.5), cex.axis=1.5)
 
     plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n", bty="n", ylab="", xlab="")
-    legend("center", legend=c("min", "5%", "25%", "median", "75%", "95%", "max"),
-           pch=16, col=cols, bty="n", cex=1.5, ncol=7)
+    legend("center", legend=c("min", "2.5%", "25%", "median", "75%", "97.5%", "max"),
+           pch=16, col=na.omit(cols[match(probs, c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1))]),
+           bty="n", cex=1.5, ncol=7)
 
     ## 1
     ## interactions of floral resources and hedgerow proximity
@@ -134,7 +135,8 @@ plotHRPersistence <- function(){
 
     plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n", bty="n", ylab="", xlab="")
     legend("center", legend=c("min", "5%", "25%", "median", "75%", "95%", "max"),
-           pch=16, col=cols, bty="n", cex=1.5, ncol=7)
+           pch=16, col=na.omit(cols[match(probs, c(0, 0.025, 0.25, 0.5, 0.75, 0.95, 1))]),
+           bty="n", cex=1.5, ncol=7)
 
     ## 1
     ## interactions of floral resources and hedgerow proximity
@@ -193,6 +195,136 @@ plotHRPersistence <- function(){
     legend("bottomleft", legend="Body size (c)", bty="n", cex=1.2)
 }
 
+
+
+
+
+plotHRPerstTurnOccCol <- function(){
+    layout(matrix(c(1,1, 2:5), nrow=3, byrow=TRUE),
+           heights=c(0.75,1,1,1,1))
+
+    par(oma=c(2, 7, 2, 1),
+        mar=c(4.5, 5, 1, 1.5), cex.axis=1.5)
+
+    kept.traits <- all.traits$r.degree[all.traits$GenusSpecies %in%
+                                       names(model.input$data$k)]
+    nbreaks <- 10
+    h <- hist(kept.traits, breaks=nbreaks, plot=FALSE)
+    cols <- rev(viridis(length(h$density)))
+    plot(h, col=cols,
+         xlab="", main="", ylab="", las=1)
+    abline(v=mean(kept.traits), lty=2)
+    ## legend("topright", legend=c("min", "2.5%", "25%", "median", "75%", "97.5%", "max"),
+    ##        pch=16, col=cols[match(c(0.000, 0.025, 0.250, 0.500, 0.750, 0.9, 1.000), probs)],
+    ##        bty="n", cex=1.5, ncol=7)
+
+    quantiles$k <- (h$mids - mean(kept.traits))/sd(kept.traits)
+
+    mtext("Frequency", 2, line=4, cex=1.3)
+    mtext("Floral diet breadth", 1, line=3, cex=1.3)
+    legend("topright", legend="(a)", bty="n", cex=1.2)
+
+    ## 1 persistence
+    ## interactions of floral resources and hedgerow proximity
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="")
+    mtext("Persistence", 2, line=4, cex=1.3)
+    legend("bottomleft", legend="(b)", bty="n", cex=1.2)
+    ## mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(quantiles$k)){
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['mu.phi.k'] * quantiles$k[i] +
+                        means['mu.phi.hr.area.k'] * x * quantiles$k[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+
+    ## 2 colonization
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="")
+    legend("topleft", legend="(c)", bty="n", cex=1.2)
+    mtext("Colonization", 2, line=4, cex=1.3)
+
+    for(i in 1:length(quantiles$k)){
+        curve(inv.logit(means['mu.gam.0'] +
+                        means['mu.gam.hr.area'] * x +
+                        means['mu.gam.k'] * quantiles$k[i] +
+                        means['mu.gam.hr.area.k'] * x * quantiles$k[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+
+    ## 3 occupancy
+    plot(NA, ylim=c(0, 1),
+         xlim=range(model.input$data$HRarea),
+         ylab="", xlab="", las=1)
+    legend("topleft", legend="(d)", bty="n", cex=1.2)
+    mtext("Occupancy", 2, line=4, cex=1.3)
+    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(quantiles$k)){
+        curve((inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.hr.area'] * x +
+                         means['mu.gam.k'] * quantiles$k[i] +
+                         means['mu.gam.hr.area.k'] * x *
+                         quantiles$k[i]))/
+              (1 + inv.logit(means['mu.gam.0'] +
+                             means['mu.gam.hr.area'] * x +
+                             means['mu.gam.k'] * quantiles$k[i] +
+                             means['mu.gam.hr.area.k'] * x *
+                             quantiles$k[i]) -
+               inv.logit(means['mu.phi.0'] +
+                         means['mu.phi.hr.area'] * x +
+                         means['mu.phi.k'] * quantiles$k[i] +
+                         means['mu.phi.hr.area.k'] * x * quantiles$k[i])),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+
+    ## 4 turnover
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea),
+         las=1, ylab="", xlab="")
+    legend("bottomleft", legend="(e)", bty="n", cex=1.2)
+    mtext("Turnover", 2, line=4, cex=1.3)
+    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+
+    for(i in 1:length(quantiles$k)){
+        curve(2*inv.logit(means['mu.gam.0'] +
+                          means['mu.gam.hr.area'] * x +
+                          means['mu.gam.k'] * quantiles$k[i] +
+                          means['mu.gam.hr.area.k'] * x * quantiles$k[i])*
+              (1 - inv.logit(means['mu.phi.0'] +
+                             means['mu.phi.hr.area'] * x +
+                             means['mu.phi.k'] * quantiles$k[i] +
+                             means['mu.phi.hr.area.k'] * x *
+                             quantiles$k[i]))/
+              (1+inv.logit(means['mu.gam.0'] +
+                           means['mu.gam.hr.area'] * x +
+                           means['mu.gam.k'] * quantiles$k[i] +
+                           means['mu.gam.hr.area.k'] * x *
+                           quantiles$k[i]) -
+               inv.logit(means['mu.phi.0'] +
+                         means['mu.phi.hr.area'] * x +
+                         means['mu.phi.k'] * quantiles$k[i] +
+                         means['mu.phi.hr.area.k'] * x * quantiles$k[i])) ,
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+}
 
 
 

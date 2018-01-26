@@ -84,6 +84,7 @@ ms.ms.occ <- nimbleCode({
     sigma.phi.nat.area.B ~ dunif(0,10)
     sigma.gam.nat.area.B ~ dunif(0,10)
 
+
     ## species-specific  parameters
     for(sp in 1:nsp) {
         ## day
@@ -161,6 +162,7 @@ ms.ms.occ <- nimbleCode({
                                    sd=sigma.phi.nat.area.B)
         gam.nat.area.B[sp] ~ dnorm(mu.gam.nat.area.B,
                                    sd=sigma.gam.nat.area.B)
+
 
     }
 

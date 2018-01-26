@@ -15,7 +15,9 @@ natural.decay <- "350"
 
 load(file=file.path(save.dir,
                     sprintf('runs/nimble_bees_%s_%s.Rdata',
-                                          natural.decay, include.int)))
+                                          natural.decay,
+                            include.int)))
+load(file=file.path(save.dir, sprintf("5-0-%s.Rdata", natural.decay)))
 
 
 if(is.list(ms.ms.nimble$samples)){
@@ -33,13 +35,22 @@ nimble.summary <- apply(all.samples, 2, function(x){
 
 mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
 
-wanted.order <- c("hr.area", "nat.area", "fra", "k", "B", "hr.area.fra",
+wanted.order <- c("hr.area",
+                  "nat.area",
+                  "fra",
+                  "k",
+                  "B",
+                  "hr.area.fra",
                   "nat.area.fra",
-                  "hr.area.k", "nat.area.k",
-                  "hr.area.B", "nat.area.B")
+                  "hr.area.k",
+                  "nat.area.k",
+                  "hr.area.B",
+                  "nat.area.B")
 
-xlabs <- c("Hedgerow proximity", "Non-crop \n habitat proximity",
-           "Floral diversity", "Floral diet breadth",
+xlabs <- c("Hedgerow proximity",
+           "Non-crop \n habitat proximity",
+           "Floral diversity",
+           "Floral diet breadth",
            "Body size",
            "Hedgerow proximity* \n floral diversity",
            "Non-crop proximity* \n floral diversity",
@@ -54,6 +65,11 @@ if(include.int == "no_noncrop"){
     xlabs <- xlabs[!grepl("Non-crop", xlabs)]
 }
 
+## variables to plot
+by.site <- by.site[by.site$Site %in% rownames(model.input$data$fra),]
+controls <- by.site$Site[by.site$SiteStatus == "control"]
+hedgerows <- by.site$Site[by.site$SiteStatus == "mature" | by.site$SiteStatus == "maturing"]
+
 
 f <- function() {plotPosterior(mus, wanted.order, xlabs)}
 
@@ -66,6 +82,12 @@ pdf.f(f,
 save(mus, file=file.path(save.dir,
                       sprintf('runs/mus_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
+
+
+all.samples <- all.samples[, colnames(all.samples) %in%
+                                   ms.ms.model$getNodeNames(includeData=FALSE,
+                                                            stochOnly=TRUE)]
+
 
 
 runMCMCcheckChains(ms.ms.nimble$samples, f.path=file.path(save.dir,

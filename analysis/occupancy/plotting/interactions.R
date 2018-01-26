@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 library('nimble')
-library('RColorBrewer')
+library('viridis')
 source('src/misc.R')
 source('plotting/src/plotting.R')
 source('src/prep.R')
@@ -28,25 +28,19 @@ load(file=file.path(save.dir,
 load(file=file.path(save.dir, sprintf("5-0-%s.Rdata", natural.decay)))
 
 means <- mus["mean",]
-
 inv.logit(means)
 
 save(means, file=file.path(save.dir, "means.Rdata"))
-
-probs <- c(0, 0.025, 0.25, 0.5, 0.75, 0.95, 1)
+probs <- seq(from=0, to=1, by=0.05)
 quantiles <- lapply(model.input$data[c("k","B", "HRarea", "natural", "fra")],
                     function(x) quantile(x, probs=probs, na.rm=TRUE))
-
-cols <- brewer.pal(length(probs) + 2, "Blues")[-c(1,2)]
-
-pdf.f(plotHRInteractions, file=file.path(save.dir,
-                                         sprintf("figures/interactions/HRinteractions-%s.pdf",
-                                                 natural.decay)),
-      width=9, height=8)
-
-
 
 pdf.f(plotHRPersistence, file=file.path(save.dir,
                                        sprintf("figures/interactions/HRpersistence-%s.pdf",
                                                natural.decay)),
       width=9, height=4)
+
+pdf.f(plotHRPerstTurnOccCol, file=file.path(save.dir,
+                                         sprintf("figures/interactions/HRinteractions-%s.pdf",
+                                                 natural.decay)),
+      width=9, height=8)

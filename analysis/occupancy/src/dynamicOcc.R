@@ -47,19 +47,19 @@ dDynamicOccupancy <- nimbleFunction(
 
 ## make matching changes here (at least to the input arguments)
 ## and check UserManual for non-needed "r" functions
-## rDynamicOccupancy <- nimbleFunction(
-##     run = function(n = double(0),
-##                    nrep = double(1),
-##                    psi1 = double(0),
-##                    phi = double(1),
-##                    gamma = double(1),
-##                    p = double(2),
-##                    log = double(0, default = 0)) {
-##         setSize(ans, nrow=dim(p)[1], ncol=dim(p)[2])
-##         returnType(double(2))
-##         return(ans)
-##     }
-## )
+rDynamicOccupancy <- nimbleFunction(
+    run = function(n = double(0),
+                   nrep = double(1),
+                   psi1 = double(0),
+                   phi = double(1),
+                   gamma = double(1),
+                   p = double(2),
+                   log = double(0, default = 0)) {
+        setSize(ans, nrow=dim(p)[1], ncol=dim(p)[2])
+        returnType(double(2))
+        return(ans)
+    }
+)
 
 registerDistributions(list(
     dDynamicOccupancy = list(

@@ -35,7 +35,6 @@ runMCMCcheckChains <- function(all.chains.samps, f.path,
                        type="l",
                        col=cols[i]
                        )
-                mtext(2, j, line=2)
 
 
             } # end i loop

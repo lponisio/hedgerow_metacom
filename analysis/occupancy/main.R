@@ -10,6 +10,13 @@ include.int <- "allInt"
 natural.decay <- "350"
 filtering <- TRUE
 
+
+## spec <- spec[spec$SiteStatus == "mature" | spec$SiteStatus ==
+##              "maturing",]
+## spec <- spec[spec$SiteStatus == "control",]
+
+## sr.sched <- sr.sched[sr.sched$Site %in% unique(spec$Site),]
+
 ## ************************************************************
 ## prep data
 ## ************************************************************
@@ -36,7 +43,8 @@ scale <- 1e2
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
-nchain <- 1
+nchain <- 3
+
 
 source(sprintf('src/models/complete_%s.R', include.int))
 
@@ -115,6 +123,7 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
 
 source("src/cppp.R")
 
+
 likeDiscFuncGenerator <- nimbleFunction(
     setup = function(model, ...){},
     run = function(){
@@ -125,13 +134,25 @@ likeDiscFuncGenerator <- nimbleFunction(
     contains = discrepancyFunction_BASE
 )
 
+
+
 samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
                                    ms.ms.model$getNodeNames(includeData=FALSE,
-                                              stochOnly=TRUE)]
+                                                            stochOnly=TRUE)]
+
+
+mcmcCreator <- function(model){
+  mcmc.spec <- configureMCMC(model,
+                             print=FALSE,
+                             monitors = colnames(samples.4.cppp))
+  mcmc <- buildMCMC(mcmc.spec)
+}
+
 model.cppp <- runCPPP(ms.ms.model,
                       dataNames= "X",
                       discrepancyFunction= likeDiscFuncGenerator,
                       nCores=1,
+                      mcmcCreator = mcmcCreator,
                       origMCMCOutput= samples.4.cppp)
 
 ## ability to deal with a multi chain input
