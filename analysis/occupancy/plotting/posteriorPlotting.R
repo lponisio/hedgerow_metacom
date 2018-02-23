@@ -47,17 +47,17 @@ wanted.order <- c("hr.area",
                   "hr.area.B",
                   "nat.area.B")
 
-xlabs <- c("Hedgerow proximity",
-           "Non-crop \n habitat proximity",
+xlabs <- c("Hedgerow \n area/proximity",
+           "Non-crop habitat \n area/proximity",
            "Floral diversity",
            "Floral diet breadth",
            "Body size",
-           "Hedgerow proximity* \n floral diversity",
-           "Non-crop proximity* \n floral diversity",
-           "Hedgrow proximity* \n floral diet breadth",
-           "Non-crop proximity* \n floral diet breadth",
-           "Hedgrow proximity* \n body size",
-           "Non-crop proximity* \n body size")
+           "Hedgerow \n area/proximity*\n floral diversity",
+           "Non-crop \n area/proximity*\n floral diversity",
+           "Hedgerow \n area/proximity*\n floral diet breadth",
+           "Non-crop \n area/proximity*\n floral diet breadth",
+           "Hedgerow \n area/proximity*\n body size",
+           "Non-crop \n area/proximity*\n body size")
 
 
 if(include.int == "no_noncrop"){
@@ -90,6 +90,32 @@ all.samples <- all.samples[, colnames(all.samples) %in%
 
 
 
-runMCMCcheckChains(ms.ms.nimble$samples, f.path=file.path(save.dir,
-                                                  "figures/chains"),
-                                                  natural.decay, include.int)
+## runMCMCcheckChains(ms.ms.nimble$samples, f.path=file.path(save.dir,
+##                                                   "figures/chains"),
+##                                                   natural.decay, include.int)
+
+## ****************************************************************
+##
+## posterior probability table
+##
+## *****************************************************************
+
+load(file=file.path(save.dir,
+                    sprintf('runs/post_probs_nimble_bees_%s_%s.Rdata',
+                            natural.decay, include.int)))
+
+phis <- paste("mu.phi", wanted.order,
+              sep=".")
+gams <- paste("mu.gam", wanted.order,
+              sep=".")
+
+probs.4.table.phis <- round(posterior.probs[rownames(posterior.probs) %in%
+                                      phis,],3)[phis,]
+probs.4.table.gams <- round(posterior.probs[rownames(posterior.probs) %in%
+                                      gams,], 3)[gams,]
+
+rownames(probs.4.table.phis) <- rownames(probs.4.table.gams) <- xlabs
+
+write.table(cbind(probs.4.table.phis[,-2], probs.4.table.gams[,-2]),
+            sep=" & ",
+            file=file.path(save.dir, "table/posteriorProbs.txt"))

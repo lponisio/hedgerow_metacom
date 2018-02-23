@@ -89,7 +89,7 @@ makeNetworkFig <- function(spec,
              col= rgb(1,1,1, alpha=0.3))
         if(!is.null(natural.cover)){
             natural.cover <- crop(natural.cover,  dims)
-            poly.cols <- add.alpha("black",
+            poly.cols <- add.alpha("red",
                                    alpha=0.2)
             plot(natural.cover,
                  col=poly.cols, border=poly.cols, add=TRUE)

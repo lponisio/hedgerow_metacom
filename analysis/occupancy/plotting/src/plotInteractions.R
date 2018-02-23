@@ -16,7 +16,7 @@ plotHRInteractions <- function(){
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="")
     mtext("Persistence", 2, line=4, cex=1.3)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=3, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -34,7 +34,7 @@ plotHRInteractions <- function(){
     ## 2
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="", yaxt="n")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -52,7 +52,7 @@ plotHRInteractions <- function(){
     plot(NA, ylim=c(0, 1),
          xlim=range(model.input$data$HRarea),
          yaxt="n", ylab="", xlab="")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -72,7 +72,7 @@ plotHRInteractions <- function(){
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="")
     mtext("Colonization", 2, line=4, cex=1.3)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.gam.0'] +
@@ -90,7 +90,7 @@ plotHRInteractions <- function(){
     ## 5
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="", yaxt="n")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.gam.0'] +
@@ -109,7 +109,7 @@ plotHRInteractions <- function(){
     plot(NA, ylim=c(0, 1),
          xlim=range(model.input$data$HRarea),
          yaxt="n", ylab="", xlab="")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.gam.0'] +
@@ -132,7 +132,7 @@ plotHRPersistence <- function(){
     layout(matrix(c(1,1,1, 2:4), nrow=2, byrow=TRUE), heights=c(0.25,1,1,1))
     par(oma=c(6, 7, 2.5, 1),
         mar=c(1, 0, 0, 1.5), cex.axis=1.5)
-
+    cols <- rev(viridis(length(probs)))
     plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n", bty="n", ylab="", xlab="")
     legend("center", legend=c("min", "5%", "25%", "median", "75%", "95%", "max"),
            pch=16, col=na.omit(cols[match(probs, c(0, 0.025, 0.25, 0.5, 0.75, 0.95, 1))]),
@@ -143,7 +143,7 @@ plotHRPersistence <- function(){
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="")
     mtext("Persistence", 2, line=4, cex=1.3)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow \n proximity-weighted  area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -161,7 +161,7 @@ plotHRPersistence <- function(){
     ## 2
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="", yaxt="n")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow \n proximity-weighted area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -179,7 +179,7 @@ plotHRPersistence <- function(){
     plot(NA, ylim=c(0, 1),
          xlim=range(model.input$data$HRarea),
          yaxt="n", ylab="", xlab="")
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow \n proximity-weighted area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(probs)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -230,7 +230,7 @@ plotHRPerstTurnOccCol <- function(){
          ylab="", xlab="")
     mtext("Persistence", 2, line=4, cex=1.3)
     legend("bottomleft", legend="(b)", bty="n", cex=1.2)
-    ## mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    ## mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(quantiles$k)){
         curve(inv.logit(means['mu.phi.0'] +
@@ -268,7 +268,7 @@ plotHRPerstTurnOccCol <- function(){
          ylab="", xlab="", las=1)
     legend("topleft", legend="(d)", bty="n", cex=1.2)
     mtext("Occupancy", 2, line=4, cex=1.3)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(quantiles$k)){
         curve((inv.logit(means['mu.gam.0'] +
@@ -295,9 +295,9 @@ plotHRPerstTurnOccCol <- function(){
     ## 4 turnover
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea),
          las=1, ylab="", xlab="")
-    legend("bottomleft", legend="(e)", bty="n", cex=1.2)
+    legend("topleft", legend="(e)", bty="n", cex=1.2)
     mtext("Turnover", 2, line=4, cex=1.3)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.3)
+    mtext("Hedgerow proximity-weighted \n area", 1, line=4.5, cex=1.3)
 
     for(i in 1:length(quantiles$k)){
         curve(2*inv.logit(means['mu.gam.0'] +

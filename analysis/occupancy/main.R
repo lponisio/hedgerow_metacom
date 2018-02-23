@@ -93,26 +93,24 @@ save(ms.ms.nimble, file=file.path(save.dir,
                                   sprintf('runs/nimble_bees_%s_%s.Rdata',
                                           natural.decay, include.int)))
 
-## ## ****************************************************************
-## ## runn cppp on model
-## ##
-## *****************************************************************
-## install_github("nimble-dev/nimble",
-##                ref = "add_CPPP_etc",
-##                subdir = "packages/nimble")
-## library(nimble)
-source(sprintf('src/models/complete_%s_cppp.R', include.int))
 
+
+## ****************************************************************
+## posterior probabilities
+##
+## *****************************************************************
 
 load(file=file.path(save.dir,
                     sprintf('runs/nimble_bees_%s_%s.Rdata',
                             natural.decay, include.int)))
+
 
 if(is.list(ms.ms.nimble$samples)){
     samples.4.cppp <- do.call(rbind, ms.ms.nimble$samples)
 } else{
     samples.4.cppp <- ms.ms.nimble$samples
 }
+
 
 ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            constants=model.input$constants,
@@ -121,8 +119,32 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            check=FALSE,
                            calculate=FALSE)
 
-source("src/cppp.R")
 
+samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
+                                   ms.ms.model$getNodeNames(includeData=FALSE,
+                                                            stochOnly=TRUE)]
+
+
+## H param > 0
+h1 <- apply(samples.4.cppp, 2, function(x) sum(x > 0)/length(x))
+## H param == 0
+h0 <- apply(samples.4.cppp, 2, function(x) dnorm(0, mean(x), sd(x))/length(x))
+## H param < 0
+h2 <- apply(samples.4.cppp, 2, function(x) sum(x < 0)/length(x))
+
+posterior.probs <- cbind(h1,h0,h2)
+
+save(posterior.probs, file=file.path(save.dir,
+                                  sprintf('runs/post_probs_nimble_bees_%s_%s.Rdata',
+                                          natural.decay, include.int)))
+
+
+## ****************************************************************
+## runn cppp on model
+##
+## *****************************************************************
+source(sprintf('src/models/complete_%s_cppp.R', include.int))
+source("src/cppp.R")
 
 likeDiscFuncGenerator <- nimbleFunction(
     setup = function(model, ...){},
@@ -135,12 +157,6 @@ likeDiscFuncGenerator <- nimbleFunction(
 )
 
 
-
-samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
-                                   ms.ms.model$getNodeNames(includeData=FALSE,
-                                                            stochOnly=TRUE)]
-
-
 mcmcCreator <- function(model){
   mcmc.spec <- configureMCMC(model,
                              print=FALSE,
@@ -148,12 +164,16 @@ mcmcCreator <- function(model){
   mcmc <- buildMCMC(mcmc.spec)
 }
 
+
 model.cppp <- runCPPP(ms.ms.model,
                       dataNames= "X",
                       discrepancyFunction= likeDiscFuncGenerator,
-                      nCores=1,
                       mcmcCreator = mcmcCreator,
-                      origMCMCOutput= samples.4.cppp)
+                      origMCMCOutput= samples.4.cppp,
+                      cpppControl = list(nBootstrapSDReps = 100),
+                      mcmcControl = list(nMCMCiters = 10000,
+                                         burnInProp= 0.1),
+                      nCores = 4)
 
 ## ability to deal with a multi chain input
 ## catch unpassed arguments eariler, origMCMCOutput, discFunction,

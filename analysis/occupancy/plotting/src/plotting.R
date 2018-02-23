@@ -75,7 +75,7 @@ plotPosterior <- function(summarys, wanted.order,
            type="l")
     abline(v=0, lty=2)
     legend("topright", legend="(a)", bty="n", cex=1.2)
-    mtext("Hedgerow proximity", 1, line=3, cex=1.1)
+    mtext("Hedgerow \n area/proximity", 1, line=4, cex=1.1)
     mtext(text="Frequency", 2,
           line=3.75, cex=1.3)
 
@@ -86,7 +86,9 @@ plotPosterior <- function(summarys, wanted.order,
            type="l", lty=1)
     abline(v=0, lty=2)
     legend("topright", legend="(b)", bty="n", cex=1.2)
-    mtext("Non-crop habitat proximity", 1, line=3, cex=1.1)
+    mtext("Non-crop habitat \n  area/proximity", 1, line=4, cex=1.1)
+    legend("top", legend=c("Hedgerows", "Field margins"),
+           col=c("black", "gray45"), lty=1, bty="n", cex=.8)
 
 
     plot(density(by.site$Div[by.site$Site %in% hedgerows]),
@@ -96,8 +98,7 @@ plotPosterior <- function(summarys, wanted.order,
     abline(v=mean(by.site$Div, na.rm=TRUE), lty=2)
     legend("topright", legend="(c)", bty="n", cex=1.2)
     mtext("Floral diversity", 1, line=3, cex=1.1)
-    legend("topleft", legend=c("Hedgerows", "Field margins"),
-         col=c("black", "gray45"), lty=1, bty="n", cex=.8)
+
 
 
     hist(all.traits$BodyLength, main="", xlab="", las=1, ylab="")
@@ -122,6 +123,6 @@ plotPosterior <- function(summarys, wanted.order,
     mtext(text="Colonization", 2,
           line=3.75, cex=1.3)
     mtext(text="Posterior model estimate", 2,
-          line=5.5, cex=1.3, at=max(summarys['CI95_upp', gams]) + 0.5)
+          line=6, cex=1.3, at=max(summarys['CI95_upp', gams]) + 0.5)
 }
 
