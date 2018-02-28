@@ -20,7 +20,7 @@ geo <- read.csv(file.path(hedgerow.dir, 'tables/geography.csv'),
 
 ## sampling schedule
 sr.sched <- read.csv(file.path(hedgerow.dir, 'tables/conditions.csv'),
-                as.is=TRUE)
+                     as.is=TRUE)
 sr.sched$Date <- as.Date(sr.sched$Date)
 
 sr.sched$Site <- geo$Site[match(sr.sched$GeographyFK,
@@ -51,3 +51,29 @@ load('../../data/spatial/kinda_natcover_decay_yolo.Rdata')
 load('../../data/veg.Rdata')
 
 
+if(length(args) == 0){
+    w.ypr <- FALSE
+    ## allInt, "no_noncrop"
+    include.int <- "allInt"
+    ## 350, 1000, 2500
+    natural.decay <- "350"
+    filtering <- TRUE
+    scale <- 1e2
+    data.subset <- "all"
+} else{
+    w.ypr <- FALSE
+    include.int <- args[1]
+    natural.decay <- args[2]
+    filtering <- args[3]
+    data.subset <- args[4]
+    scale <- args[5]
+}
+
+if(data.subset == "hedgerow"){
+    spec <- spec[spec$SiteStatus == "mature" | spec$SiteStatus ==
+                 "maturing",]
+}else if(data.subset == "control"){
+    spec <- spec[spec$SiteStatus == "control",]
+}
+
+sr.sched <- sr.sched[sr.sched$Site %in% unique(spec$Site),]

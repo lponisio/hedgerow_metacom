@@ -48,54 +48,54 @@ dDynamicOccupancy <- nimbleFunction(
 
 ## make matching changes here (at least to the input arguments)
 ## and check UserManual for non-needed "r" functions
-rDynamicOccupancy <- nimbleFunction(
-    run = function(n = double(0),
-                   nrep = double(1),
-                   psi1 = double(0),
-                   phi = double(1),
-                   gamma = double(1),
-                   p = double(2)) {
-        ## x is a year by rep matix
-        x <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
-        nyears <- dim(p)[1]
-        if(nrep[1] > 0) {
-          ProbOccNextTime <- psi1
-          x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
-                                    p = psi1*p[1,1:nrep[1]])
-          numObs <- sum(x[1,1:nrep[1]])
-          ProbOccAndCount <- ProbOccNextTime *
-            exp(sum(dbinom(x[1,1:nrep[1]],
-                           size = 1, p = p[1,1:nrep[1]], log = 1)))
-          ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
-          ProbCount <- ProbOccAndCount + ProbUnoccAndCount
-          ProbOccGivenCount <- ProbOccAndCount / ProbCount
-          ProbOccNextTime <- ProbOccGivenCount * phi[1] +
-            (1-ProbOccGivenCount) * gamma[1]
-        }
+## rDynamicOccupancy <- nimbleFunction(
+##     run = function(n = double(0),
+##                    nrep = double(1),
+##                    psi1 = double(0),
+##                    phi = double(1),
+##                    gamma = double(1),
+##                    p = double(2)) {
+##         ## x is a year by rep matix
+##         x <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
+##         nyears <- dim(p)[1]
+##         if(nrep[1] > 0) {
+##           ProbOccNextTime <- psi1
+##           x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
+##                                     p = psi1*p[1,1:nrep[1]])
+##           numObs <- sum(x[1,1:nrep[1]])
+##           ProbOccAndCount <- ProbOccNextTime *
+##             exp(sum(dbinom(x[1,1:nrep[1]],
+##                            size = 1, p = p[1,1:nrep[1]], log = 1)))
+##           ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
+##           ProbCount <- ProbOccAndCount + ProbUnoccAndCount
+##           ProbOccGivenCount <- ProbOccAndCount / ProbCount
+##           ProbOccNextTime <- ProbOccGivenCount * phi[1] +
+##             (1-ProbOccGivenCount) * gamma[1]
+##         }
 
-        if(nyears >= 1) {
-            for(t in 2:nyears) {
-                if(nrep[t] > 0) {
-                  x[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
-                                            p = ProbOccNextTime*p[t,1:nrep[t]])
+##         if(nyears >= 1) {
+##             for(t in 2:nyears) {
+##                 if(nrep[t] > 0) {
+##                   x[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
+##                                             p = ProbOccNextTime*p[t,1:nrep[t]])
 
-                     ProbOccAndCount <- ProbOccNextTime *
-                        exp(sum(dbinom(x[t,1:nrep[t]],
-                                       size = 1, p = p[t,1:nrep[t]], log = 1)))
-                    ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
-                    ProbCount <- ProbOccAndCount + ProbUnoccAndCount
-                    ProbOccGivenCount <- ProbOccAndCount / ProbCount
-                    if(t < nyears)
-                        ProbOccNextTime <- ProbOccGivenCount * phi[t] +
-                            (1-ProbOccGivenCount) * gamma[t]
+##                      ProbOccAndCount <- ProbOccNextTime *
+##                         exp(sum(dbinom(x[t,1:nrep[t]],
+##                                        size = 1, p = p[t,1:nrep[t]], log = 1)))
+##                     ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
+##                     ProbCount <- ProbOccAndCount + ProbUnoccAndCount
+##                     ProbOccGivenCount <- ProbOccAndCount / ProbCount
+##                     if(t < nyears)
+##                         ProbOccNextTime <- ProbOccGivenCount * phi[t] +
+##                             (1-ProbOccGivenCount) * gamma[t]
 
-              }
-            }
-        }
-        return(x)
-        returnType(double(2))
-    }
-)
+##               }
+##             }
+##         }
+##         return(x)
+##         returnType(double(2))
+##     }
+## )
 
 registerDistributions(list(
     dDynamicOccupancy = list(

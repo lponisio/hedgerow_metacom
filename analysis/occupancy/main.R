@@ -2,21 +2,8 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
 rm(list=ls())
 setwd('analysis/occupancy')
+args <- commandArgs(trailingOnly=TRUE)
 source('src/initialize.R')
-w.ypr <- FALSE
-## allInt, "no_noncrop"
-include.int <- "allInt"
-## 350, 1000, 2500
-natural.decay <- "350"
-filtering <- FALSE
-
-
-## spec <- spec[spec$SiteStatus == "mature" | spec$SiteStatus ==
-##              "maturing",]
-## spec <- spec[spec$SiteStatus == "control",]
-
-## sr.sched <- sr.sched[sr.sched$Site %in% unique(spec$Site),]
-
 ## ************************************************************
 ## prep data
 ## ************************************************************
@@ -86,8 +73,10 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
 
 
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  sprintf('runs/nimble_bees_%s_%s.Rdata',
-                                          natural.decay, include.int)))
+                                  sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                                          data.subset,
+                                          natural.decay,
+                                          include.int)))
 
 
 
@@ -97,8 +86,8 @@ save(ms.ms.nimble, file=file.path(save.dir,
 ## *****************************************************************
 
 load(file=file.path(save.dir,
-                    sprintf('runs/nimble_bees_%s_%s.Rdata',
-                            natural.decay, include.int)))
+                    sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                            data.subset, natural.decay, include.int)))
 
 
 if(is.list(ms.ms.nimble$samples)){
@@ -122,17 +111,20 @@ samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
 
 
 ## H param > 0
-h1 <- apply(samples.4.cppp, 2, function(x) sum(x > 0)/length(x))
+h1 <- apply(samples.4.cppp,
+            2, function(x) sum(x > 0)/length(x))
 ## H param == 0
-h0 <- apply(samples.4.cppp, 2, function(x) dnorm(0, mean(x), sd(x))/length(x))
+h0 <- apply(samples.4.cppp,
+            2, function(x) dnorm(0, mean(x), sd(x))/length(x))
 ## H param < 0
-h2 <- apply(samples.4.cppp, 2, function(x) sum(x < 0)/length(x))
+h2 <- apply(samples.4.cppp,
+            2, function(x) sum(x < 0)/length(x))
 
 posterior.probs <- cbind(h1,h0,h2)
 
 save(posterior.probs, file=file.path(save.dir,
-                                  sprintf('runs/post_probs_nimble_bees_%s_%s.Rdata',
-                                          natural.decay, include.int)))
+     sprintf('runs/%s_post_probs_nimble_bees_%s_%s.Rdata',
+              data.subset, natural.decay, include.int)))
 
 
 ## ****************************************************************
