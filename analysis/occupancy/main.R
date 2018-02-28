@@ -8,7 +8,7 @@ w.ypr <- FALSE
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "350"
-filtering <- TRUE
+filtering <- FALSE
 
 
 ## spec <- spec[spec$SiteStatus == "mature" | spec$SiteStatus ==
@@ -52,8 +52,8 @@ if(filtering){
     source('src/dynamicOcc.R')
     model.input$data$Z <- NULL
     model.input$inits$Z <- NULL
-    ## We do not want any X element equal to NA or they will not be considered data and
-    ## will be sampled.
+    ## We do not want any X element equal to NA or they will not be
+    ## considered data and will be sampled.
     model.input$data$X[ is.na(model.input$data$X) ] <- -1000
     source(sprintf('src/models/complete_%s_filter_cppp.R', include.int))
 }
@@ -62,10 +62,6 @@ if(filtering){
 ## ## not using mcmc suite
 ## ##
 ## *****************************************************************
-## until next release so can use waic
-install_github("nimble-dev/nimble",
-               ref = "devel",
-               subdir = "packages/nimble")
 
 ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            constants=model.input$constants,
