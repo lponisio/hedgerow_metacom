@@ -32,11 +32,6 @@ rownames(spstats) <- all.sites.pt@data$df0
 
 save(spstats, file="../../data/spatial/HRarea.Rdata")
 
-
-## taking a look at the sampled sites natural habitat area
-samp.site <- spstats[rownames(spstats) %in% spec$Site,]
-write.csv(samp.site, file="../../data/spatial/hrarea.csv")
-
 ## *************************************************************
 ## natural using kremen lab digitized data, decay method
 ## *************************************************************
@@ -48,19 +43,10 @@ save(natural.land,
 
 samp.site.nat.krem <- natural.land[natural.land$Site %in%
                                    spec$Site,]
-
-write.csv(samp.site.nat.krem,
-          file="../../data/spatial/natarea_kremen.csv")
-
 ## *************************************************************
 ## natural using yolo county data source, decay method
 ## *************************************************************
 radii <- round(exp(seq(from=log(10), to=log(1500), length=20)))
-
-landcover.nat@data$type <- "natural"
-landcover.nat <- unionSpatialPolygons(landcover.nat,
-                                      landcover.nat@data$type)
-
 dats <- data.frame(type="natural")
 rownames(dats) <- "natural"
 landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
@@ -105,9 +91,6 @@ save(nat.area.sum,
      file="../../data/spatial/natcover_decay_yolo.Rdata")
 
 samp.site.nat <- nat.area.sum[rownames(nat.area.sum) %in% spec$Site,]
-
-write.csv(samp.site.nat,
-          file="../../data/spatial/natarea_yolo.csv")
 
 ## compare kremen and yolo data layers
 

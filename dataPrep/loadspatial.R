@@ -6,6 +6,7 @@ library(rgdal)
 library(maptools)
 library(raster)
 library(spectralGP)
+library(sp)
 save.dir <- '../../data/spatial'
 load('../../data/networks/allSpecimens.Rdata')
 
@@ -112,7 +113,7 @@ kinda.natural <- c("Tamarisk Alliance",
                  "Upland Annual Grasslands & Forbs Formation",
                  "California Annual Grasslands Alliance")
 
-
+## make table for ms
 vegtype <- data.frame(Classification=sort(as.character(unique(landcover@data$VegName))))
 vegtype$Bee.resources <- "yes"
 vegtype$Bee.resources[vegtype$Classification %in% non.natural] <- "no"
@@ -123,14 +124,10 @@ write.table(vegtype,
 
 landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
 
-save(landcover.nat,
-     file=file.path(save.dir, "landcoverNat.Rdata"))
-
 
 new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
 surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
     unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
-
 
 ## find out which classes look like they are really ag
 f <- function(){
@@ -146,4 +143,27 @@ f <- function(){
 }
 
 pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
+
+
+
+## merge polygones into single "natural" layer
+landcover.nat@data$type <- "natural"
+landcover.nat <- unionSpatialPolygons(landcover.nat,
+                                      landcover.nat@data$type)
+
+dats <- data.frame(type="natural")
+rownames(dats) <- "natural"
+landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
+                                          data=dats)
+
+
+plot(landcover.nat, col="lightgreen")
+new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
+points(new.hr, col="red")
+surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
+    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
+points(surveyed.hr, col="dodgerblue")
+
+save(landcover.nat,
+     file=file.path(save.dir, "landcoverNat.Rdata"))
 
