@@ -3,7 +3,12 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
+
+args <- c("allInt","350","filtering","all",1e2)
+
 source('src/initialize.R')
+
+
 ## ************************************************************
 ## prep data
 ## ************************************************************
@@ -18,7 +23,6 @@ model.input <- prepOccModelInput(nzero=0,
                     col.name.trait2 = "BodyLength",
                     HRarea=sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
-                    kinda.natural.mat=NULL, ## kinda natural
                     natural.decay=natural.decay,
                     veg=by.site,
                     w.ypr=w.ypr,
@@ -26,12 +30,11 @@ model.input <- prepOccModelInput(nzero=0,
                     model.type=include.int,
                     col.name.div.type = "Div") ## div.visits, Div
 
-scale <- 1e2
+
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
 nchain <- 3
-
 
 source(sprintf('src/models/complete_%s.R', include.int))
 
@@ -57,116 +60,75 @@ ms.ms.model <- nimbleModel(code=ms.ms.occ,
                            check=FALSE,
                            calculate=FALSE)
 C.model <- compileNimble(ms.ms.model)
-
 ## configure and build mcmc
 mcmc.spec <- configureMCMC(ms.ms.model,
                            print=FALSE,
                            monitors = model.input$monitors)
 mcmc <- buildMCMC(mcmc.spec)
 C.mcmc <- compileNimble(mcmc, project = ms.ms.model)
-
 ## run model
 ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nchains=nchain,
                         nburnin=burnin,
                         WAIC=TRUE)
-
-
+plotPosteriors()
+checkChains()
 save(ms.ms.nimble, file=file.path(save.dir,
-                                  sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                    sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
                                           data.subset,
                                           natural.decay,
                                           include.int)))
 
-
-
 ## ****************************************************************
 ## posterior probabilities
-##
 ## *****************************************************************
-
-load(file=file.path(save.dir,
-                    sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
-                            data.subset, natural.decay, include.int)))
-
+if(is.null(ms.ms.nimble)){
+    load(file=file.path(save.dir,
+                        sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                                data.subset, natural.decay, include.int)))
+}
 
 if(is.list(ms.ms.nimble$samples)){
-    samples.4.cppp <- do.call(rbind, ms.ms.nimble$samples)
+    samples.4.table <- do.call(rbind, ms.ms.nimble$samples)
 } else{
-    samples.4.cppp <- ms.ms.nimble$samples
+    samples.4.table <- ms.ms.nimble$samples
 }
 
+if(is.null(ms.ms.model)){
+    ms.ms.model <- nimbleModel(code=ms.ms.occ,
+                               constants=model.input$constants,
+                               data=model.input$data,
+                               inits=model.input$inits,
+                               check=FALSE,
+                               calculate=FALSE)
+}
 
-ms.ms.model <- nimbleModel(code=ms.ms.occ,
-                           constants=model.input$constants,
-                           data=model.input$data,
-                           inits=model.input$inits,
-                           check=FALSE,
-                           calculate=FALSE)
-
-
-samples.4.cppp <- samples.4.cppp[, colnames(samples.4.cppp) %in%
-                                   ms.ms.model$getNodeNames(includeData=FALSE,
-                                                            stochOnly=TRUE)]
-
+samples.4.table <- samples.4.table[, colnames(samples.4.table) %in%
+                      ms.ms.model$getNodeNames(includeData=FALSE,
+                                               stochOnly=TRUE)]
 
 ## H param > 0
-h1 <- apply(samples.4.cppp,
+h1 <- apply(samples.4.table,
             2, function(x) sum(x > 0)/length(x))
 ## H param == 0
-h0 <- apply(samples.4.cppp,
+h0 <- apply(samples.4.table,
             2, function(x) dnorm(0, mean(x), sd(x))/length(x))
 ## H param < 0
-h2 <- apply(samples.4.cppp,
+h2 <- apply(samples.4.table,
             2, function(x) sum(x < 0)/length(x))
-
 posterior.probs <- cbind(h1,h0,h2)
-
-save(posterior.probs, file=file.path(save.dir,
-     sprintf('runs/%s_post_probs_nimble_bees_%s_%s.Rdata',
-              data.subset, natural.decay, include.int)))
+makeTable()
 
 
-## ****************************************************************
-## runn cppp on model
-##
-## *****************************************************************
-source(sprintf('src/models/complete_%s_cppp.R', include.int))
-source("src/cppp.R")
-
-likeDiscFuncGenerator <- nimbleFunction(
-    setup = function(model, ...){},
-    run = function(){
-        output <- -calculate(model)
-        returnType(double(0))
-        return(output)
-    },
-    contains = discrepancyFunction_BASE
-)
-
-
-mcmcCreator <- function(model){
-  mcmc.spec <- configureMCMC(model,
-                             print=FALSE,
-                             monitors = colnames(samples.4.cppp))
-  mcmc <- buildMCMC(mcmc.spec)
+## variables to plot
+if(data.subset=="all"){
+    by.site <- by.site[by.site$Site %in% rownames(model.input$data$fra),]
+    controls <- by.site$Site[by.site$SiteStatus == "control"]
+    hedgerows <- by.site$Site[by.site$SiteStatus == "mature" | by.site$SiteStatus == "maturing"]
+    pdf.f(plotVariables,
+          file=file.path(save.dir, 'figures/variables/all.pdf'),
+          height= 9, width=3)
 }
-
-
-model.cppp <- runCPPP(ms.ms.model,
-                      dataNames= "X",
-                      discrepancyFunction= likeDiscFuncGenerator,
-                      mcmcCreator = mcmcCreator,
-                      origMCMCOutput= samples.4.cppp,
-                      cpppControl = list(nBootstrapSDReps = 100),
-                      mcmcControl = list(nMCMCiters = 10000,
-                                         burnInProp= 0.1),
-                      nCores = 4)
-
-## ability to deal with a multi chain input
-## catch unpassed arguments eariler, origMCMCOutput, discFunction,
-## dataNames
-## breaks if you monitor things other than parameters, why?
 
 ## ## *****************************************************************
 ## ## run in nimble using mcmc suite

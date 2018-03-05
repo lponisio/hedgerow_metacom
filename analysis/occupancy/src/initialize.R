@@ -7,6 +7,9 @@ library('nimble')
 library('R2jags')
 source('src/misc.R')
 source('src/prep.R')
+source('plotting/posteriorPlotting.R')
+source('plotting/src/plotting.R')
+source('plotting/src/checkChains.R')
 source('src/make-matrix.R')
 source('src/comparMCMCs_withMonitors.R')
 load('../../data/networks/allSpecimens.Rdata')
@@ -19,7 +22,8 @@ geo <- read.csv(file.path(hedgerow.dir, 'tables/geography.csv'),
                 as.is=TRUE)
 
 ## sampling schedule
-sr.sched <- read.csv(file.path(hedgerow.dir, 'tables/conditions.csv'),
+sr.sched <- read.csv(file.path(hedgerow.dir,
+                               'tables/conditions.csv'),
                      as.is=TRUE)
 sr.sched$Date <- as.Date(sr.sched$Date)
 
@@ -34,9 +38,6 @@ sr.sched$Site <- geo$Site[match(sr.sched$GeographyFK,
 
 ## trait data
 all.traits <- read.csv("../../data/traits.csv")
-all.traits$Nestuse <- paste(all.traits$NestLoc, all.traits$Excavate)
-all.traits$Nestuse[all.traits$Nestuse == "NA NA"] <- NA
-all.traits$Nestuse[all.traits$Nestuse == "NA rent"] <- NA
 all.traits$BodyLength[!is.na(all.traits$MeanITD)] <-
     all.traits$MeanITD[!is.na(all.traits$MeanITD)]
 
@@ -46,7 +47,6 @@ load('../../data/spatial/HRarea.Rdata')
 load('../../data/spatial/HRareaDist.Rdata')
 ## area of different landcovers
 load('../../data/spatial/natcover_decay_yolo.Rdata')
-load('../../data/spatial/kinda_natcover_decay_yolo.Rdata')
 ## veg data
 load('../../data/veg.Rdata')
 
@@ -60,13 +60,18 @@ if(length(args) == 0){
     filtering <- TRUE
     scale <- 1e2
     data.subset <- "all"
-} else{
+}else{
     w.ypr <- FALSE
     include.int <- args[1]
     natural.decay <- args[2]
     filtering <- args[3]
+    if(filtering == "filtering"){
+        filtering <- TRUE
+    } else {
+        filtering <- FALSE
+    }
     data.subset <- args[4]
-    scale <- args[5]
+    scale <- as.numeric(args[5])
 }
 
 if(data.subset == "hedgerow"){
@@ -77,3 +82,9 @@ if(data.subset == "hedgerow"){
 }
 
 sr.sched <- sr.sched[sr.sched$Site %in% unique(spec$Site),]
+
+
+if(length(args) > 5){
+    ncores <- args[6]
+}
+

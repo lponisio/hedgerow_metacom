@@ -77,9 +77,18 @@ points(surveyed.hr, col="dodgerblue")
 nat.area <- makeDistanceTable(dd.lc=landcover.nat,
                               dd.h=all.sites.pt,
                                         radii=radii,
-                              num.cores=8,
+                              num.cores=2,
                               type.col="type")
 
+nat.area <- lapply(nat.area, function(x){
+    if(inherits(x, "try-error")){
+        x <- NULL
+    } else{
+        x
+    }
+})
+
+nat.area <- nat.area[!sapply(nat.area, is.null)]
 save(nat.area, file="../../data/spatial/natcover_yolo.Rdata")
 
 nat.area.sum <- sapply(decays, function(x) {
@@ -91,9 +100,7 @@ only.nat.sites <- crop(all.sites.pt, extent(landcover.nat))
 in.nat <- all.sites.pt@data$df0[all.sites.pt@data$df0 %in%
                                 only.nat.sites@data$df0]
 nat.area.sum[!rownames(nat.area.sum) %in% in.nat] <- NA
-
 hist(nat.area.sum)
-
 save(nat.area.sum,
      file="../../data/spatial/natcover_decay_yolo.Rdata")
 
@@ -101,43 +108,6 @@ samp.site.nat <- nat.area.sum[rownames(nat.area.sum) %in% spec$Site,]
 
 write.csv(samp.site.nat,
           file="../../data/spatial/natarea_yolo.csv")
-
-## *************************************************************
-## kinda natural using yolo county data source, decay method
-## *************************************************************
-landcover.kinda.nat@data$type <- "kinda.natural"
-landcover.kinda.nat <- unionSpatialPolygons(landcover.kinda.nat, landcover.kinda.nat@data$type)
-
-landcover.kinda.nat <- unionSpatialPolygons(landcover.kinda.nat,
-                                      landcover.kinda.nat@data$type)
-
-rownames(dats) <- "kinda.natural"
-landcover.kinda.nat <- SpatialPolygonsDataFrame(landcover.kinda.nat,
-                                          data=dats)
-
-
-kinda.nat.area <- makeDistanceTable(dd.lc=landcover.kinda.nat,
-                              dd.h=all.sites.pt,
-                                        radii=radii,
-                              num.cores=10,
-                              type.col="type")
-
-save(kinda.nat.area, file="../../data/spatial/kinda_natcover_yolo.Rdata")
-
-kinda.nat.area.sum <- sapply(decays, function(x) {
-    sapply(kinda.nat.area, applyDecay, decay=x)
-})
-colnames(kinda.nat.area.sum) <- decays
-
-hist(kinda.nat.area.sum)
-
-save(kinda.nat.area.sum,
-     file="../../data/spatial/kinda_natcover_decay_yolo.Rdata")
-
-samp.site.kinda.nat <- kinda.nat.area.sum[rownames(kinda.nat.area.sum) %in% spec$Site,]
-
-write.csv(samp.site.kinda.nat,
-          file="../../data/spatial/kinda_natarea_yolo.csv")
 
 ## compare kremen and yolo data layers
 

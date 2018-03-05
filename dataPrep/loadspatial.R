@@ -113,22 +113,17 @@ kinda.natural <- c("Tamarisk Alliance",
                  "California Annual Grasslands Alliance")
 
 
-## vegtype <- data.frame(Classification=sort(as.character(unique(landcover@data$VegName))))
-## vegtype$Bee.resources <- "yes"
-## vegtype$Bee.resources[vegtype$Classification %in% non.natural] <- "no"
+vegtype <- data.frame(Classification=sort(as.character(unique(landcover@data$VegName))))
+vegtype$Bee.resources <- "yes"
+vegtype$Bee.resources[vegtype$Classification %in% non.natural] <- "no"
 
-## write.table(vegtype,
-##             file="~/Dropbox/hedgerow_metacom_saved/occupancy/table/vegtype.txt",
-##             sep=" & ", row.names=FALSE)
-
+write.table(vegtype,
+            file="~/Dropbox/hedgerow_metacom_saved/occupancy/table/vegtype.txt",
+            sep=" & ", row.names=FALSE)
 
 landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
-                          ## & !landcover@data$VegName %in% kinda.natural,]
-## include kinda natural components????
 
-landcover.kinda.nat <- landcover[landcover@data$VegName %in% kinda.natural,]
-
-save(landcover.nat, landcover.kinda.nat,
+save(landcover.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
 
 

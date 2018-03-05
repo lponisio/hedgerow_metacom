@@ -19,7 +19,6 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               ## is the d of the buffer of interest
                               natural.mat=NULL, ## site by year
                               ## natural area proximity
-                              kinda.natural.mat=NULL, ## kinda natural
                               natural.decay, ## site by decay matrix natural
                               veg, ## floral availability matrix
                               w.ypr=FALSE, ## include ypr in model?
@@ -32,7 +31,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               load.inits.name='nimble', ## file name
                               ## of the model to load inits from
                               jags=FALSE, ## prep input for jags?
-                              model.type="allInt") {
+                              model.type="allInt",
+                              kremen.digitize=FALSE) {
 
     ## this function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
@@ -50,24 +50,9 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                             date=spec$Date)
 
     ## natural cover, scale by year
-    ## for the kremen digitized data, the antural data is year
-    ## specific so a matrix, otherwise it is a vector
-    if(is.null(natural.mat)){ ## for kremen digitized data
-        natural.mat <- samp2site.spp(natural$Site,
-                                     natural$Year, natural[,
-                                                           natural.decay])
-        natural.sites <- rownames(natural.mat)
-    } else{ ## for yolo landcover data
-        natural.mat <- natural.mat[, natural.decay]
-        natural.mat <- natural.mat[!is.na(natural.mat)]
-        natural.mat <- standardize(natural.mat)
-        natural.sites <- names(natural.mat)
-    }
-    if(!is.null(kinda.natural.mat)){
-        kinda.natural.mat <- kinda.natural.mat[, natural.decay]
-        kinda.natural.mat <- kinda.natural.mat[!is.na(kinda.natural.mat)]
-        natural.sites <- names(kinda.natural.mat)
-    }
+    natural.mat <- natural.mat[, natural.decay]
+    natural.mat <- natural.mat[!is.na(natural.mat)]
+    natural.sites <- names(natural.mat)
 
     ## area of hedgerow, scaled
     if(!is.null(buffer)){
@@ -77,11 +62,10 @@ prepOccModelInput <- function(nzero, ## if augmenting data
         d.area <- HRarea
         buffer <- "all"
     }
-    d.area <- standardize(d.area[names(d.area) %in%
-                                 natural.sites])
+    d.area <- standardize(log(d.area[names(d.area) %in%
+                                 natural.sites]))
 
     ## veg diversity
-    ## veg$Site <- gsub(":.*", "", veg$Site)
     flower.mat <- samp2site.ypr(site=veg$Site,
                                 yr=veg$Year,
                                 abund=veg[, col.name.div.type])
@@ -190,7 +174,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     rownames(these.traits) <- traits$GenusSpecies
     these.traits <- these.traits[rownames(these.traits) %in%
                                  dimnames(X)$sp,]
-    these.traits <- apply(these.traits, 2, standardize)
+    these.traits <- apply(these.traits, 2, function(x) standardize(log(x)))
     any.na.trait <- apply(these.traits, 1, function(x) !any(is.na(x)))
     traits1 <- these.traits[any.na.trait,1]
     traits2 <- these.traits[any.na.trait,2]
@@ -206,21 +190,12 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
 
     ## drop last year of natural data
-    if(is.null(natural.mat)){
-        natural.mat <- natural.mat[, as.numeric(colnames(natural.mat)) <
-                                     max(dimnames(X)$year)]
-        natural.mat <- natural.mat[rownames(natural.mat) %in%
-                                   dimnames(X)$site,]
-        natural.mat <- standardize(log(natural.mat))
-    } else {
-        natural.mat <- natural.mat[names(natural.mat) %in%
-                                   dimnames(X)$site]
-    }
-    if(!is.null(kinda.natural.mat)){
-        kinda.natural.mat <- kinda.natural.mat[names(kinda.natural.mat) %in%
-                                               dimnames(X)$site]
-        kinda.natural.mat <- standardize(log(kinda.natural.mat))
-    }
+    natural.mat <- natural.mat[names(natural.mat) %in%
+                               dimnames(X)$site]
+    natural.mat <- log(natural.mat)
+    natural.mat[!is.finite(natural.mat)] <- 0
+    natural.mat <- standardize(natural.mat)
+
     site.status <- unique(cbind(Site=spec$Site,
                                 Year=spec$Year,
                                 ypr=spec$ypr,
@@ -313,10 +288,9 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                  ypr = site.status.mat,
                  HRarea=d.area[names(d.area) %in% dimnames(X)$site][dimnames(X)$site],
                  natural=natural.mat[dimnames(X)$site],
-                 ## kinda.natural=kinda.natural.mat[dimnames(X)$site],
                  fra = flower.mat[dimnames(X)$site,])
 
-     monitors <- getParams()
+    monitors <- getParams()
 
     ## remove ypr and inits if not in model
     if(!w.ypr){
@@ -434,93 +408,93 @@ getParams <- function(){
 
 getInits <- function(nsp){
     list(mu.p.0 = rnorm(1),
-      sigma.p.0 = runif(1),
-      mu.p.day.1 = rnorm(1),
-      sigma.p.day.1 = runif(1),
-      mu.p.day.2 = rnorm(1),
-      sigma.p.day.2= runif(1),
+         sigma.p.0 = runif(1),
+         mu.p.day.1 = rnorm(1),
+         sigma.p.day.1 = runif(1),
+         mu.p.day.2 = rnorm(1),
+         sigma.p.day.2= runif(1),
 
-      mu.phi.0 = rnorm(1),
-      sigma.phi.0 = runif(1),
-      mu.phi.hr.area = rnorm(1),
-      sigma.phi.hr.area = runif(1),
-      mu.phi.nat.area = rnorm(1),
-      sigma.phi.nat.area = runif(1),
+         mu.phi.0 = rnorm(1),
+         sigma.phi.0 = runif(1),
+         mu.phi.hr.area = rnorm(1),
+         sigma.phi.hr.area = runif(1),
+         mu.phi.nat.area = rnorm(1),
+         sigma.phi.nat.area = runif(1),
 
-      mu.phi.fra = rnorm(1),
-      sigma.phi.fra = runif(1),
-      mu.phi.k = rnorm(1),
-      sigma.phi.k = runif(1),
-      mu.phi.B = rnorm(1),
-      sigma.phi.B = runif(1),
-      mu.phi.nat.area.fra = rnorm(1),
-      sigma.phi.nat.area.fra = runif(1),
-      mu.phi.hr.area.fra = rnorm(1),
-      sigma.phi.hr.area.fra = runif(1),
-      mu.phi.nat.area.k = rnorm(1),
-      sigma.phi.nat.area.k = runif(1),
-      mu.phi.hr.area.k = rnorm(1),
-      sigma.phi.hr.area.k = runif(1),
-      mu.phi.nat.area.B = rnorm(1),
-      sigma.phi.nat.area.B = runif(1),
-      mu.phi.hr.area.B = rnorm(1),
-      sigma.phi.hr.area.B = runif(1),
+         mu.phi.fra = rnorm(1),
+         sigma.phi.fra = runif(1),
+         mu.phi.k = rnorm(1),
+         sigma.phi.k = runif(1),
+         mu.phi.B = rnorm(1),
+         sigma.phi.B = runif(1),
+         mu.phi.nat.area.fra = rnorm(1),
+         sigma.phi.nat.area.fra = runif(1),
+         mu.phi.hr.area.fra = rnorm(1),
+         sigma.phi.hr.area.fra = runif(1),
+         mu.phi.nat.area.k = rnorm(1),
+         sigma.phi.nat.area.k = runif(1),
+         mu.phi.hr.area.k = rnorm(1),
+         sigma.phi.hr.area.k = runif(1),
+         mu.phi.nat.area.B = rnorm(1),
+         sigma.phi.nat.area.B = runif(1),
+         mu.phi.hr.area.B = rnorm(1),
+         sigma.phi.hr.area.B = runif(1),
 
-      mu.gam.0 = rnorm(1),
-      sigma.gam.0 = runif(1),
-      mu.gam.hr.area = rnorm(1),
-      sigma.gam.hr.area = runif(1),
+         mu.gam.0 = rnorm(1),
+         sigma.gam.0 = runif(1),
+         mu.gam.hr.area = rnorm(1),
+         sigma.gam.hr.area = runif(1),
 
-      mu.gam.nat.area = rnorm(1),
-      sigma.gam.nat.area = runif(1),
-      mu.gam.fra = rnorm(1),
-      sigma.gam.fra = runif(1),
-      mu.gam.k = rnorm(1),
-      sigma.gam.k = runif(1),
-      mu.gam.B = rnorm(1),
-      sigma.gam.B = runif(1),
-      mu.gam.hr.area.fra = rnorm(1),
-      sigma.gam.hr.area.fra = runif(1),
-      mu.gam.nat.area.fra = rnorm(1),
-      sigma.gam.nat.area.fra = runif(1),
-      mu.gam.hr.area.k = rnorm(1),
-      sigma.gam.hr.area.k = runif(1),
-      mu.gam.nat.area.k = rnorm(1),
-      sigma.gam.nat.area.k = runif(1),
-      mu.gam.hr.area.B = rnorm(1),
-      sigma.gam.hr.area.B = runif(1),
-      mu.gam.nat.area.B = rnorm(1),
-      sigma.gam.nat.area.B = runif(1),
+         mu.gam.nat.area = rnorm(1),
+         sigma.gam.nat.area = runif(1),
+         mu.gam.fra = rnorm(1),
+         sigma.gam.fra = runif(1),
+         mu.gam.k = rnorm(1),
+         sigma.gam.k = runif(1),
+         mu.gam.B = rnorm(1),
+         sigma.gam.B = runif(1),
+         mu.gam.hr.area.fra = rnorm(1),
+         sigma.gam.hr.area.fra = runif(1),
+         mu.gam.nat.area.fra = rnorm(1),
+         sigma.gam.nat.area.fra = runif(1),
+         mu.gam.hr.area.k = rnorm(1),
+         sigma.gam.hr.area.k = runif(1),
+         mu.gam.nat.area.k = rnorm(1),
+         sigma.gam.nat.area.k = runif(1),
+         mu.gam.hr.area.B = rnorm(1),
+         sigma.gam.hr.area.B = runif(1),
+         mu.gam.nat.area.B = rnorm(1),
+         sigma.gam.nat.area.B = runif(1),
 
-      p.0 = rnorm(nsp),
-      p.day.1 = rnorm(nsp),
-      p.day.2 = rnorm(nsp),
+         p.0 = rnorm(nsp),
+         p.day.1 = rnorm(nsp),
+         p.day.2 = rnorm(nsp),
 
-      phi.0 = rnorm(nsp),
-      phi.hr.area = rnorm(nsp),
-      phi.nat.area = rnorm(nsp),
+         phi.0 = rnorm(nsp),
+         phi.hr.area = rnorm(nsp),
+         phi.nat.area = rnorm(nsp),
 
-      phi.fra = rnorm(nsp),
-      phi.k = rnorm(nsp),
-      phi.B = rnorm(nsp),
-      phi.nat.area.fra = rnorm(nsp),
-      phi.hr.area.fra = rnorm(nsp),
-      phi.nat.area.k = rnorm(nsp),
-      phi.hr.area.k = rnorm(nsp),
-      phi.nat.area.B = rnorm(nsp),
-      phi.hr.area.B = rnorm(nsp),
+         phi.fra = rnorm(nsp),
+         phi.k = rnorm(nsp),
+         phi.B = rnorm(nsp),
+         phi.nat.area.fra = rnorm(nsp),
+         phi.hr.area.fra = rnorm(nsp),
+         phi.nat.area.k = rnorm(nsp),
+         phi.hr.area.k = rnorm(nsp),
+         phi.nat.area.B = rnorm(nsp),
+         phi.hr.area.B = rnorm(nsp),
 
-      gam.0 = rnorm(nsp),
-      gam.hr.area = rnorm(nsp),
-      gam.nat.area = rnorm(nsp),
+         gam.0 = rnorm(nsp),
+         gam.hr.area = rnorm(nsp),
+         gam.nat.area = rnorm(nsp),
 
-      gam.fra = rnorm(nsp),
-      gam.k = rnorm(nsp),
-      gam.B = rnorm(nsp),
-      gam.hr.area.fra = rnorm(nsp),
-      gam.nat.area.fra = rnorm(nsp),
-      gam.hr.area.k = rnorm(nsp),
-      gam.nat.area.k = rnorm(nsp),
-      gam.hr.area.B = rnorm(nsp),
-      gam.nat.area.B = rnorm(nsp))
+         gam.fra = rnorm(nsp),
+         gam.k = rnorm(nsp),
+         gam.B = rnorm(nsp),
+         gam.hr.area.fra = rnorm(nsp),
+         gam.nat.area.fra = rnorm(nsp),
+         gam.hr.area.k = rnorm(nsp),
+         gam.nat.area.k = rnorm(nsp),
+         gam.hr.area.B = rnorm(nsp),
+         gam.nat.area.B = rnorm(nsp))
 }
