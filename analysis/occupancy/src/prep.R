@@ -32,7 +32,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               ## of the model to load inits from
                               jags=FALSE, ## prep input for jags?
                               model.type="allInt",
-                              kremen.digitize=FALSE) {
+                              kremen.digitize=FALSE,
+                              HR.decay=TRUE) {
 
     ## this function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
@@ -57,13 +58,19 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     ## area of hedgerow, scaled
     if(!is.null(buffer)){
         d.area <- HRarea[, buffer]
-
+    } else if(HR.decay){
+        hr.mat <- HRarea[, natural.decay]
+        d.area <- hr.mat[!is.na(hr.mat)]
+        buffer <- "all"
     } else{
         d.area <- HRarea
         buffer <- "all"
     }
-    d.area <- standardize(log(d.area[names(d.area) %in%
-                                 natural.sites]))
+    ## log and standardize HR area
+    d.area <- log(d.area[names(d.area) %in%
+                         natural.sites])
+    d.area[!is.finite(d.area)] <- 0
+    d.area <- standardize(d.area)
 
     ## veg diversity
     flower.mat <- samp2site.ypr(site=veg$Site,
@@ -174,6 +181,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     rownames(these.traits) <- traits$GenusSpecies
     these.traits <- these.traits[rownames(these.traits) %in%
                                  dimnames(X)$sp,]
+    ## log and standardize trait data
     these.traits <- apply(these.traits, 2, function(x) standardize(log(x)))
     any.na.trait <- apply(these.traits, 1, function(x) !any(is.na(x)))
     traits1 <- these.traits[any.na.trait,1]
@@ -181,12 +189,12 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     X <- X[,,,any.na.trait,drop=FALSE]
     date.mat <- date.mat[,,,any.na.trait,drop=FALSE]
 
-    ## drop last year of flower data, standardize
+    ## drop last year of flower data, log and standardize
     flower.mat <- flower.mat[rownames(flower.mat) %in%
                              dimnames(X)$site,]
     flower.mat <- flower.mat[, as.numeric(colnames(flower.mat)) <
                                max(dimnames(X)$year)]
-    flower.mat <- standardize(flower.mat)
+    flower.mat <- standardize(log(flower.mat))
 
 
     ## drop last year of natural data
