@@ -348,11 +348,11 @@ getParams <- function(){
 
       'mu.phi.0',
       'sigma.phi.0',
+
       'mu.phi.hr.area',
       'sigma.phi.hr.area',
-      'mu.phi.nat.area',
-      'sigma.phi.nat.area',
-
+      ## 'mu.phi.nat.area',
+      ## 'sigma.phi.nat.area',
       ## 'mu.phi.fra',
       ## 'sigma.phi.fra',
       ## 'mu.phi.k',
@@ -372,13 +372,13 @@ getParams <- function(){
       ## 'mu.phi.hr.area.B',
       ## 'sigma.phi.hr.area.B',
 
-      ## 'mu.gam.0',
-      ## 'sigma.gam.0',
-      ## 'mu.gam.hr.area',
-      ## 'sigma.gam.hr.area',
+      'mu.gam.0',
+      'sigma.gam.0',
+
+      'mu.gam.hr.area',
+      'sigma.gam.hr.area' #,
       ## 'mu.gam.nat.area',
       ## 'sigma.gam.nat.area',
-
       ## 'mu.gam.fra',
       ## 'sigma.gam.fra',
       ## 'mu.gam.k',
@@ -426,8 +426,8 @@ getInits <- function(nsp){
          mu.phi.0 = rnorm(1),
          sigma.phi.0 = runif(1),
 
-         ## mu.phi.hr.area = rnorm(1),
-         ## sigma.phi.hr.area = runif(1),
+         mu.phi.hr.area = rnorm(1),
+         sigma.phi.hr.area = runif(1),
          ## mu.phi.nat.area = rnorm(1),
          ## sigma.phi.nat.area = runif(1),
          ## mu.phi.fra = rnorm(1),
@@ -452,8 +452,8 @@ getInits <- function(nsp){
          mu.gam.0 = rnorm(1),
          sigma.gam.0 = runif(1),
 
-         ## mu.gam.hr.area = rnorm(1),
-         ## sigma.gam.hr.area = runif(1),
+         mu.gam.hr.area = rnorm(1),
+         sigma.gam.hr.area = runif(1),
          ## mu.gam.nat.area = rnorm(1),
          ## sigma.gam.nat.area = runif(1),
          ## mu.gam.fra = rnorm(1),
@@ -481,8 +481,8 @@ getInits <- function(nsp){
 
          phi.0 = rnorm(nsp),
 
-         ## phi.hr.area = rnorm(nsp),
-         ## phi.nat.area = rnorm(nsp),
+         phi.hr.area = rnorm(nsp),
+         phi.nat.area = rnorm(nsp),
          ## phi.fra = rnorm(nsp),
          ## phi.k = rnorm(nsp),
          ## phi.B = rnorm(nsp),
@@ -493,10 +493,10 @@ getInits <- function(nsp){
          ## phi.nat.area.B = rnorm(nsp),
          ## phi.hr.area.B = rnorm(nsp),
 
-         gam.0 = rnorm(nsp)
+         gam.0 = rnorm(nsp),
 
-         ## gam.hr.area = rnorm(nsp),
-         ## gam.nat.area = rnorm(nsp),
+         gam.hr.area = rnorm(nsp),
+         gam.nat.area = rnorm(nsp)
          ## gam.fra = rnorm(nsp),
          ## gam.k = rnorm(nsp),
          ## gam.B = rnorm(nsp),
@@ -505,5 +505,7 @@ getInits <- function(nsp){
          ## gam.hr.area.k = rnorm(nsp),
          ## gam.nat.area.k = rnorm(nsp),
          ## gam.hr.area.B = rnorm(nsp),
-         ## gam.nat.area.B = rnorm(nsp))
+         ## gam.nat.area.B = rnorm(nsp)
+         )
+
 }
