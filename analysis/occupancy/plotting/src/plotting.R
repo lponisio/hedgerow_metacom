@@ -98,38 +98,44 @@ plotVariables <- function(){
     ##      xlim=range(model.input$data$HRarea) + c(0,1), las=1, col="gray45")
     ## points(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% hedgerows]),
     ##        type="l")
-    hist(model.input$data$HRarea)
+    hist(model.input$data$HRarea, main="", xlab="", ylab="", las=1)
     abline(v=0, lty=2)
     legend("topleft", legend="(a)", bty="n", cex=1.2)
     mtext("Hedgerow area/proximity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
-    legend("topright", legend=c("Hedgerows", "Field margins"),
-           col=c("black", "gray45"), lty=1, bty="n", cex=0.8)
+    ## legend("topright", legend=c("Hedgerows", "Field margins"),
+    ##        col=c("black", "gray45"), lty=1, bty="n", cex=0.8)
 
-    plot(density(model.input$data$natural[names(model.input$data$natural) %in% controls]),
-         main="", xlab="", ylab="", las=1,
-         xlim=range(model.input$data$natural) + c(0,1), col="gray45")
-    points(density(model.input$data$natural[names(model.input$data$natural) %in% hedgerows]),
-           type="l", lty=1)
+    ## plot(density(model.input$data$natural[names(model.input$data$natural) %in% controls]),
+    ##      main="", xlab="", ylab="", las=1,
+    ##      xlim=range(model.input$data$natural) + c(0,1), col="gray45")
+    ## points(density(model.input$data$natural[names(model.input$data$natural) %in% hedgerows]),
+    ##        type="l", lty=1)
+    hist(model.input$data$natural, main="", xlab="", ylab="", las=1)
     abline(v=0, lty=2)
     legend("topleft", legend="(b)", bty="n", cex=1.2)
     mtext("Non-crop habitat area/proximity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
 
-    plot(density(by.site$Div[by.site$Site %in% hedgerows]),
-         main="", xlab="", ylab="", las=1)
-    points(density(by.site$Div[by.site$Site %in% controls]),
-           type="l", col="gray45")
-    abline(v=mean(by.site$Div, na.rm=TRUE), lty=2)
+    ## plot(density(by.site$Div[by.site$Site %in% hedgerows]),
+    ##      main="", xlab="", ylab="", las=1)
+    ## points(density(by.site$Div[by.site$Site %in% controls]),
+    ##        type="l", col="gray45")
+    ## abline(v=mean(by.site$Div, na.rm=TRUE), lty=2)
+    hist(model.input$data$fra, main="", xlab="", ylab="", las=1)
+    abline(v=mean(model.input$data$fra, na.rm=TRUE), lty=2)
     legend("topleft", legend="(c)", bty="n", cex=1.2)
     mtext("Floral diversity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
 
-    hist(all.traits$BodyLength, main="", xlab="", las=1, ylab="")
-    abline(v=mean(all.traits$BodyLength, na.rm=TRUE), lty=2)
+    ## hist(all.traits$BodyLength, main="", xlab="", las=1, ylab="")
+    ## abline(v=mean(all.traits$BodyLength, na.rm=TRUE), lty=2)
+
+    hist(model.input$data$B, main="", xlab="", las=1, ylab="")
+    abline(v=mean(model.input$data$B, na.rm=TRUE), lty=2)
     legend("topleft", legend="(d)", bty="n", cex=1.2)
     mtext("Body size (mm)", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,

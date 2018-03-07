@@ -3,8 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-
-args <- c("allInt","350","not-filtering","all",1e2)
+args <- c("allInt","350","filtering","control",1e2)
 source('src/initialize.R')
 
 ## ************************************************************

@@ -52,6 +52,10 @@ load('../../data/spatial/natcover_decay_yolo.Rdata')
 ## veg data
 load('../../data/veg.Rdata')
 
+## raw flower data
+load("~/Dropbox/hedgerow/data_sets/traditional/veg-complete.Rdata")
+raw.flower.data <- dd
+
 
 if(length(args) == 0){
     w.ypr <- FALSE

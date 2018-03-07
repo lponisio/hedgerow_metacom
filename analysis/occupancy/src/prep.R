@@ -33,7 +33,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               jags=FALSE, ## prep input for jags?
                               model.type="allInt",
                               kremen.digitize=FALSE,
-                              HR.decay=TRUE) {
+                              HR.decay=TRUE,
+                              flower.raw=FALSE) {
 
     ## this function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
@@ -68,21 +69,35 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     }
     ## log and standardize HR area
     d.area <- log(d.area[names(d.area) %in%
-                         natural.sites])
-    d.area[!is.finite(d.area)] <- 0
+                         natural.sites] + 1)
     d.area <- standardize(d.area)
 
     ## veg diversity
-    flower.mat <- samp2site.ypr(site=veg$Site,
-                                yr=veg$Year,
-                                abund=veg[, col.name.div.type])
-    flower.mat <- t(apply(flower.mat, 1, function(x){
-        nas <- which(is.na(x))
-        if(length(nas) != 0){
-            x[is.na(x)] <- mean(x, na.rm=TRUE)
-        }
-        return(x)
-    }))
+    get.site <- function(syd)
+        as.vector(sapply(syd, function(x)
+            strsplit(x, ';')[[1]][1]))
+    get.year <- function(syd)
+        as.vector(sapply(syd, function(x)
+            as.numeric(strsplit(x, ';')[[1]][2])))
+    get.day <- function(syd)
+        as.vector(sapply(syd, function(x)
+            as.numeric(strsplit(x, ';')[[1]][3])))
+
+
+    if(!flower.raw){
+        flower.mat <- samp2site.ypr(site=veg$Site,
+                                    yr=veg$Year,
+                                    abund=veg[, col.name.div.type])
+    } else{
+
+    }
+    ## flower.mat <- t(apply(flower.mat, 1, function(x){
+    ##     nas <- which(is.na(x))
+    ##     if(length(nas) != 0){
+    ##         x[is.na(x)] <- mean(x, na.rm=TRUE)
+    ##     }
+    ##     return(x)
+    ## }))
 
     ## drop sites without natural data or hedgerow data from specimen
     ## and sampling data
@@ -182,26 +197,24 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     these.traits <- these.traits[rownames(these.traits) %in%
                                  dimnames(X)$sp,]
     ## log and standardize trait data
-    these.traits <- apply(these.traits, 2, function(x) standardize(log(x)))
+    these.traits <- apply(these.traits, 2, function(x) standardize(log(x + 1)))
     any.na.trait <- apply(these.traits, 1, function(x) !any(is.na(x)))
     traits1 <- these.traits[any.na.trait,1]
     traits2 <- these.traits[any.na.trait,2]
     X <- X[,,,any.na.trait,drop=FALSE]
     date.mat <- date.mat[,,,any.na.trait,drop=FALSE]
 
-    ## drop last year of flower data, log and standardize
+    ## drop last year of flower data,  don't standardize, dont log!
     flower.mat <- flower.mat[rownames(flower.mat) %in%
                              dimnames(X)$site,]
     flower.mat <- flower.mat[, as.numeric(colnames(flower.mat)) <
                                max(dimnames(X)$year)]
-    flower.mat <- standardize(log(flower.mat))
-
+    ## flower.mat <- standardize(flower.mat)
 
     ## drop last year of natural data
     natural.mat <- natural.mat[names(natural.mat) %in%
                                dimnames(X)$site]
-    natural.mat <- log(natural.mat)
-    natural.mat[!is.finite(natural.mat)] <- 0
+    natural.mat <- log(natural.mat + 1)
     natural.mat <- standardize(natural.mat)
 
     site.status <- unique(cbind(Site=spec$Site,
@@ -351,10 +364,10 @@ getParams <- function(){
 
       'mu.phi.hr.area',
       'sigma.phi.hr.area',
-      ## 'mu.phi.nat.area',
-      ## 'sigma.phi.nat.area',
-      ## 'mu.phi.fra',
-      ## 'sigma.phi.fra',
+      'mu.phi.nat.area',
+      'sigma.phi.nat.area',
+      'mu.phi.fra',
+      'sigma.phi.fra',
       ## 'mu.phi.k',
       ## 'sigma.phi.k',
       ## 'mu.phi.B',
@@ -376,11 +389,11 @@ getParams <- function(){
       'sigma.gam.0',
 
       'mu.gam.hr.area',
-      'sigma.gam.hr.area' #,
-      ## 'mu.gam.nat.area',
-      ## 'sigma.gam.nat.area',
-      ## 'mu.gam.fra',
-      ## 'sigma.gam.fra',
+      'sigma.gam.hr.area' ,
+      'mu.gam.nat.area',
+      'sigma.gam.nat.area',
+      'mu.gam.fra',
+      'sigma.gam.fra'
       ## 'mu.gam.k',
       ## 'sigma.gam.k',
       ## 'mu.gam.B',
@@ -428,10 +441,10 @@ getInits <- function(nsp){
 
          mu.phi.hr.area = rnorm(1),
          sigma.phi.hr.area = runif(1),
-         ## mu.phi.nat.area = rnorm(1),
-         ## sigma.phi.nat.area = runif(1),
-         ## mu.phi.fra = rnorm(1),
-         ## sigma.phi.fra = runif(1),
+         mu.phi.nat.area = rnorm(1),
+         sigma.phi.nat.area = runif(1),
+         mu.phi.fra = rnorm(1),
+         sigma.phi.fra = runif(1),
          ## mu.phi.k = rnorm(1),
          ## sigma.phi.k = runif(1),
          ## mu.phi.B = rnorm(1),
@@ -454,10 +467,10 @@ getInits <- function(nsp){
 
          mu.gam.hr.area = rnorm(1),
          sigma.gam.hr.area = runif(1),
-         ## mu.gam.nat.area = rnorm(1),
-         ## sigma.gam.nat.area = runif(1),
-         ## mu.gam.fra = rnorm(1),
-         ## sigma.gam.fra = runif(1),
+         mu.gam.nat.area = rnorm(1),
+         sigma.gam.nat.area = runif(1),
+         mu.gam.fra = rnorm(1),
+         sigma.gam.fra = runif(1),
          ## mu.gam.k = rnorm(1),
          ## sigma.gam.k = runif(1),
          ## mu.gam.B = rnorm(1),
@@ -483,7 +496,7 @@ getInits <- function(nsp){
 
          phi.hr.area = rnorm(nsp),
          phi.nat.area = rnorm(nsp),
-         ## phi.fra = rnorm(nsp),
+         phi.fra = rnorm(nsp),
          ## phi.k = rnorm(nsp),
          ## phi.B = rnorm(nsp),
          ## phi.nat.area.fra = rnorm(nsp),
@@ -496,8 +509,8 @@ getInits <- function(nsp){
          gam.0 = rnorm(nsp),
 
          gam.hr.area = rnorm(nsp),
-         gam.nat.area = rnorm(nsp)
-         ## gam.fra = rnorm(nsp),
+         gam.nat.area = rnorm(nsp),
+         gam.fra = rnorm(nsp)
          ## gam.k = rnorm(nsp),
          ## gam.B = rnorm(nsp),
          ## gam.hr.area.fra = rnorm(nsp),
