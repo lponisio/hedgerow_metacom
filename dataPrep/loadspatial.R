@@ -70,6 +70,7 @@ nsites <- nrow(all.sites.pt@data)
 too.far.N <- all.sites.pt@data$df0[order(coordinates(all.sites.pt)[,2])][nsites:(nsites-14)]
 
 all.sites.pt <-  all.sites.pt[!all.sites.pt@data$df0 %in% too.far.N,]
+all.sites.lines <-  all.sites.lines[!all.sites.lines@data$site %in% too.far.N,]
 
 points(all.sites.pt, col="red")
 

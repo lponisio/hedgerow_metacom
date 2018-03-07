@@ -4,10 +4,8 @@ rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
 
-args <- c("allInt","350","filtering","all",1e2)
-
+args <- c("allInt","350","not-filtering","all",1e2)
 source('src/initialize.R')
-
 
 ## ************************************************************
 ## prep data
@@ -21,7 +19,7 @@ model.input <- prepOccModelInput(nzero=0,
                     all.traits,
                     col.name.trait1 = "r.degree",
                     col.name.trait2 = "BodyLength",
-                    HRarea=sum.dist.area, ##spstats
+                    HRarea= hr.area.sum, #sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
                     natural.decay=natural.decay,
                     veg=by.site,

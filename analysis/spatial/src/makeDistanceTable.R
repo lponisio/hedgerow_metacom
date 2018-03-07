@@ -5,7 +5,8 @@ library(rgeos)
 library(spatstat)
 
 makeDistanceTable <- function(dd.lc, dd.h, radii, num.cores,
-                              site.col='df0', type.col='VegName') {
+                              site.col='df0', type.col='VegName',
+                              area.function = gArea, drop.self=FALSE) {
 
     get.areas <- function(ss) {
         cat(sprintf('site: %s\n', ss))
@@ -14,7 +15,9 @@ makeDistanceTable <- function(dd.lc, dd.h, radii, num.cores,
         f.cover.type <- function(type) {
             cat(sprintf('cover type: %s\n', type))
             dd.type <- dd.lc[dd.lc@data[,type.col] == type,]
-
+            if(drop.self){
+                dd.type <- dd.type[dd.type@data$site != as.character(ss),]
+            }
             ## make list of easily accessible polygons
             ## make.poly <- function(poly){
             ##     SpatialPolygons(list(Polygons(list(poly), poly@ringDir)),
@@ -37,7 +40,7 @@ makeDistanceTable <- function(dd.lc, dd.h, radii, num.cores,
                 if(is.null(new.poly)){
                     area.nat <- 0
                 } else{
-                    area.nat <- gArea(new.poly)
+                    area.nat <- area.function(new.poly)
                 }
 
                 ## sum.areas <- ifelse(length(intersections)==0,

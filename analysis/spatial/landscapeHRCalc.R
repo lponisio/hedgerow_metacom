@@ -9,6 +9,7 @@ source('src/getNatural.R')
 source('src/makeDistanceTable.R')
 load('../../data/spatial/hr.Rdata')
 load('../../data/spatial/sitesAll.Rdata')
+load('../../data/spatial/sitesAllLines.Rdata')
 ## area of different landcovers from kremen lab
 load('../../data/spatial/distTables.Rdata')
 ## area of landcover from yolo county
@@ -43,22 +44,33 @@ save(natural.land,
 
 samp.site.nat.krem <- natural.land[natural.land$Site %in%
                                    spec$Site,]
+
+## *************************************************************
+## hedgerow area using decay method
+## *************************************************************
+radii <- round(exp(seq(from=log(10), to=log(1500), length=20)))
+all.sites.lines@data$type <- "hedgerow"
+
+hr.area <- makeDistanceTable(dd.lc=all.sites.lines,
+                              dd.h=all.sites.pt,
+                                        radii=radii,
+                              num.cores=1,
+                             type.col="type",
+                             area.function=gLength,
+                             drop.self=TRUE)
+hr.area <- hr.area[!sapply(hr.area, is.null)]
+
+hr.area.sum <- sapply(decays, function(x) {
+    sapply(hr.area, applyDecay, decay=x)
+})
+colnames(hr.area.sum) <- decays
+
+save(hr.area.sum,
+     file="../../data/spatial/hrcover_decay.Rdata")
+
 ## *************************************************************
 ## natural using yolo county data source, decay method
 ## *************************************************************
-radii <- round(exp(seq(from=log(10), to=log(1500), length=20)))
-dats <- data.frame(type="natural")
-rownames(dats) <- "natural"
-landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
-                                          data=dats)
-
-
-plot(landcover.nat, col="lightgreen")
-new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
-points(new.hr, col="red")
-surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
-    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
-points(surveyed.hr, col="dodgerblue")
 
 nat.area <- makeDistanceTable(dd.lc=landcover.nat,
                               dd.h=all.sites.pt,

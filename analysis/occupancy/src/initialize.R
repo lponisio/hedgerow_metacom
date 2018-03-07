@@ -41,11 +41,13 @@ all.traits <- read.csv("../../data/traits.csv")
 all.traits$BodyLength[!is.na(all.traits$MeanITD)] <-
     all.traits$MeanITD[!is.na(all.traits$MeanITD)]
 
-## area of hedgerow in buffers
+## HR area of hedgerow in buffers
 load('../../data/spatial/HRarea.Rdata')
-## area weighted by log distance
+## HR area weighted by log distance
 load('../../data/spatial/HRareaDist.Rdata')
-## area of different landcovers
+## HR area weighted by gaussian decay
+load('../../data/spatial/hrcover_decay.Rdata')
+## non-crop area weighted by gaussian decay
 load('../../data/spatial/natcover_decay_yolo.Rdata')
 ## veg data
 load('../../data/veg.Rdata')
