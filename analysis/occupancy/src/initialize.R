@@ -58,7 +58,6 @@ raw.flower.data <- dd
 
 
 if(length(args) == 0){
-    w.ypr <- FALSE
     ## allInt, "no_noncrop"
     include.int <- "allInt"
     ## 350, 1000, 2500
@@ -67,7 +66,6 @@ if(length(args) == 0){
     scale <- 1e2
     data.subset <- "all"
 }else{
-    w.ypr <- FALSE
     include.int <- args[1]
     natural.decay <- args[2]
     filtering <- args[3]

@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","350","filtering","control",1e2)
+args <- c("allInt","350","filtering","all",1e2)
 source('src/initialize.R')
 
 ## ************************************************************
@@ -21,11 +21,11 @@ model.input <- prepOccModelInput(nzero=0,
                     HRarea= hr.area.sum, #sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
                     natural.decay=natural.decay,
-                    veg=by.site,
-                    w.ypr=w.ypr,
+                    veg=by.site, #raw.flower.data,
                     load.inits=FALSE,
                     model.type=include.int,
-                    col.name.div.type = "Div") ## div.visits, Div
+                    col.name.div.type = "Div",## div.visits, Div
+                    raw.flower=FALSE)
 
 
 burnin <- 1e1*scale
@@ -130,17 +130,16 @@ if(data.subset=="all"){
 ## ## *****************************************************************
 ## ## run in nimble using mcmc suite
 ## ## *****************************************************************
-## input1 <- c(code=ms.ms.occ,
-##             model.input)
+input1 <- c(code=ms.ms.occ,
+            model.input)
 
-## ms.ms.nimble <- compareMCMCs_withMonitors(input1,
-##                                           MCMCs=c('nimble'),
-##                                           niter=niter,
-##                                           burnin = burnin,
-##                                           thin=nthin,
-##                                           summary=FALSE,
-##                                           check=FALSE,
-##                                           monitors=model.input$monitors)
+ms.ms.nimble <- compareMCMCs(input1,
+                             MCMCs=c('jags','nimble'),
+                             niter=niter,
+                             burnin = burnin,
+                             thin=nthin,
+                             summary=FALSE,
+                             check=FALSE)
 
 ## save(ms.ms.nimble, file=file.path(save.dir,
 ##                                   sprintf('runs/nimble_bees_%s.Rdata',
