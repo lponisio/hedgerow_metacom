@@ -42,7 +42,7 @@ if(filtering){
     ## We do not want any X element equal to NA or they will not be
     ## considered data and will be sampled.
     model.input$data$X[ is.na(model.input$data$X) ] <- -1000
-    source(sprintf('src/models/complete_%s_filter_cppp.R', include.int))
+    source(sprintf('src/models/complete_%s_filter.R', include.int))
 }
 
 ## ## ****************************************************************
@@ -118,14 +118,14 @@ makeTable()
 
 
 ## variables to plot
-if(data.subset=="all"){
-    by.site <- by.site[by.site$Site %in% rownames(model.input$data$fra),]
-    controls <- by.site$Site[by.site$SiteStatus == "control"]
-    hedgerows <- by.site$Site[by.site$SiteStatus == "mature" | by.site$SiteStatus == "maturing"]
-    pdf.f(plotVariables,
-          file=file.path(save.dir, 'figures/variables/all.pdf'),
-          height= 9, width=3)
-}
+by.site <- by.site[by.site$Site %in% rownames(model.input$data$fra),]
+controls <- by.site$Site[by.site$SiteStatus == "control"]
+hedgerows <- by.site$Site[by.site$SiteStatus == "mature" | by.site$SiteStatus == "maturing"]
+pdf.f(plotVariables,
+      file=file.path(save.dir, 'figures/variables', sprintf('%s.pdf',
+                                                             data.subset)),
+      height= 9, width=3)
+
 
 ## ## *****************************************************************
 ## ## run in nimble using mcmc suite
