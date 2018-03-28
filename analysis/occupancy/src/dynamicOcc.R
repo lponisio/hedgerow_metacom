@@ -55,6 +55,7 @@ rDynamicOccupancy <- nimbleFunction(
                    p = double(2)) {
         ## x is a year by rep matix
         x <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
+        z <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
         nyears <- dim(p)[1]
         if(nrep[1] > 0) {
           ProbOccNextTime <- psi1
