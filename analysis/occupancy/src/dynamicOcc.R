@@ -58,34 +58,27 @@ rDynamicOccupancy <- nimbleFunction(
         nyears <- dim(p)[1]
         if(nrep[1] > 0) {
           ProbOccNextTime <- psi1
+          z[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
+                                    p = psi1)
+          
           x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
-                                    p = psi1*p[1,1:nrep[1]])
-          numObs <- sum(x[1,1:nrep[1]])
-          ProbOccAndCount <- ProbOccNextTime *
-            exp(sum(dbinom(x[1,1:nrep[1]],
-                           size = 1, p = p[1,1:nrep[1]], log = 1)))
-          ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
-          ProbCount <- ProbOccAndCount + ProbUnoccAndCount
-          ProbOccGivenCount <- ProbOccAndCount / ProbCount
-          ProbOccNextTime <- ProbOccGivenCount * phi[1] +
-            (1-ProbOccGivenCount) * gamma[1]
+                                    p = z[1, 1:nrep[1]]*p[1,1:nrep[1]])
+          ProbOccNextTime <-  z[1, 1:nrep[1]] * phi[1] +
+            (1- z[1, 1:nrep[1]]) * gamma[1]
         }
 
         if(nyears >= 1) {
             for(t in 2:nyears) {
                 if(nrep[t] > 0) {
+                  z[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
+                                            p = ProbOccNextTime)
                   x[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
-                                            p = ProbOccNextTime*p[t,1:nrep[t]])
+                                            p = z[t, 1:nrep[t]]*p[t,1:nrep[t]])
 
-                     ProbOccAndCount <- ProbOccNextTime *
-                        exp(sum(dbinom(x[t,1:nrep[t]],
-                                       size = 1, p = p[t,1:nrep[t]], log = 1)))
-                    ProbUnoccAndCount <- (1-ProbOccNextTime) * (numObs == 0)
-                    ProbCount <- ProbOccAndCount + ProbUnoccAndCount
-                    ProbOccGivenCount <- ProbOccAndCount / ProbCount
+                  
                     if(t < nyears)
-                        ProbOccNextTime <- ProbOccGivenCount * phi[t] +
-                            (1-ProbOccGivenCount) * gamma[t]
+                        ProbOccNextTime <- z[t, 1:nrep[t]] * phi[t] +
+                            (1-z[t, 1:nrep[t]]) * gamma[t]
 
               }
             }
