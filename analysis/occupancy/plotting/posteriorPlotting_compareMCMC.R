@@ -11,18 +11,19 @@ source('../../../occupancy/analysis/all/plotting.R')
 include.int <- "allInt"
 ## 350, 1000, 2500
 natural.decay <- "1000"
+data.subset <- "all"
 
 load(file=file.path(save.dir,
-                    sprintf('runs/nimble_bees_%s_%s.Rdata',
-                                          natural.decay, include.int)))
-
-
+                    sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                                          data.subset,
+                                          natural.decay,
+                            include.int)))
 ## *****************************************************************
 ## comparisons
 ## *****************************************************************
 ## if using compareMCMC
 
-ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
+ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble,
                                                  name = "ms.ms")
 
 ## doesn't really work with a lot of params
@@ -31,7 +32,11 @@ ms.ms.occ.all <- combine_MCMC_comparison_results(ms.ms.nimble[[1]],
 
 ## takes forever with a lot of params
 checkChains(ms.ms.occ.all$ms.ms$samples, only.one="nimble",
-            f.path = file.path(save.dir, "figures/chains/%s.pdf"))
+            f.path = file.path(save.dir,
+                                  sprintf('figures/%s_nimble_bees_%s_%s.Rdata',
+                                          data.subset,
+                                          natural.decay,
+                            include.int)))
 
 ## *****************************************************************
 ## paramter groups

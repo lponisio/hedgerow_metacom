@@ -60,10 +60,8 @@ ms.ms.occ <- nimbleCode({
     gam.nat.area.k  ~ dnorm(0,0.01)
 
     ## interaction between hedgerow proximity and species body size
-    mu.phi.hr.area.B  ~ dnorm(0,0.01)
-    mu.gam.hr.area.B  ~ dnorm(0,0.01)
-    sigma.phi.hr.area.B ~ dunif(0,10)
-    sigma.gam.hr.area.B ~ dunif(0,10)
+    phi.hr.area.B  ~ dnorm(0,0.01)
+    gam.hr.area.B  ~ dnorm(0,0.01)
 
     ## interaction between semi nat habitat proximity and body size
     ## breadth

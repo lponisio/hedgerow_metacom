@@ -11,6 +11,16 @@ wanted.order <- c("hr.area",
                   "hr.area.B",
                   "nat.area.B")
 
+
+phis <- paste("phi", wanted.order,
+              sep=".")
+phis <- paste(c(rep("mu.", 3), rep("", 8)), phis, sep="")
+gams <- paste("gam", wanted.order,
+              sep=".")
+gams <- paste(c(rep("mu.", 3), rep("", 8)), gams, sep="")
+
+to.plot <- c(phis, gams)
+
 xlabs <- c("Hedgerow \n area/proximity",
            "Non-crop habitat \n area/proximity",
            "Floral diversity",
@@ -36,15 +46,15 @@ plotPosteriors <- function(){
         CI95_low <-  means - 1.96*sd(x)
         return(c(mean=means, CI95_upp=CI95_upp, CI95_low=CI95_low ))
     })
-
-    mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
+    ## mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
+    mus <- nimble.summary[, to.plot]
 
     if(include.int == "no_noncrop"){
-        wanted.order <- wanted.order[!grepl("nat", wanted.order)]
+        to.plot <- to.plot[!grepl("nat", to.plot)]
         xlabs <- xlabs[!grepl("Non-crop", xlabs)]
     }
 
-    f <- function() {plotPosterior(mus, wanted.order, xlabs)}
+    f <- function() {plotPosterior(mus, to.plot, xlabs, phis, gams)}
 
     pdf.f(f,
           file=file.path(save.dir,
@@ -63,10 +73,10 @@ plotPosteriors <- function(){
 }
 
 makeTable <- function(){
-    phis <- paste("mu.phi", wanted.order,
-                  sep=".")
-    gams <- paste("mu.gam", wanted.order,
-                  sep=".")
+    ## phis <- paste("phi", wanted.order,
+    ##               sep=".")
+    ## gams <- paste("gam", wanted.order,
+    ##               sep=".")
 
     probs.4.table.phis <- round(posterior.probs[rownames(posterior.probs) %in%
                                                 phis,],3)[phis,]

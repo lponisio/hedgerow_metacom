@@ -236,7 +236,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                              dimnames(X)$site,]
     flower.mat <- flower.mat[, as.numeric(colnames(flower.mat)) <
                                max(dimnames(X)$year)]
-    ## flower.mat <- standardize(flower.mat)
+    flower.mat <- standardize(flower.mat)
 
     ## drop last year of natural data, log, standardize
     natural.mat <- natural.mat[names(natural.mat) %in%
@@ -328,55 +328,40 @@ getParams <- function(){
 
       'mu.phi.0',
       'sigma.phi.0',
-
       'mu.phi.hr.area',
       'sigma.phi.hr.area',
       'mu.phi.nat.area',
       'sigma.phi.nat.area',
       'mu.phi.fra',
       'sigma.phi.fra',
-      ## 'mu.phi.k',
-      ## 'sigma.phi.k',
-      ## 'mu.phi.B',
-      ## 'sigma.phi.B',
-      ## 'mu.phi.nat.area.fra',
-      ## 'sigma.phi.nat.area.fra',
-      ## 'mu.phi.hr.area.fra',
-      ## 'sigma.phi.hr.area.fra',
-      ## 'mu.phi.nat.area.k',
-      ## 'sigma.phi.nat.area.k',
-      ## 'mu.phi.hr.area.k',
-      ## 'sigma.phi.hr.area.k',
-      ## 'mu.phi.nat.area.B',
-      ## 'sigma.phi.nat.area.B',
-      ## 'mu.phi.hr.area.B',
-      ## 'sigma.phi.hr.area.B',
+      'phi.k',
+
+      'phi.B',
+      'phi.nat.area.fra',
+      'phi.hr.area.fra',
+      'phi.nat.area.k',
+      'phi.hr.area.k',
+      'phi.nat.area.B',
+      'phi.hr.area.B',
 
       'mu.gam.0',
       'sigma.gam.0',
-
       'mu.gam.hr.area',
       'sigma.gam.hr.area' ,
       'mu.gam.nat.area',
       'sigma.gam.nat.area',
       'mu.gam.fra',
-      'sigma.gam.fra'
-      ## 'mu.gam.k',
-      ## 'sigma.gam.k',
-      ## 'mu.gam.B',
-      ## 'sigma.gam.B',
-      ## 'mu.gam.hr.area.fra',
-      ## 'sigma.gam.hr.area.fra',
-      ## 'mu.gam.nat.area.fra',
-      ## 'sigma.gam.nat.area.fra',
-      ## 'mu.gam.hr.area.k',
-      ## 'sigma.gam.hr.area.k',
-      ## 'mu.gam.nat.area.k',
-      ## 'sigma.gam.nat.area.k',
-      ## 'mu.gam.hr.area.B',
-      ## 'sigma.gam.hr.area.B',
-      ## 'mu.gam.nat.area.B',
-      ## 'sigma.gam.nat.area.B'
+      'sigma.gam.fra',
+
+      'gam.k',
+      'gam.B',
+      'gam.hr.area.fra',
+      'gam.nat.area.fra',
+      'gam.hr.area.k',
+      'gam.nat.area.k',
+      'gam.hr.area.B',
+      'gam.nat.area.B'
+
 
       ## ## site level effects
       ## 'phi.nat.area',
@@ -405,22 +390,6 @@ getInits <- function(nsp){
          sigma.phi.nat.area = runif(1),
          mu.phi.fra = rnorm(1),
          sigma.phi.fra = runif(1),
-         ## mu.phi.k = rnorm(1),
-         ## sigma.phi.k = runif(1),
-         ## mu.phi.B = rnorm(1),
-         ## sigma.phi.B = runif(1),
-         ## mu.phi.hr.area.fra = rnorm(1),
-         ## sigma.phi.hr.area.fra = runif(1),
-         ## mu.phi.nat.area.fra = rnorm(1),
-         ## sigma.phi.nat.area.fra = runif(1),
-         ## mu.phi.nat.area.k = rnorm(1),
-         ## sigma.phi.nat.area.k = runif(1),
-         ## mu.phi.hr.area.k = rnorm(1),
-         ## sigma.phi.hr.area.k = runif(1),
-         ## mu.phi.nat.area.B = rnorm(1),
-         ## sigma.phi.nat.area.B = runif(1),
-         ## mu.phi.hr.area.B = rnorm(1),
-         ## sigma.phi.hr.area.B = runif(1),
 
          mu.gam.0 = rnorm(1),
          sigma.gam.0 = runif(1),
@@ -431,22 +400,6 @@ getInits <- function(nsp){
          sigma.gam.nat.area = runif(1),
          mu.gam.fra = rnorm(1),
          sigma.gam.fra = runif(1),
-         ## mu.gam.k = rnorm(1),
-         ## sigma.gam.k = runif(1),
-         ## mu.gam.B = rnorm(1),
-         ## sigma.gam.B = runif(1),
-         ## mu.gam.hr.area.fra = rnorm(1),
-         ## sigma.gam.hr.area.fra = runif(1),
-         ## mu.gam.nat.area.fra = rnorm(1),
-         ## sigma.gam.nat.area.fra = runif(1),
-         ## mu.gam.hr.area.k = rnorm(1),
-         ## sigma.gam.hr.area.k = runif(1),
-         ## mu.gam.nat.area.k = rnorm(1),
-         ## sigma.gam.nat.area.k = runif(1),
-         ## mu.gam.hr.area.B = rnorm(1),
-         ## sigma.gam.hr.area.B = runif(1),
-         ## mu.gam.nat.area.B = rnorm(1),
-         ## sigma.gam.nat.area.B = runif(1),
 
          p.0 = rnorm(nsp),
          p.day.1 = rnorm(nsp),

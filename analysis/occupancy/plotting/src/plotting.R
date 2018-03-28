@@ -43,14 +43,14 @@ plotComparisons <- function(){
 
 
 plotPosterior <- function(summarys, wanted.order,
-                          xlabs){
+                          xlabs, phis, gams){
     plotPhiGam <- function(phi.gam){
-        plot(1:length(wanted.order),
+        plot(1:length(phi.gam),
              summarys["mean", phi.gam],
              ylim=range(summarys[c("CI95_low", "CI95_upp"), phi.gam]),
              pch=16, las=1,
              ylab="", xlab="", xaxt="n",
-             xlim= range(c(1,length(wanted.order)) +  c(-0.25, 0.25)))
+             xlim= range(c(1,length(phi.gam)) +  c(-0.25, 0.25)))
         arrows(y1=summarys['CI95_upp', phi.gam],
                y0=summarys['CI95_low', phi.gam],
                x0=1:length(wanted.order),
@@ -62,10 +62,10 @@ plotPosterior <- function(summarys, wanted.order,
     layout(matrix(1:2, nrow=2))
     par(oma=c(0, 4, 1, 1),
         mar=c(2, 4, 5.5, 1), cex.axis=1.2)
-    phis <- paste("mu.phi", wanted.order,
-                  sep=".")
-    gams <- paste("mu.gam", wanted.order,
-                  sep=".")
+    ## phis <- paste("mu.phi", wanted.order,
+    ##               sep=".")
+    ## gams <- paste("mu.gam", wanted.order,
+    ##               sep=".")
 
     plotPhiGam(phis)
     legend("topright", legend="(a)", bty="n", cex=1.2)
@@ -76,9 +76,9 @@ plotPosterior <- function(summarys, wanted.order,
 
     plotPhiGam(gams)
     legend("topright", legend="(b)", bty="n", cex=1.2)
-    axis(1, at=1:length(wanted.order),
+    axis(1, at=1:length(phis),
          labels=FALSE)
-    text(x=1:length(wanted.order),
+    text(x=1:length(phis),
          y=par()$usr[3]-0.1*(par()$usr[4]-par()$usr[3]),
          labels=xlabs, srt=45, xpd=TRUE, adj=1, cex=0.95)
     mtext(text="Colonization", 2,

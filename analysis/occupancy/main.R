@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","350","filtering","all",1e2)
+args <- c("allInt","2500","filtering","all",5e2)
 source('src/initialize.R')
 
 ## ************************************************************
@@ -28,10 +28,17 @@ model.input <- prepOccModelInput(nzero=0,
                     raw.flower=FALSE)
 
 
+## variables to plot
+pdf.f(plotVariables,
+      file=file.path(save.dir, 'figures/variables', sprintf('%s.pdf',
+                                                            data.subset)),
+      height= 9, width=3)
+
+
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
-nchain <- 3
+nchain <- 2
 
 source(sprintf('src/models/complete_%s.R', include.int))
 
@@ -79,7 +86,7 @@ save(ms.ms.nimble, file=file.path(save.dir,
 ## ****************************************************************
 ## posterior probabilities
 ## *****************************************************************
-if(is.null(ms.ms.nimble)){
+if(!exists("ms.ms.nimble")){
     load(file=file.path(save.dir,
                         sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
                                 data.subset, natural.decay, include.int)))
@@ -91,7 +98,7 @@ if(is.list(ms.ms.nimble$samples)){
     samples.4.table <- ms.ms.nimble$samples
 }
 
-if(is.null(ms.ms.model)){
+if(!exists("ms.ms.model")){
     ms.ms.model <- nimbleModel(code=ms.ms.occ,
                                constants=model.input$constants,
                                data=model.input$data,
@@ -115,16 +122,6 @@ h2 <- apply(samples.4.table,
             2, function(x) sum(x < 0)/length(x))
 posterior.probs <- cbind(h1,h0,h2)
 makeTable()
-
-
-## variables to plot
-by.site <- by.site[by.site$Site %in% rownames(model.input$data$fra),]
-controls <- by.site$Site[by.site$SiteStatus == "control"]
-hedgerows <- by.site$Site[by.site$SiteStatus == "mature" | by.site$SiteStatus == "maturing"]
-pdf.f(plotVariables,
-      file=file.path(save.dir, 'figures/variables', sprintf('%s.pdf',
-                                                             data.subset)),
-      height= 9, width=3)
 
 
 ## ## *****************************************************************
