@@ -55,31 +55,30 @@ rDynamicOccupancy <- nimbleFunction(
                    p = double(2)) {
         ## x is a year by rep matix
         x <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
-        z <- matrix(NA, nrow=dim(p)[1], ncol=dim(p)[2])
         nyears <- dim(p)[1]
+        z <- numeric(nyears)
         if(nrep[1] > 0) {
-          ProbOccNextTime <- psi1
-          z[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
+          z[1] <- rbinom(1, size = 1,
                                     p = psi1)
           
           x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
-                                    p = z[1, 1:nrep[1]]*p[1,1:nrep[1]])
-          ProbOccNextTime <-  z[1, 1:nrep[1]] * phi[1] +
-            (1- z[1, 1:nrep[1]]) * gamma[1]
+                                    p = z[1]*p[1,1:nrep[1]])
+          ProbOccNextTime <-  z[1] * phi[1] +
+            (1- z[1]) * gamma[1]
         }
 
         if(nyears >= 1) {
             for(t in 2:nyears) {
                 if(nrep[t] > 0) {
-                  z[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
+                  z[t] <- rbinom(1, size = 1,
                                             p = ProbOccNextTime)
                   x[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
-                                            p = z[t, 1:nrep[t]]*p[t,1:nrep[t]])
+                                            p = z[t]*p[t,1:nrep[t]])
 
                   
                     if(t < nyears)
-                        ProbOccNextTime <- z[t, 1:nrep[t]] * phi[t] +
-                            (1-z[t, 1:nrep[t]]) * gamma[t]
+                        ProbOccNextTime <- z[t] * phi[t] +
+                            (1-z[t]) * gamma[t]
 
               }
             }
