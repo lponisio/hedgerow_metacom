@@ -74,7 +74,6 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     spec.data <- data.frame(pollinator=spec$GenusSpecies,
                             site=spec$Site,
                             date=spec$Date)
-
     ## natural cover
     natural.mat <- natural.mat[, natural.decay]
     natural.mat <- natural.mat[!is.na(natural.mat)]

@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","2500","filtering","all",5e2)
+args <- c("allInt","10^8","filtering","all",2e2)
 source('src/initialize.R')
 
 ## ************************************************************
@@ -112,7 +112,7 @@ samples.4.table <- samples.4.table[, colnames(samples.4.table) %in%
                                                stochOnly=TRUE)]
 
 ## H param > 0
-h1 <- apply(samples.4.table,
+h1 <- apply(samples.4.table,a
             2, function(x) sum(x > 0)/length(x))
 ## H param == 0
 h0 <- apply(samples.4.table,

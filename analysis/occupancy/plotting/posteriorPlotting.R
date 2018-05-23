@@ -1,3 +1,5 @@
+source('~/Dropbox/hedgerow_metacom/analysis/occupancy/plotting/src/plotInteractions.R')
+library(viridis)
 
 wanted.order <- c("hr.area",
                   "nat.area",
@@ -77,7 +79,6 @@ makeTable <- function(){
     ##               sep=".")
     ## gams <- paste("gam", wanted.order,
     ##               sep=".")
-
     probs.4.table.phis <- round(posterior.probs[rownames(posterior.probs) %in%
                                                 phis,],3)[phis,]
     probs.4.table.gams <- round(posterior.probs[rownames(posterior.probs) %in%
@@ -89,8 +90,8 @@ makeTable <- function(){
                 sep=" & ",
 
                 file= file.path(save.dir,
-                     sprintf('table/%s_post_probs_nimble_bees_%s_%s.txt',
-                                data.subset, natural.decay, include.int)))
+                                sprintf('table/%s_post_probs_nimble_bees_%s_%s.txt',
+                                        data.subset, natural.decay, include.int)))
 }
 
 checkChains <- function(){
@@ -98,6 +99,7 @@ checkChains <- function(){
                        f.path= file.path(save.dir,
                                          'figures/chains'),
                        natural.decay, include.int,
-                       data.subset)
+                       data.subset, num.samps=10000)
 }
+
 

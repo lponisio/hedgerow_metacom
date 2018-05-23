@@ -46,7 +46,7 @@ baci <- c('Barger',
 
 dd.h <- dd.h[dd.h@data$site %in% baci,]
 
-radii <- round(exp(seq(from=log(10), to=log(1500), length=20)))
+radii <- round(exp(seq(from=log(10), to=log(10000), length=20)))
 
 dist.tables.2006 <- make.distance.table(dd.lc=dd.2006,
                                         year=2006,
