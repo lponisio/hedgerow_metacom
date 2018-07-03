@@ -41,7 +41,7 @@ spec$doy <- as.numeric(strftime(spec$Date, format='%j'))
 
 
 occ.data <-
-    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/5-0-350.RData'),
+    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/all-5-0-2500-350.Rdata'),
         silent=TRUE)
 if(!inherits(occ.data, "try-error")){
     keep.sites <- dimnames(model.input$data$X)[[1]]
@@ -243,6 +243,9 @@ sites.to.keep <- site.years$Site[site.years$Year >= 1]
 ## create networks
 spec.for.nets <- spec[spec$Site %in% sites.to.keep,]
 
+## spec.for.nets <- spec.for.nets[!spec.for.nets$GenusSpecies %in%
+##                      c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus", "Halictus ligatus"), ]
+
 nets <- breakNet(spec.dat=spec.for.nets, 'Site', 'Year')
 
 ## within a year, the network of shared species across sites
@@ -267,7 +270,7 @@ specs.years <- calcSpec(nets.year, spec, spec.metric = 'd', 0.3)
 ## within a site across years
 specs.site <- calcSpec(nets.site, spec, spec.metric = 'd', 0.3)
 
-specs.save.path <- '../analysis/speciesLevel/saved'
+specs.save.path <- '../analysis/networks/saved'
 save(specs, specs.years, specs.site,
      file=file.path(specs.save.path, 'specs.Rdata'))
 

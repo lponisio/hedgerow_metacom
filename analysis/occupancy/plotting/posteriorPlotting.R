@@ -60,13 +60,17 @@ plotPosteriors <- function(){
 
     pdf.f(f,
           file=file.path(save.dir,
-                         sprintf('figures/posterior/%s_mus_bees_%s_%s.pdf',
-                                 data.subset, natural.decay, include.int)),
+                         sprintf('figures/posterior/%s_mus_bees_%s_%s_%s.pdf',
+                                data.subset,
+                                natural.decay, HR.decay,
+                                include.int)),
           height=7, width=12)
 
     save(mus, file=file.path(save.dir,
-                             sprintf('runs/%s_mus_bees_%s_%s.Rdata',
-                                     data.subset, natural.decay, include.int)))
+                             sprintf('runs/%s_mus_bees_%s_%s_%s.Rdata',
+                                data.subset,
+                                natural.decay, HR.decay,
+                                include.int)))
 
 
     all.samples <- all.samples[, colnames(all.samples) %in%
@@ -83,15 +87,26 @@ makeTable <- function(){
                                                 phis,],3)[phis,]
     probs.4.table.gams <- round(posterior.probs[rownames(posterior.probs) %in%
                                                 gams,], 3)[gams,]
+    means.4.table.phis <- round(means[names(means) %in% phis],3)[phis]
+    means.4.table.gams <- round(means[names(means) %in% gams],3)[gams]
+    ses.4.table.phis <- round(se[names(se) %in% phis],3)[phis]
+    ses.4.table.gams <- round(se[names(se) %in% gams],3)[gams]
+    names.4.table <- gsub("\\n", "", xlabs)
 
-    rownames(probs.4.table.phis) <- rownames(probs.4.table.gams) <- xlabs
+    mat.4.table <- cbind(paste0(means.4.table.phis, "(", ses.4.table.phis, ")"),
+                         probs.4.table.phis,
+                         paste0(means.4.table.gams, "(", ses.4.table.gams, ")"),
+                         probs.4.table.gams)
 
-    write.table(cbind(probs.4.table.phis[,-2], probs.4.table.gams[,-2]),
+    rownames(mat.4.table) <- names.4.table
+    write.table(mat.4.table,
                 sep=" & ",
 
                 file= file.path(save.dir,
-                                sprintf('table/%s_post_probs_nimble_bees_%s_%s.txt',
-                                        data.subset, natural.decay, include.int)))
+                        sprintf('table/%s_post_probs_nimble_bees_%s_%s_%s.txt',
+                                          data.subset,
+                                          natural.decay, HR.decay,
+                                          include.int)))
 }
 
 checkChains <- function(){

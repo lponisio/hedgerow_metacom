@@ -109,10 +109,11 @@ non.natural <- c("Water", "Vineyards",
                  "Giant Reed Series")
 
 kinda.natural <- c("Tamarisk Alliance",
-                 "Perennial pepperweed (Lepidium latifolium) Alliance",
-                 "Eucalyptus Alliance", "Acacia - Robinia Alliance",
-                 "Upland Annual Grasslands & Forbs Formation",
-                 "California Annual Grasslands Alliance")
+                   "Perennial pepperweed (Lepidium latifolium) Alliance",
+                   "Eucalyptus Alliance", "Acacia - Robinia Alliance",
+                   "Upland Annual Grasslands & Forbs Formation",
+                   "California Annual Grasslands Alliance",
+                   "Upland Annual Grasslands & Forbs Formation")
 
 ## make table for ms
 vegtype <- data.frame(Classification=sort(as.character(unique(landcover@data$VegName))))
@@ -125,10 +126,9 @@ write.table(vegtype,
 
 landcover.nat <- landcover[!landcover@data$VegName %in% non.natural,]
 
-
 new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
 surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
-    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
+                            unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
 
 ## find out which classes look like they are really ag
 f <- function(){
@@ -143,28 +143,177 @@ f <- function(){
     }
 }
 
-pdf.f(f, file='../../dataPrep/figures/landcover.pdf')
+pdf.f(f, file="../../../hedgerow_metacom_saved/map/landcovers.pdf")
 
 
 
 ## merge polygones into single "natural" layer
-landcover.nat@data$type <- "natural"
-landcover.nat <- unionSpatialPolygons(landcover.nat,
-                                      landcover.nat@data$type)
+## landcover.nat@data$type <- "natural"
+## landcover.nat <- unionSpatialPolygons(landcover.nat,
+##                                       landcover.nat@data$type)
 
-dats <- data.frame(type="natural")
-rownames(dats) <- "natural"
-landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
-                                          data=dats)
-
-
-plot(landcover.nat, col="lightgreen")
-new.hr <- all.sites.pt[grep("new", all.sites.pt@data$df0),]
-points(new.hr, col="red")
-surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
-    unique(spec$Site[spec$SiteStatus %in% c("maturing", "mature")]),]
-points(surveyed.hr, col="dodgerblue")
+## dats <- data.frame(type="natural")
+## rownames(dats) <- "natural"
+## landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
+##                                           data=dats)
 
 save(landcover.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
 
+
+
+
+## plotting
+library(dismo)
+library(viridis)
+plotLandscapeCovers <- function(){
+    ## prep map and site data
+    all.sites.pt <- spTransform(all.sites.pt,
+                                CRS("+init=epsg:4326"))
+
+    landcover.nat <- spTransform(landcover.nat,
+                                 CRS("+init=epsg:4326"))
+
+    bbox.sites <- bbox(all.sites.pt)
+    bbox.nat <- bbox(landcover.nat)
+
+
+    bbox.all <- matrix(c(bbox.sites[1,1],
+                         bbox.sites[2,1],
+                         bbox.sites[1,2],
+                         bbox.sites[2,2]),
+                       ncol=2)
+
+
+    sys <- gmap(x=bbox.all,
+                scale=2,
+                type="satellite", zoom=10)
+
+    all.sites.pt <- spTransform(all.sites.pt,
+                                sys@crs)
+
+    landcover.nat <- spTransform(landcover.nat,
+                                 sys@crs)
+
+
+    new.hr <- all.sites.pt[grepl("new", all.sites.pt@data$df0),]
+    surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
+                                unique(spec$Site[spec$SiteStatus %in%
+                                                 c("maturing", "mature")]),]
+    surveyed.control <- all.sites.pt[all.sites.pt@data$df0 %in%
+                          unique(spec$Site[spec$SiteStatus =="control"]),]
+
+    dims <- bbox(sys)
+    plot(sys)
+    rect(xleft=dims[1,1],ybottom=dims[2,1],
+         xright=dims[1,2],ytop=dims[2,2],
+         col= rgb(1,1,1, alpha=0.3))
+
+    natural.cover <- crop(landcover.nat,  dims)
+    only.natural.cover <-  natural.cover[!natural.cover@data$VegName
+                                         %in% kinda.natural,]
+    non.native.natural.cover <- natural.cover[natural.cover@data$VegName
+                                              %in% kinda.natural,]
+
+    colors <-
+        add.alpha(rainbow((length(unique(natural.cover@data$VegName))
+        +1 )),
+                  0.5)
+    names(colors) <- unique(natural.cover@data$VegName)
+
+    for(veg.type in unique(natural.cover@data$VegName)){
+        plot(natural.cover[natural.cover@data$VegName == veg.type,],
+             col=colors[veg.type], add=TRUE)
+    }
+
+    points(new.hr, col="darkturquoise", pch=15)
+    points(surveyed.hr, col="dodgerblue", pch=16)
+    points(surveyed.control, col="navy", pch=17)
+
+    points(new.hr, col="black", pch=0)
+    points(surveyed.hr, col="black", pch=1)
+    points(surveyed.control, col="black", pch=2)
+
+    leg.names <- c("Riparian Forest Association",
+                   "California Annual Grasslands Alliance",
+                   "Upland Annual Grasslands & Forbs",
+                   "Wetland Forbs Super Alliance",
+                   "Valley Oak Alliance - Riparian",
+                   "Flooded Deciduous Shrubland",
+                   "Wet Meadow Grasses Super Alliance",
+                   "Mixed Willow Super Alliance",
+                   "Valley Oak Alliance", "Blackberry Super Alliance",
+                   "Tamarisk Alliance", "Fremont Cottonwood/Willow",
+                   "Fresh Water Marsh Alliance",
+                   "Eucalyptus Alliance", "Blue Oak Alliance",
+                   "Interior Live/Blue Oak", "Vernal Pool Complex")
+
+    plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n")
+    legend("left", col=colors, pch=16,
+           legend=leg.names, ncol=2, bty="n")
+    legend("left", col="black", pch=1,
+           legend=leg.names, ncol=2, bty="n")
+
+    only.2.cols <- add.alpha(c("red", "violetred"), 0.5)
+    plot(sys)
+    plot(non.native.natural.cover, col=only.2.cols[1], add=TRUE)
+    plot(only.natural.cover, col=only.2.cols[2], add=TRUE)
+
+    points(new.hr, col="darkturquoise", pch=15)
+    points(surveyed.hr, col="dodgerblue", pch=16)
+    points(surveyed.control, col="navy", pch=17)
+
+    points(new.hr, col="black", pch=0)
+    points(surveyed.hr, col="black", pch=1)
+    points(surveyed.control, col="black", pch=2)
+
+    plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n")
+    legend("left", col=only.2.cols, pch=16,
+           legend=c("Predominantly non-native vegetation",
+                    "Predominantly native vegetation"),
+           ncol=1, bty="n")
+    legend("left", col="black", pch=1,
+           legend=c("Predominantly non-native vegetation",
+                    "Predominantly native vegetation"),
+           ncol=1, bty="n")
+
+
+    plot(NA, ylim=c(0,1), xlim=c(0,1), xaxt="n", yaxt="n")
+    legend("left",
+           col=c("darkturquoise","dodgerblue", "navy"),
+           pch=c(15, 16, 17),
+           legend=c("Unsurveyed hedgerow",
+                    "Surveyed hedgerow",
+                    "Surveyed field margin"),
+           ncol=3, bty="n")
+    legend("left", col="black",
+           pch=c(0, 1, 2),
+           legend=c("Unsurveyed hedgerow",
+                    "Surveyed hedgerow",
+                    "Surveyed field margin"),
+           ncol=3, bty="n")
+
+}
+
+
+pdf.f(plotLandscapeCovers,
+      file="../../../hedgerow_metacom_saved/map/covermap.pdf",
+      height=10, width=8)
+
+
+## looking at each type of vegetation on the landscape
+## landcover <- spTransform(landcover,
+##                              CRS("+init=epsg:4326"))
+
+## landcover <- spTransform(landcover,
+##                              sys@crs)
+
+
+## cols <- add.alpha(viridis(length(unique(landcover@data$VegName))), 0.5)
+## names(cols) <- unique(landcover@data$VegName)
+
+## for(veg.type in unique(landcover@data$VegName)){
+##     print(veg.type)
+##     plot(landcover[landcover@data$VegName == veg.type,],
+##          col=cols[veg.type], add=TRUE)
+## }

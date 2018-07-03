@@ -36,7 +36,7 @@ save(spstats, file="../../data/spatial/HRarea.Rdata")
 ## *************************************************************
 ## natural using kremen lab digitized data, decay method
 ## *************************************************************
-decays <- c(10, 350, 1000, 2500, 10000)
+decays <- c(10, 350, 1000, 2500, 10000, 100000)
 
 natural.land <- getNatural(spec, dist.tables, decays)
 save(natural.land,
@@ -48,7 +48,7 @@ samp.site.nat.krem <- natural.land[natural.land$Site %in%
 ## *************************************************************
 ## hedgerow area using decay method
 ## *************************************************************
-radii <- round(exp(seq(from=log(10), to=log(10000), length=20)))
+radii <- round(exp(seq(from=log(10), to=log(100000), length=20)))
 all.sites.lines@data$type <- "hedgerow"
 
 hr.area <- makeDistanceTable(dd.lc=all.sites.lines,

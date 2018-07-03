@@ -10,6 +10,7 @@ source('src/prep.R')
 source('plotting/posteriorPlotting.R')
 source('plotting/src/plotting.R')
 source('plotting/src/checkChains.R')
+source('plotting/src/plotInteractions.R')
 source('src/make-matrix.R')
 source('src/comparMCMCs_withMonitors.R')
 load('../../data/networks/allSpecimens.Rdata')
@@ -61,21 +62,23 @@ if(length(args) == 0){
     ## allInt, "no_noncrop"
     include.int <- "allInt"
     ## 350, 1000, 2500
-    natural.decay <- "350"
+    natural.decay  <- "350"
+    HR.decay <- "350"
     filtering <- TRUE
     scale <- 1e2
     data.subset <- "all"
 }else{
     include.int <- args[1]
     natural.decay <- args[2]
-    filtering <- args[3]
+    HR.decay <- args[3]
+    filtering <- args[4]
     if(filtering == "filtering"){
         filtering <- TRUE
     } else {
         filtering <- FALSE
     }
-    data.subset <- args[4]
-    scale <- as.numeric(args[5])
+    data.subset <- args[5]
+    scale <- as.numeric(args[6])
 }
 
 if(data.subset == "hedgerow"){
@@ -89,6 +92,6 @@ sr.sched <- sr.sched[sr.sched$Site %in% unique(spec$Site),]
 
 
 if(length(args) > 5){
-    ncores <- args[6]
+    ncores <- args[7]
 }
 

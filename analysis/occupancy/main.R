@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","10^8","filtering","all",2e2)
+args <- c("allInt","2500", "350", "filtering","all",2e2)
 source('src/initialize.R')
 
 ## ************************************************************
@@ -21,18 +21,21 @@ model.input <- prepOccModelInput(nzero=0,
                     HRarea= hr.area.sum, #sum.dist.area, ##spstats
                     natural.mat=nat.area.sum, ## natural
                     natural.decay=natural.decay,
+                    HR.decay=HR.decay,
                     veg=by.site, #raw.flower.data,
                     load.inits=FALSE,
                     model.type=include.int,
                     col.name.div.type = "Div",## div.visits, Div
-                    raw.flower=FALSE)
+                    raw.flower=FALSE,
+                    drop.li.ht=FALSE,
+                    only.li.ht=TRUE)
 
 
 ## variables to plot
 pdf.f(plotVariables,
-      file=file.path(save.dir, 'figures/variables', sprintf('%s.pdf',
-                                                            data.subset)),
-      height= 9, width=3)
+      file=file.path(save.dir, 'figures/variables',
+                     sprintf('%s%s%s.pdf', natural.decay, HR.decay, data.subset)),
+      height= 6, width=3)
 
 
 burnin <- 1e1*scale
@@ -78,18 +81,20 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
 plotPosteriors()
 checkChains()
 save(ms.ms.nimble, file=file.path(save.dir,
-                    sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
+                    sprintf('runs/%s_nimble_bees_%s_%s_%s.Rdata',
                                           data.subset,
-                                          natural.decay,
+                                          natural.decay, HR.decay,
                                           include.int)))
 
 ## ****************************************************************
-## posterior probabilities
+## posterior probabilities and interaction plots
 ## *****************************************************************
 if(!exists("ms.ms.nimble")){
     load(file=file.path(save.dir,
-                        sprintf('runs/%s_nimble_bees_%s_%s.Rdata',
-                                data.subset, natural.decay, include.int)))
+                        sprintf('runs/%s_nimble_bees_%s_%s_%s.Rdata',
+                                data.subset,
+                                natural.decay, HR.decay,
+                                include.int)))
 }
 
 if(is.list(ms.ms.nimble$samples)){
@@ -98,6 +103,30 @@ if(is.list(ms.ms.nimble$samples)){
     samples.4.table <- ms.ms.nimble$samples
 }
 
+means <- apply(samples.4.table, 2, mean)
+se <- apply(samples.4.table, 2, sd)
+
+
+
+pdf.f(f.plotInteractionsHRRemnant.k, file=file.path(save.dir,
+                sprintf("figures/interactions/HRinteractions-k-%s-%s.pdf",
+                                                 natural.decay, HR.decay)),
+      width=6, height=11)
+
+
+pdf.f(f.plotInteractionsFloralDiv, file=file.path(save.dir,
+                 sprintf("figures/interactions/HRinteractions-fra-%s-%s.pdf",
+                                                 natural.decay, HR.decay)),
+      width=3, height=9)
+
+
+pdf.f(plotInteractionsB, file=file.path(save.dir,
+                 sprintf("figures/interactions/HRinteractions-B-%s-%s.pdf",
+                                                 natural.decay, HR.decay)),
+      width=3, height=9)
+
+
+## posterior probs
 if(!exists("ms.ms.model")){
     ms.ms.model <- nimbleModel(code=ms.ms.occ,
                                constants=model.input$constants,
@@ -110,33 +139,29 @@ if(!exists("ms.ms.model")){
 samples.4.table <- samples.4.table[, colnames(samples.4.table) %in%
                       ms.ms.model$getNodeNames(includeData=FALSE,
                                                stochOnly=TRUE)]
-
 ## H param > 0
-h1 <- apply(samples.4.table,a
+h1 <- apply(samples.4.table,
             2, function(x) sum(x > 0)/length(x))
-## H param == 0
-h0 <- apply(samples.4.table,
-            2, function(x) dnorm(0, mean(x), sd(x))/length(x))
 ## H param < 0
 h2 <- apply(samples.4.table,
             2, function(x) sum(x < 0)/length(x))
-posterior.probs <- cbind(h1,h0,h2)
+posterior.probs <- cbind(h1,h2)
 makeTable()
 
 
 ## ## *****************************************************************
 ## ## run in nimble using mcmc suite
 ## ## *****************************************************************
-input1 <- c(code=ms.ms.occ,
-            model.input)
+## input1 <- c(code=ms.ms.occ,
+##             model.input)
 
-ms.ms.nimble <- compareMCMCs(input1,
-                             MCMCs=c('jags','nimble'),
-                             niter=niter,
-                             burnin = burnin,
-                             thin=nthin,
-                             summary=FALSE,
-                             check=FALSE)
+## ms.ms.nimble <- compareMCMCs(input1,
+##                              MCMCs=c('jags','nimble'),
+##                              niter=niter,
+##                              burnin = burnin,
+##                              thin=nthin,
+##                              summary=FALSE,
+##                              check=FALSE)
 
 ## save(ms.ms.nimble, file=file.path(save.dir,
 ##                                   sprintf('runs/nimble_bees_%s.Rdata',

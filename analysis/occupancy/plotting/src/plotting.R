@@ -89,7 +89,7 @@ plotPosterior <- function(summarys, wanted.order,
 
 
 plotVariables <- function(){
-    layout(matrix(1:4, ncol=1))
+    layout(matrix(1:2, ncol=1))
     par(oma=c(2, 2, 1, 1),
         mar=c(4, 4, 2, 1))
 
@@ -99,8 +99,8 @@ plotVariables <- function(){
     ## points(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% hedgerows]),
     ##        type="l")
     hist(model.input$data$HRarea, main="", xlab="", ylab="", las=1)
-    abline(v=0, lty=2)
-    legend("topleft", legend="(a)", bty="n", cex=1.2)
+    abline(v=0, lty=2, col="red")
+    legend("topright", legend="(a)", bty="n", cex=1.2)
     mtext("Hedgerow area/proximity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
@@ -113,9 +113,9 @@ plotVariables <- function(){
     ## points(density(model.input$data$natural[names(model.input$data$natural) %in% hedgerows]),
     ##        type="l", lty=1)
     hist(model.input$data$natural, main="", xlab="", ylab="", las=1)
-    abline(v=0, lty=2)
-    legend("topleft", legend="(b)", bty="n", cex=1.2)
-    mtext("Non-crop habitat area/proximity", 1, line=3, cex=0.9)
+    abline(v=0, lty=2, col="red")
+    legend("topright", legend="(b)", bty="n", cex=1.2)
+    mtext("Remnant habitat area/proximity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
 
@@ -124,22 +124,22 @@ plotVariables <- function(){
     ## points(density(by.site$Div[by.site$Site %in% controls]),
     ##        type="l", col="gray45")
     ## abline(v=mean(by.site$Div, na.rm=TRUE), lty=2)
-    hist(model.input$data$fra, main="", xlab="", ylab="", las=1)
-    abline(v=mean(model.input$data$fra, na.rm=TRUE), lty=2)
-    legend("topleft", legend="(c)", bty="n", cex=1.2)
-    mtext("Floral diversity", 1, line=3, cex=0.9)
-    mtext(text="Frequency", 2,
-          line=3.75, cex=0.9)
+    ## hist(model.input$data$fra, main="", xlab="", ylab="", las=1)
+    ## abline(v=mean(model.input$data$fra, na.rm=TRUE), lty=2, col="red")
+    ## legend("topright", legend="(c)", bty="n", cex=1.2)
+    ## mtext("Floral diversity", 1, line=3, cex=0.9)
+    ## mtext(text="Frequency", 2,
+    ##       line=3.75, cex=0.9)
 
     ## hist(all.traits$BodyLength, main="", xlab="", las=1, ylab="")
     ## abline(v=mean(all.traits$BodyLength, na.rm=TRUE), lty=2)
 
-    hist(model.input$data$B, main="", xlab="", las=1, ylab="")
-    abline(v=mean(model.input$data$B, na.rm=TRUE), lty=2)
-    legend("topleft", legend="(d)", bty="n", cex=1.2)
-    mtext("Body size (mm)", 1, line=3, cex=0.9)
-    mtext(text="Frequency", 2,
-          line=3.75, cex=0.9)
+    ## hist(model.input$data$B, main="", xlab="", las=1, ylab="")
+    ## abline(v=mean(model.input$data$B, na.rm=TRUE), lty=2, col="red")
+    ## legend("topright", legend="(d)", bty="n", cex=1.2)
+    ## mtext("Body size (mm)", 1, line=3, cex=0.9)
+    ## mtext(text="Frequency", 2,
+    ##       line=3.75, cex=0.9)
 
 }
 

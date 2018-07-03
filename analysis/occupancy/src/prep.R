@@ -47,7 +47,9 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               ## is the d of the buffer of interest
                               natural.mat=NULL, ## site by year
                               ## natural area proximity
-                              natural.decay,## site by decay matrix natural
+                              natural.decay,## site by decay matrix
+                              ## natural
+                              HR.decay,## site by decay matrix natura
                               veg, ## floral availability matrix
                               col.name.div.type="Div", ## colname of
                               ## the metric of floral availability
@@ -56,13 +58,30 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               jags=FALSE, ## prep input for jags?
                               model.type="allInt",
                               kremen.digitize=FALSE,
-                              HR.decay=TRUE,
+                              use.HR.decay=TRUE,
                               data.subset="all",
-                              raw.flower=FALSE) {
+                              raw.flower=FALSE,
+                              drop.li.ht=FALSE, ## drop lasioglossum
+                              ## incompletum and halictus triartitus/ligatus? ,
+                              only.li.ht=FALSE  ## run on only
+                              ## incompletum and halictus triartitus/ligatus?
+                              ) {
 
-    ## this function preps specimen data for the multi season multi
+    ## ht function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
     ## constants needed to run in jags or nimble
+
+    ## remove halictus tripartitus/ligatus and lasioglossum incompletum
+    if(drop.li.ht){
+        spec <- spec[!spec$GenusSpecies %in%
+                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus", "Halictus ligatus"), ]
+    }
+
+    if(only.li.ht){
+        spec <- spec[spec$GenusSpecies %in%
+                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus", "Halictus ligatus"), ]
+    }
+
 
     ## create complete site x date x species matrix based on sample
     ## schedule
@@ -82,8 +101,8 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     ## area of hedgerow
     if(!is.null(buffer)){
         d.area <- HRarea[, buffer]
-    } else if(HR.decay){
-        hr.mat <- HRarea[, natural.decay]
+    } else if(use.HR.decay){
+        hr.mat <- HRarea[, HR.decay]
         d.area <- hr.mat[!is.na(hr.mat)]
         buffer <- "all"
     } else{
@@ -294,9 +313,9 @@ prepOccModelInput <- function(nzero, ## if augmenting data
         my.inits <- inits
     }
     save.path <- file.path(save.dir,
-                           sprintf('%s-%s-%s-%s.RData',
+                           sprintf('%s-%s-%s-%s-%s.RData',
                                    data.subset, threshold,
-                                   nzero, natural.decay))
+                                   nzero, natural.decay, HR.decay))
 
     model.input <- list(data=data,
                         monitors=monitors,
