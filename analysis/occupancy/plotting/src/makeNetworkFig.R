@@ -92,7 +92,7 @@ makeNetworkFig <- function(spec,
             poly.cols <- add.alpha("red",
                                    alpha=0.2)
             plot(natural.cover,
-                 col=poly.cols, border=poly.cols, add=TRUE)
+                 col=poly.cols, border="red", add=TRUE)
         }
 
     }

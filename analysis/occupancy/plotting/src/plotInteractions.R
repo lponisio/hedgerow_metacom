@@ -186,7 +186,7 @@ f.plotInteractionsFloralDiv <- function(){
 plotInteractionsFloralDiv <- function(plot.turnover,
                                       plot.remnant){
     if(plot.turnover){
-        layout(matrix(c(1,1, 2:9), nrow=5, byrow=TRUE),
+        layout(matrix(c(1,1, 2:5), nrow=3, byrow=TRUE),
                heights=c(0.75,1,1,1,1))
     } else if(plot.remnant){
         layout(matrix(c(1,1, 2:7), nrow=4, byrow=TRUE),
@@ -374,8 +374,10 @@ plotInteractionsFloralDiv <- function(plot.turnover,
                   col=cols[i],
                   lwd=2,
                   add=TRUE)
+            mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1.2)
         }
-
+    }
+    if(plot.remnant){
 
         ## 8 turnover nat*fra
         plot(NA, ylim=c(0, 1), xlim=range(model.input$data$natural),
@@ -408,11 +410,9 @@ plotInteractionsFloralDiv <- function(plot.turnover,
                   col=cols[i],
                   lwd=2,
                   add=TRUE)
+            mtext("Remnant \n proximity-weighted area", 1, line=5.5, cex=1.2)
         }
-    }else if(plot.remnant){
-        mtext("Remnant \n proximity-weighted area", 1, line=5.5, cex=1.2)
-    } else{
-        mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1.2)
+
     }
 }
 
@@ -508,7 +508,7 @@ plotInteractionsB <- function(){
     }
     mtext("Remnant habitat \n proximity-weighted area", 1, line=5.5, cex=1)
 
-    }
+}
 
 
 

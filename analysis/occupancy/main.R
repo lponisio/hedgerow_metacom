@@ -3,7 +3,7 @@
 rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","2500", "350", "filtering","all",2e2)
+## args <- c("allInt","2500", "350", "filtering","all",1e2)
 source('src/initialize.R')
 
 ## ************************************************************
@@ -11,7 +11,7 @@ source('src/initialize.R')
 ## ************************************************************
 
 model.input <- prepOccModelInput(nzero=0,
-                    threshold=5,
+                    threshold=2,
                     save.dir=save.dir,
                     spec,
                     sr.sched,
@@ -28,7 +28,7 @@ model.input <- prepOccModelInput(nzero=0,
                     col.name.div.type = "Div",## div.visits, Div
                     raw.flower=FALSE,
                     drop.li.ht=FALSE,
-                    only.li.ht=TRUE)
+                    only.li.ht=FALSE)
 
 
 ## variables to plot
@@ -41,7 +41,7 @@ pdf.f(plotVariables,
 burnin <- 1e1*scale
 niter <- (1e3)*scale
 nthin <- 2
-nchain <- 2
+nchain <- 1
 
 source(sprintf('src/models/complete_%s.R', include.int))
 
@@ -54,6 +54,8 @@ if(filtering){
     model.input$data$X[ is.na(model.input$data$X) ] <- -1000
     source(sprintf('src/models/complete_%s_filter.R', include.int))
 }
+
+testOccData()
 
 ## ## ****************************************************************
 ## ## not using mcmc suite
@@ -81,17 +83,18 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
 plotPosteriors()
 checkChains()
 save(ms.ms.nimble, file=file.path(save.dir,
-                    sprintf('runs/%s_nimble_bees_%s_%s_%s.Rdata',
+                    sprintf('runs/no_li_ht_%s_nimble_bees_%s_%s_%s.Rdata',
                                           data.subset,
                                           natural.decay, HR.decay,
                                           include.int)))
 
 ## ****************************************************************
 ## posterior probabilities and interaction plots
-## *****************************************************************
+## ****************************************************************
+
 if(!exists("ms.ms.nimble")){
     load(file=file.path(save.dir,
-                        sprintf('runs/%s_nimble_bees_%s_%s_%s.Rdata',
+                        sprintf('runs/no_li_ht_%s_nimble_bees_%s_%s_%s.Rdata',
                                 data.subset,
                                 natural.decay, HR.decay,
                                 include.int)))
@@ -118,6 +121,8 @@ pdf.f(f.plotInteractionsFloralDiv, file=file.path(save.dir,
                  sprintf("figures/interactions/HRinteractions-fra-%s-%s.pdf",
                                                  natural.decay, HR.decay)),
       width=3, height=9)
+
+
 
 
 pdf.f(plotInteractionsB, file=file.path(save.dir,
@@ -147,32 +152,5 @@ h2 <- apply(samples.4.table,
             2, function(x) sum(x < 0)/length(x))
 posterior.probs <- cbind(h1,h2)
 makeTable()
-
-
-## ## *****************************************************************
-## ## run in nimble using mcmc suite
-## ## *****************************************************************
-## input1 <- c(code=ms.ms.occ,
-##             model.input)
-
-## ms.ms.nimble <- compareMCMCs(input1,
-##                              MCMCs=c('jags','nimble'),
-##                              niter=niter,
-##                              burnin = burnin,
-##                              thin=nthin,
-##                              summary=FALSE,
-##                              check=FALSE)
-
-## save(ms.ms.nimble, file=file.path(save.dir,
-##                                   sprintf('runs/nimble_bees_%s.Rdata',
-##                                           natural.decay)))
-
-
-## ## *****************************************************************
-## ## run in jags as a check
-## ## *****************************************************************
-## source('src/complete_jags.R')
-
-## ms.ms.jags <- ms.ms(d=model.input)
 
 

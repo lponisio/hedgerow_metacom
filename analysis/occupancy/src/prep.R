@@ -71,15 +71,16 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     ## species occupancy model, and returns a lsit of the inits, data,
     ## constants needed to run in jags or nimble
 
-    ## remove halictus tripartitus/ligatus and lasioglossum incompletum
+    ## remove halictus tripartitus and lasioglossum incompletum
     if(drop.li.ht){
         spec <- spec[!spec$GenusSpecies %in%
-                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus", "Halictus ligatus"), ]
+                     c("Lasioglossum (Dialictus) incompletum",
+                       "Halictus tripartitus"), ]
     }
 
     if(only.li.ht){
         spec <- spec[spec$GenusSpecies %in%
-                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus", "Halictus ligatus"), ]
+                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus"), ]
     }
 
 
@@ -249,7 +250,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     X <- X[,,,any.na.trait,drop=FALSE]
     date.mat <- date.mat[,,,any.na.trait,drop=FALSE]
 
-    ## drop last year of flower data,  don't standardize, dont log!
+    ## drop last year of flower data
     flower.mat <- flower.mat[rownames(flower.mat) %in%
                              dimnames(X)$site,]
     flower.mat <- flower.mat[, as.numeric(colnames(flower.mat)) <

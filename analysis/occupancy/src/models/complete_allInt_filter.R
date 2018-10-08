@@ -1,72 +1,72 @@
 ms.ms.occ <- nimbleCode({
     ## multi-species priors
     ## detectablility
-    mu.p.0     ~ dnorm(0,0.01)
-    mu.p.day.1 ~ dnorm(0,0.01)
-    mu.p.day.2 ~ dnorm(0,0.01)
-    sigma.p.0     ~ dunif(0,10)
-    sigma.p.day.1 ~ dunif(0,10)
-    sigma.p.day.2 ~ dunif(0,10)
+    mu.p.0     ~ dnorm(0,0.001)
+    mu.p.day.1 ~ dnorm(0,0.001)
+    mu.p.day.2 ~ dnorm(0,0.001)
+    sigma.p.0     ~ dunif(0,100)
+    sigma.p.day.1 ~ dunif(0,100)
+    sigma.p.day.2 ~ dunif(0,100)
 
     ## phi/gam random intercepts
-    mu.phi.0  ~ dnorm(0,0.01)
-    mu.gam.0  ~ dnorm(0,0.01)
-    sigma.phi.0 ~ dunif(0,10)
-    sigma.gam.0 ~ dunif(0,10)
+    mu.phi.0  ~ dnorm(0,0.001)
+    mu.gam.0  ~ dnorm(0,0.001)
+    sigma.phi.0 ~ dunif(0,100)
+    sigma.gam.0 ~ dunif(0,100)
 
     ## hedgerow area proximity
-    mu.phi.hr.area  ~ dnorm(0,0.01)
-    mu.gam.hr.area  ~ dnorm(0,0.01)
-    sigma.phi.hr.area ~ dunif(0,10)
-    sigma.gam.hr.area ~ dunif(0,10)
+    mu.phi.hr.area  ~ dnorm(0,0.001)
+    mu.gam.hr.area  ~ dnorm(0,0.001)
+    sigma.phi.hr.area ~ dunif(0,100)
+    sigma.gam.hr.area ~ dunif(0,100)
 
     ## semi nat habitat area proximity
-    mu.phi.nat.area  ~ dnorm(0,0.01)
-    mu.gam.nat.area  ~ dnorm(0,0.01)
-    sigma.phi.nat.area ~ dunif(0,10)
-    sigma.gam.nat.area ~ dunif(0,10)
+    mu.phi.nat.area  ~ dnorm(0,0.001)
+    mu.gam.nat.area  ~ dnorm(0,0.001)
+    sigma.phi.nat.area ~ dunif(0,100)
+    sigma.gam.nat.area ~ dunif(0,100)
 
     ## floral resource diversity
-    mu.phi.fra  ~ dnorm(0,0.01)
-    mu.gam.fra  ~ dnorm(0,0.01)
-    sigma.phi.fra ~ dunif(0,10)
-    sigma.gam.fra ~ dunif(0,10)
+    mu.phi.fra  ~ dnorm(0,0.001)
+    mu.gam.fra  ~ dnorm(0,0.001)
+    sigma.phi.fra ~ dunif(0,100)
+    sigma.gam.fra ~ dunif(0,100)
 
     ## diet breadth
-    phi.k  ~ dnorm(0,0.01)
-    gam.k  ~ dnorm(0,0.01)
+    phi.k  ~ dnorm(0,0.001)
+    gam.k  ~ dnorm(0,0.001)
 
     ## body size
-    phi.B  ~ dnorm(0,0.01)
-    gam.B  ~ dnorm(0,0.01)
+    phi.B  ~ dnorm(0,0.001)
+    gam.B  ~ dnorm(0,0.001)
 
     ## interaction between hedgerow proximity and floral resources
     ## (habitat quality)
-    phi.hr.area.fra  ~ dnorm(0,0.01)
-    gam.hr.area.fra  ~ dnorm(0,0.01)
+    phi.hr.area.fra  ~ dnorm(0,0.001)
+    gam.hr.area.fra  ~ dnorm(0,0.001)
 
     ## interaction between semi nat habitat proximity and floral
     ## resources (habitat quality)
-    phi.nat.area.fra  ~ dnorm(0,0.01)
-    gam.nat.area.fra  ~ dnorm(0,0.01)
+    phi.nat.area.fra  ~ dnorm(0,0.001)
+    gam.nat.area.fra  ~ dnorm(0,0.001)
 
     ## interaction between hedgerow proximity and species diet breadth
-    phi.hr.area.k  ~ dnorm(0,0.01)
-    gam.hr.area.k  ~ dnorm(0,0.01)
+    phi.hr.area.k  ~ dnorm(0,0.001)
+    gam.hr.area.k  ~ dnorm(0,0.001)
 
     ## interaction between semi nat habitat proximity and species diet
     ## breadth
-    phi.nat.area.k  ~ dnorm(0,0.01)
-    gam.nat.area.k  ~ dnorm(0,0.01)
+    phi.nat.area.k  ~ dnorm(0,0.001)
+    gam.nat.area.k  ~ dnorm(0,0.001)
 
     ## interaction between hedgerow proximity and species body size
-    phi.hr.area.B  ~ dnorm(0,0.01)
-    gam.hr.area.B  ~ dnorm(0,0.01)
+    phi.hr.area.B  ~ dnorm(0,0.001)
+    gam.hr.area.B  ~ dnorm(0,0.001)
 
     ## interaction between semi nat habitat proximity and body size
     ## breadth
-    phi.nat.area.B  ~ dnorm(0,0.01)
-    gam.nat.area.B  ~ dnorm(0,0.01)
+    phi.nat.area.B  ~ dnorm(0,0.001)
+    gam.nat.area.B  ~ dnorm(0,0.001)
 
     ## species-specific  parameters
     for(sp in 1:nsp) {
