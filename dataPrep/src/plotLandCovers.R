@@ -19,11 +19,10 @@ plotLandscapeCovers <- function(){
 
 
 
-    bbox.all <- matrix(c(bbox.sites[1,1],
-                         bbox.sites[2,1],
-                         bbox.sites[1,2],
-                         bbox.sites[2,2]),
-                       ncol=2)
+    sys <- try(gmap(x=bbox.all,
+                    scale=2,
+                    type="satellite", zoom=10))
+
 
 
     sys <- gmap(x=bbox.all,
