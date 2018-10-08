@@ -12,7 +12,11 @@ library(fossil, quietly = TRUE)
 ## *******************************************************************
 load('~/Dropbox/hedgerow/data_sets/traditional/specimens-complete.RData')
 load('~/Dropbox/hedgerow/data_sets/matrices/net/bee.syr.RData')
-trait.dir <- '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'
+trait.dir <-
+    '~/Dropbox/hedgerow/data_sets/traditional/functional_traits'
+bee.trait <-
+    read.csv(file.path(trait.dir, 'bee.csv'),
+             row.names=1)
 load('~/Dropbox/hedgerow/data_sets/misc/veg.Rdata')
 
 ## *******************************************************************
@@ -77,6 +81,10 @@ traits$r.degree <-  rare.pols.degree[match(traits$GenusSpecies,
 traits$r.degree[is.na(traits$r.degree)] <-
     rare.plants.degree[match(traits$GenusSpecies[is.na(traits$r.degree)],
                              names(rare.plants.degree))]
+
+
+traits$BodyLength <- bee.trait$MeanITD[match(traits$GenusSpecies,
+                                             bee.trait$GenusSpecies)]
 
 rownames(traits) <- NULL
 
@@ -238,3 +246,9 @@ by.site$median.div.visits <- plant.median.div.visits[match(paste(by.site$Site,
                                              names(nets))]
 
 save(by.site, file="../data/veg.Rdata")
+
+
+load("~/Dropbox/hedgerow/data_sets/traditional/veg-complete.Rdata")
+
+raw.flower.data <- dd
+save(raw.flower.data, file="../data/rawFlower.Rdata")
