@@ -89,9 +89,8 @@ save(ms.ms.nimble, file=file.path(save.dir,
                                           include.int)))
 
 ## ****************************************************************
-## posterior probabilities and interaction plots
+##  interaction plots
 ## ****************************************************************
-
 if(!exists("ms.ms.nimble")){
     load(file=file.path(save.dir,
                         sprintf('runs/no_li_ht_%s_nimble_bees_%s_%s_%s.Rdata',
@@ -99,7 +98,6 @@ if(!exists("ms.ms.nimble")){
                                 natural.decay, HR.decay,
                                 include.int)))
 }
-
 if(is.list(ms.ms.nimble$samples)){
     samples.4.table <- do.call(rbind, ms.ms.nimble$samples)
 } else{
@@ -109,28 +107,24 @@ if(is.list(ms.ms.nimble$samples)){
 means <- apply(samples.4.table, 2, mean)
 se <- apply(samples.4.table, 2, sd)
 
-
-
 pdf.f(f.plotInteractionsHRRemnant.k, file=file.path(save.dir,
                 sprintf("figures/interactions/HRinteractions-k-%s-%s.pdf",
                                                  natural.decay, HR.decay)),
       width=6, height=11)
-
 
 pdf.f(f.plotInteractionsFloralDiv, file=file.path(save.dir,
                  sprintf("figures/interactions/HRinteractions-fra-%s-%s.pdf",
                                                  natural.decay, HR.decay)),
       width=3, height=9)
 
-
-
-
 pdf.f(plotInteractionsB, file=file.path(save.dir,
                  sprintf("figures/interactions/HRinteractions-B-%s-%s.pdf",
                                                  natural.decay, HR.decay)),
       width=3, height=9)
 
-
+## ****************************************************************
+##  posterior probability table
+## ****************************************************************
 ## posterior probs
 if(!exists("ms.ms.model")){
     ms.ms.model <- nimbleModel(code=ms.ms.occ,
