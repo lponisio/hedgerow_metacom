@@ -1,49 +1,47 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
 rm(list=ls())
 setwd('analysis/spatial')
-library(sp)
-library(maptools)
+source('src/initialize.R')
+args <- commandArgs(trailingOnly=TRUE)
 
-source('src/CalcSpStats.R')
-source('src/getNatural.R')
-source('src/makeDistanceTable.R')
-load('../../data/spatial/hr.Rdata')
-load('../../data/spatial/sitesAll.Rdata')
-load('../../data/spatial/sitesAllLines.Rdata')
-## area of different landcovers from kremen lab
-load('../../data/spatial/distTables.Rdata')
-## area of landcover from yolo county
-load('../../data/spatial/landcoverNat.Rdata')
-## specimen data
-load('../../data/networks/allSpecimens.Rdata')
+if(length(args) == 0){
+    ncores <- 1
+} else{
+    ncores <- args[1]
+}
+
+decays <- c(10, 350, 1000, 2500, 10000, 100000)
 
 ## *************************************************************
 ## hedgerow area within buffers
 ## *************************************************************
-buff <- seq(500, 2000, by=500)
-rast.hr <- raster(hr)
-nsite <- nrow(all.sites.pt@data)
+## this calculation was replaced by the gaussian decay
+## buff <- seq(500, 2000, by=500)
+## rast.hr <- raster(hr)
+## nsite <- nrow(all.sites.pt@data)
 
-spstats <- t(sapply(1:nsite, calcSpStats, d = buff,
-                  plt = all.sites.pt, plt.name = 'SITE',
-                  rast = hr))
+## spstats <- t(sapply(1:nsite, calcSpStats, d = buff,
+##                   plt = all.sites.pt, plt.name = 'SITE',
+##                   rast = hr))
 
-colnames(spstats) <- paste("d", buff, sep="")
-rownames(spstats) <- all.sites.pt@data$df0
+## colnames(spstats) <- paste("d", buff, sep="")
+## rownames(spstats) <- all.sites.pt@data$df0
 
-save(spstats, file="../../data/spatial/HRarea.Rdata")
+## save(spstats, file="../../data/spatial/HRarea.Rdata")
 
 ## *************************************************************
 ## natural using kremen lab digitized data, decay method
 ## *************************************************************
-decays <- c(10, 350, 1000, 2500, 10000, 100000)
+## this method for calculating natural cover was based on hand
+## digitized data> Not all sites used in this analysis however, were
+## dignitized, and buffers only extended 1500 m around each site
 
-natural.land <- getNatural(spec, dist.tables, decays)
-save(natural.land,
-     file="../../data/spatial/natcover.Rdata")
+## natural.land <- getNatural(spec, dist.tables, decays)
+## save(natural.land,
+##      file="../../data/spatial/natcover.Rdata")
 
-samp.site.nat.krem <- natural.land[natural.land$Site %in%
-                                   spec$Site,]
+## samp.site.nat.krem <- natural.land[natural.land$Site %in%
+##                                    spec$Site,]
 
 ## *************************************************************
 ## hedgerow area using decay method
@@ -54,7 +52,7 @@ all.sites.lines@data$type <- "hedgerow"
 hr.area <- makeDistanceTable(dd.lc=all.sites.lines,
                               dd.h=all.sites.pt,
                                         radii=radii,
-                              num.cores=15,
+                              num.cores=ncores,
                              type.col="type",
                              area.function=gLength,
                              drop.self=TRUE)
@@ -75,7 +73,7 @@ save(hr.area.sum,
 nat.area <- makeDistanceTable(dd.lc=landcover.nat,
                               dd.h=all.sites.pt,
                                         radii=radii,
-                              num.cores=10,
+                              num.cores=ncores,
                               type.col="type")
 
 nat.area <- lapply(nat.area, function(x){
@@ -102,22 +100,23 @@ hist(nat.area.sum)
 save(nat.area.sum,
      file="../../data/spatial/natcover_decay_yolo.Rdata")
 
-samp.site.nat <- nat.area.sum[rownames(nat.area.sum) %in% spec$Site,]
 
+## *************************************************************
 ## compare kremen and yolo data layers
+## *************************************************************
+## samp.site.nat <- nat.area.sum[rownames(nat.area.sum) %in% spec$Site,]
+## samp.site.nat <- as.data.frame(samp.site.nat)
+## samp.site.nat$Site <- rownames(samp.site.nat)
 
-samp.site.nat <- as.data.frame(samp.site.nat)
-samp.site.nat$Site <- rownames(samp.site.nat)
+## all.decays <- merge(samp.site.nat.krem, samp.site.nat, by="Site")
 
-all.decays <- merge(samp.site.nat.krem, samp.site.nat, by="Site")
+## plot(all.decays$natural350[all.decays$Year == 2006],
+##      all.decays$'350'[all.decays$Year == 2006],
+##      xlab= "Kremen",
+##      ylab="Yolo", pch=16)
 
-plot(all.decays$natural350[all.decays$Year == 2006],
-     all.decays$'350'[all.decays$Year == 2006],
-     xlab= "Kremen",
-     ylab="Yolo", pch=16)
-
-text(all.decays$natural350[all.decays$Year == 2006],
-     all.decays$'350'[all.decays$Year == 2006],
-     labels=all.decays$Site[all.decays$Year == 2006],
-     cex=0.7, pos=3)
-abline(a=0, b=1)
+## text(all.decays$natural350[all.decays$Year == 2006],
+##      all.decays$'350'[all.decays$Year == 2006],
+##      labels=all.decays$Site[all.decays$Year == 2006],
+##      cex=0.7, pos=3)
+## abline(a=0, b=1)

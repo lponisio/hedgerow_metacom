@@ -1,6 +1,3 @@
-library(rgdal)
-library(raster)
-library(rgeos)
 
 calcSpStats <- function(i,
                         d, ## buffer RADIUS
