@@ -1,39 +1,3 @@
-source('~/Dropbox/hedgerow_metacom/analysis/occupancy/plotting/src/plotInteractions.R')
-library(viridis)
-
-wanted.order <- c("hr.area",
-                  "nat.area",
-                  "fra",
-                  "k",
-                  "B",
-                  "hr.area.fra",
-                  "nat.area.fra",
-                  "hr.area.k",
-                  "nat.area.k",
-                  "hr.area.B",
-                  "nat.area.B")
-
-
-phis <- paste("phi", wanted.order,
-              sep=".")
-phis <- paste(c(rep("mu.", 3), rep("", 8)), phis, sep="")
-gams <- paste("gam", wanted.order,
-              sep=".")
-gams <- paste(c(rep("mu.", 3), rep("", 8)), gams, sep="")
-
-to.plot <- c(phis, gams)
-
-xlabs <- c("Hedgerow \n area/proximity",
-           "Non-crop habitat \n area/proximity",
-           "Floral diversity",
-           "Floral diet breadth",
-           "Body size",
-           "Hedgerow \n area/proximity*\n floral diversity",
-           "Non-crop \n area/proximity*\n floral diversity",
-           "Hedgerow \n area/proximity*\n floral diet breadth",
-           "Non-crop \n area/proximity*\n floral diet breadth",
-           "Hedgerow \n area/proximity*\n body size",
-           "Non-crop \n area/proximity*\n body size")
 
 plotPosteriors <- function(){
     if(is.list(ms.ms.nimble$samples)){
@@ -114,3 +78,45 @@ checkChains <- function(){
 }
 
 
+
+plotComparisons <- function(){
+    layout(matrix(1:3, ncol=1))
+    par(oma=c(2,1,0.5,1), mar=c(10,2,0,0))
+    cols <- rainbow(dim(ms.ms.occ.all$ms.ms$summary)[1])
+    for(group in groups){
+        if(length(group) > 1){
+            for(i in 1:dim(ms.ms.occ.all$ms.ms$summary)[1]){
+                this.samp <- ms.ms.occ.all$ms.ms$summary[i,,group]
+                xs <- jitter(1:dim(this.samp)[2])
+                if(i == 1){
+                    plot(x=xs, y=this.samp["mean",], pch=16,
+                         col=cols[i],
+                         ylim=range(c(ms.ms.occ.all$ms.ms$summary[,'CI95_upp',
+                                                                  group],
+                                      ms.ms.occ.all$ms.ms$summary[,'CI95_low',
+                                                                  group])),
+                         xaxt="n",
+                         ylab="Estimate",
+                         xlab="")
+                    abline(h=0,lty=2, col="grey")
+
+                    axis(1, at=1:dim(this.samp)[2],
+                         labels=FALSE)
+                    text(x=1:dim(this.samp)[2],
+                         y=par()$usr[3]-0.1*(par()$usr[4]-par()$usr[3]),
+                         labels=group, srt=45, adj=1, xpd=TRUE)
+                } else{
+                    points(x=xs,
+                           y=this.samp["mean",], pch=16, col=cols[i])
+                }
+                arrows(y1=this.samp['CI95_upp',],
+                       y0=this.samp['CI95_low',],
+                       x0=xs,
+                       code=0, angle=90, length=0.02, lwd=1, col=cols[i])
+            }
+        }
+
+        legend("topright", legend=dimnames(ms.ms.occ.all$ms.ms$summary)[[1]],
+               pch=16, col=cols)
+    }
+}

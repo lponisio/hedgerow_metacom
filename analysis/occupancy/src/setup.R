@@ -120,3 +120,40 @@ getInits <- function(nsp){
          )
 
 }
+
+
+
+## random objects needed for plotting
+wanted.order <- c("hr.area",
+                  "nat.area",
+                  "fra",
+                  "k",
+                  "B",
+                  "hr.area.fra",
+                  "nat.area.fra",
+                  "hr.area.k",
+                  "nat.area.k",
+                  "hr.area.B",
+                  "nat.area.B")
+
+
+phis <- paste("phi", wanted.order,
+              sep=".")
+phis <- paste(c(rep("mu.", 3), rep("", 8)), phis, sep="")
+gams <- paste("gam", wanted.order,
+              sep=".")
+gams <- paste(c(rep("mu.", 3), rep("", 8)), gams, sep="")
+
+to.plot <- c(phis, gams)
+
+xlabs <- c("Hedgerow \n area/proximity",
+           "Non-crop habitat \n area/proximity",
+           "Floral diversity",
+           "Floral diet breadth",
+           "Body size",
+           "Hedgerow \n area/proximity*\n floral diversity",
+           "Non-crop \n area/proximity*\n floral diversity",
+           "Hedgerow \n area/proximity*\n floral diet breadth",
+           "Non-crop \n area/proximity*\n floral diet breadth",
+           "Hedgerow \n area/proximity*\n body size",
+           "Non-crop \n area/proximity*\n body size")

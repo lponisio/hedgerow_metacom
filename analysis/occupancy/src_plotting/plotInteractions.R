@@ -1,4 +1,3 @@
-
 f.plotInteractionsHRRemnant.k <- function(){
     plotInteractionsHRRemnant(means=means,
                               all.traits=all.traits,
