@@ -1,4 +1,17 @@
 
+
+checkDirExists <- function(save.dir){
+    if(!dir.exists(save.dir)) {
+        cat(paste("Needed dir",
+                  save.dir,
+                  "does not exist. OK to create? (Type 'yes' if ok.)"))
+        okToMakeDir <- readlines()
+        if(!identical(okToMakeDir, "yes"))
+            stop("Stopping because permission to make save.dir denied.")
+        dir.create(save.dir, showWarnings = FALSE)
+    }
+}
+
 ## add transparency to named colors
 add.alpha <- function(col, alpha=0.2){
     apply(sapply(col, col2rgb)/255, 2,

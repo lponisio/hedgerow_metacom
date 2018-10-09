@@ -1,6 +1,6 @@
-## rm(list=ls())
 ## setwd('~/Dropbox/hedgerow_metacom')
 setwd('analysis/occupancy')
+rm(list=ls())
 library(igraph)
 library(bipartite)
 library(RColorBrewer)
@@ -8,6 +8,7 @@ source('plotting/src/makeNetworkFig.R')
 source('src/initialize.R')
 source('plotting/src/initialize.R')
 
+## only works when keeping track of site level phi and gamma
 ## for(i in 1:length(phi.gam)){
 ##     this.site.ave <- phi.gam[[i]]
 ##     file.name <- c("phi", "gam")[i]

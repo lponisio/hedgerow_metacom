@@ -92,18 +92,48 @@ plotVariables <- function(){
     layout(matrix(1:2, ncol=1))
     par(oma=c(2, 2, 1, 1),
         mar=c(4, 4, 2, 1))
-
-    ## plot(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% controls]),
-    ##      main="", xlab="", ylab="",
-    ##      xlim=range(model.input$data$HRarea) + c(0,1), las=1, col="gray45")
-    ## points(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% hedgerows]),
-    ##        type="l")
     hist(model.input$data$HRarea, main="", xlab="", ylab="", las=1)
     abline(v=0, lty=2, col="red")
     legend("topright", legend="(a)", bty="n", cex=1.2)
     mtext("Hedgerow area/proximity", 1, line=3, cex=0.9)
     mtext(text="Frequency", 2,
           line=3.75, cex=0.9)
+    hist(model.input$data$natural, main="", xlab="", ylab="", las=1)
+    abline(v=0, lty=2, col="red")
+    legend("topright", legend="(b)", bty="n", cex=1.2)
+    mtext("Remnant habitat area/proximity", 1, line=3, cex=0.9)
+    mtext(text="Frequency", 2,
+          line=3.75, cex=0.9)
+
+}
+
+plotVariablesWrapper <- function(){
+    checkDirExists(file.path(save.dir, 'figures/variables'))
+    pdf.f(plotVariables,
+          file=file.path(save.dir, 'figures/variables',
+                         sprintf('%s%s.pdf', natural.decay, HR.decay)),
+          height= 6, width=3)
+
+}
+
+
+
+## plotVariables <- function(){
+##     layout(matrix(1:2, ncol=1))
+##     par(oma=c(2, 2, 1, 1),
+##         mar=c(4, 4, 2, 1))
+
+    ## plot(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% controls]),
+    ##      main="", xlab="", ylab="",
+    ##      xlim=range(model.input$data$HRarea) + c(0,1), las=1, col="gray45")
+    ## points(density(model.input$data$HRarea[names(model.input$data$HRarea) %in% hedgerows]),
+    ##        type="l")
+    ## hist(model.input$data$HRarea, main="", xlab="", ylab="", las=1)
+    ## abline(v=0, lty=2, col="red")
+    ## legend("topright", legend="(a)", bty="n", cex=1.2)
+    ## mtext("Hedgerow area/proximity", 1, line=3, cex=0.9)
+    ## mtext(text="Frequency", 2,
+    ##       line=3.75, cex=0.9)
     ## legend("topright", legend=c("Hedgerows", "Field margins"),
     ##        col=c("black", "gray45"), lty=1, bty="n", cex=0.8)
 
@@ -112,12 +142,12 @@ plotVariables <- function(){
     ##      xlim=range(model.input$data$natural) + c(0,1), col="gray45")
     ## points(density(model.input$data$natural[names(model.input$data$natural) %in% hedgerows]),
     ##        type="l", lty=1)
-    hist(model.input$data$natural, main="", xlab="", ylab="", las=1)
-    abline(v=0, lty=2, col="red")
-    legend("topright", legend="(b)", bty="n", cex=1.2)
-    mtext("Remnant habitat area/proximity", 1, line=3, cex=0.9)
-    mtext(text="Frequency", 2,
-          line=3.75, cex=0.9)
+    ## hist(model.input$data$natural, main="", xlab="", ylab="", las=1)
+    ## abline(v=0, lty=2, col="red")
+    ## legend("topright", legend="(b)", bty="n", cex=1.2)
+    ## mtext("Remnant habitat area/proximity", 1, line=3, cex=0.9)
+    ## mtext(text="Frequency", 2,
+    ##       line=3.75, cex=0.9)
 
     ## plot(density(by.site$Div[by.site$Site %in% hedgerows]),
     ##      main="", xlab="", ylab="", las=1)
@@ -141,5 +171,5 @@ plotVariables <- function(){
     ## mtext(text="Frequency", 2,
     ##       line=3.75, cex=0.9)
 
-}
+## }
 

@@ -1,35 +1,9 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
 rm(list=ls())
 setwd('analysis/occupancy')
-args <- commandArgs(trailingOnly=TRUE)
-args <- c("allInt","2500", "350", "filtering","all",1e2)
-source('src/initialize.R')
 
-## ************************************************************
-## prep data
-## ************************************************************
-
-model.input <- prepOccModelInput(nzero=0,
-                    threshold=2,
-                    save.dir=save.dir,
-                    spec,
-                    sr.sched,
-                    all.traits,
-                    col.name.trait1 = "r.degree",
-                    col.name.trait2 = "BodyLength",
-                    HRarea= hr.area.sum, #sum.dist.area, ##spstats
-                    natural.mat=nat.area.sum, ## natural
-                    natural.decay=natural.decay,
-                    HR.decay=HR.decay,
-                    veg=by.site, #raw.flower.data,
-                    load.inits=FALSE,
-                    model.type=include.int,
-                    col.name.div.type = "Div",## div.visits, Div
-                    raw.flower=FALSE,
-                    drop.li.ht=FALSE,
-                    only.li.ht=FALSE)
-
-
+## load data of interest
+## random data checks
 
 ## ************************************************************
 ## colinearily?

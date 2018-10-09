@@ -1,50 +1,12 @@
-## ************************************************************
-## prep and format data
-## ************************************************************
-samp2site.ypr <- function(site, yr, abund) {
-    x <- tapply(abund, list(site=site,yr=yr), sum, na.rm=TRUE)
-    return(x)
-}
-
-
-## return the closest syd in a data-set to argument syd
-get.close.syd <- function(syd, d, threshold=10) {
-    d.sub <- d[d$Site==get.site(syd) & d$Year ==as.character(get.year(syd)),]
-    days.diff <- abs(as.numeric(d.sub$Day)-get.day(syd))
-
-    if(length(days.diff)==0) {
-        cat(sprintf('no match for %s\n', syd))
-        return(NA)
-    }
-    if(min(days.diff)>threshold) {
-        cat(sprintf('date discrepancy > %s days: ', threshold))
-        cat(sprintf('%s\n', syd))
-    }
-    d.sub$syd[which.min(days.diff)]
-}
-
-get.site <- function(syd)
-    as.vector(sapply(syd, function(x)
-        strsplit(x, ';')[[1]][1]))
-get.year <- function(syd)
-    as.vector(sapply(syd, function(x)
-        as.numeric(strsplit(x, ';')[[1]][2])))
-get.day <- function(syd)
-    as.vector(sapply(syd, function(x)
-        as.numeric(strsplit(x, ';')[[1]][3])))
-
 
 prepOccModelInput <- function(nzero, ## if augmenting data
                               threshold, ## min times a pollinator is seen
-                              save.dir, ## directory to save data
                               spec, ## specimen data
                               sr.sched, ## sampling schedule
                               traits, ## dataframe with traits
                               col.name.trait1, ## colname of one trait
                               col.name.trait2, ## colname of second trait
                               HRarea, ## vector of hedgerow area prox
-                              buffer=NULL, ## if using buffers, what
-                              ## is the d of the buffer of interest
                               natural.mat=NULL, ## site by year
                               ## natural area proximity
                               natural.decay,## site by decay matrix
@@ -53,36 +15,13 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               veg, ## floral availability matrix
                               col.name.div.type="Div", ## colname of
                               ## the metric of floral availability
-                              load.inits.name='nimble', ## file name
-                              ## of the model to load inits from
-                              jags=FALSE, ## prep input for jags?
-                              model.type="allInt",
-                              kremen.digitize=FALSE,
                               use.HR.decay=TRUE,
                               data.subset="all",
-                              raw.flower=FALSE,
-                              drop.li.ht=FALSE, ## drop lasioglossum
-                              ## incompletum and halictus triartitus/ligatus? ,
-                              only.li.ht=FALSE  ## run on only
-                              ## incompletum and halictus triartitus/ligatus?
-                              ) {
+                              save.dir) {
 
-    ## ht function preps specimen data for the multi season multi
+    ## this function preps specimen data for the multi season multi
     ## species occupancy model, and returns a lsit of the inits, data,
     ## constants needed to run in jags or nimble
-
-    ## remove halictus tripartitus and lasioglossum incompletum
-    if(drop.li.ht){
-        spec <- spec[!spec$GenusSpecies %in%
-                     c("Lasioglossum (Dialictus) incompletum",
-                       "Halictus tripartitus"), ]
-    }
-
-    if(only.li.ht){
-        spec <- spec[spec$GenusSpecies %in%
-                     c("Lasioglossum (Dialictus) incompletum", "Halictus tripartitus"), ]
-    }
-
 
     ## create complete site x date x species matrix based on sample
     ## schedule
@@ -100,9 +39,7 @@ prepOccModelInput <- function(nzero, ## if augmenting data
     natural.sites <- names(natural.mat)
 
     ## area of hedgerow
-    if(!is.null(buffer)){
-        d.area <- HRarea[, buffer]
-    } else if(use.HR.decay){
+    if(use.HR.decay){
         hr.mat <- HRarea[, HR.decay]
         d.area <- hr.mat[!is.na(hr.mat)]
         buffer <- "all"
@@ -115,26 +52,10 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                          natural.sites] + 1)
     d.area <- standardize(d.area)
 
-    if(!raw.flower){
-        flower.mat <- samp2site.ypr(site=veg$Site,
-                                    yr=veg$Year,
-                                    abund=veg[, col.name.div.type])
-    } else{
-        sr.sched <- sr.sched[sr.sched$NetPan == "net",]
-        sr.sched$Day <- strftime(sr.sched$Date, format="%j")
-        sr.sched$Year <- format(as.Date(sr.sched$Date),"%Y")
-        veg$Day <- strftime(veg$Date, format="%j")
-        veg$Year <- format(as.Date(veg$Date),"%Y")
-        veg$syd <- paste(veg$Site, veg$Year, veg$Day,
-                         sep=";")
-        syd <- paste(sr.sched$Site, sr.sched$Year, sr.sched$Day,
-                     sep=";")
-        close.veg.data <- sapply(syd, get.close.syd, d=veg,
-                                 threshold=30)
-        ## WIP
+    flower.mat <- samp2site.ypr(site=veg$Site,
+                                yr=veg$Year,
+                                abund=veg[, col.name.div.type])
 
-
-    }
     flower.mat <- t(apply(flower.mat, 1, function(x){
         nas <- which(is.na(x))
         if(length(nas) != 0){
@@ -302,155 +223,60 @@ prepOccModelInput <- function(nzero, ## if augmenting data
 
     monitors <- getParams()
 
-    if(model.type == "no_noncrop"){
-        data$natural <- NULL
-        inits <- inits[!grepl("nat", names(inits))]
-        monitors <- monitors[!grepl("nat", monitors)]
-    }
-
-    if(jags){
-        my.inits <- function() inits
-    } else {
-        my.inits <- inits
-    }
-    save.path <- file.path(save.dir,
-                           sprintf('%s-%s-%s-%s-%s.RData',
-                                   data.subset, threshold,
-                                   nzero, natural.decay, HR.decay))
-
+    my.inits <- inits
     model.input <- list(data=data,
                         monitors=monitors,
                         constants=constants,
                         inits=my.inits)
-    if(!dir.exists(save.dir)) {
-        cat(paste("Needed dir", save.dir, "does not exist. OK to create? (Type 'yes' if ok.)"))
-        okToMakeDir <- readlines()
-        if(!identical(okToMakeDir, "yes"))
-            stop("Stopping because permission to make save.dir denied.")
-        dir.create(save.dir, showWarnings = FALSE)
-    }
-    save(model.input, file=save.path)
     return(model.input)
 }
 
-## ************************************************************
-## specify the parameters to be monitored
-## ************************************************************
-
-getParams <- function(){
-    c('mu.p.0',
-      'sigma.p.0',
-      'mu.p.day.1',
-      'sigma.p.day.1',
-      'mu.p.day.2',
-      'sigma.p.day.2',
-
-      'mu.phi.0',
-      'sigma.phi.0',
-      'mu.phi.hr.area',
-      'sigma.phi.hr.area',
-      'mu.phi.nat.area',
-      'sigma.phi.nat.area',
-      'mu.phi.fra',
-      'sigma.phi.fra',
-      'phi.k',
-
-      'phi.B',
-      'phi.nat.area.fra',
-      'phi.hr.area.fra',
-      'phi.nat.area.k',
-      'phi.hr.area.k',
-      'phi.nat.area.B',
-      'phi.hr.area.B',
-
-      'mu.gam.0',
-      'sigma.gam.0',
-      'mu.gam.hr.area',
-      'sigma.gam.hr.area' ,
-      'mu.gam.nat.area',
-      'sigma.gam.nat.area',
-      'mu.gam.fra',
-      'sigma.gam.fra',
-
-      'gam.k',
-      'gam.B',
-      'gam.hr.area.fra',
-      'gam.nat.area.fra',
-      'gam.hr.area.k',
-      'gam.nat.area.k',
-      'gam.hr.area.B',
-      'gam.nat.area.B'
-
-
-      ## ## site level effects
-      ## 'phi.nat.area',
-      ## 'phi.hr.area',
-      ## 'phi.hr.area.fra',
-      ## 'phi.nat.area.fra',
-      ## 'phi.hr.area.k'
-
-      )
+samp2site.ypr <- function(site, yr, abund) {
+    x <- tapply(abund, list(site=site,yr=yr), sum, na.rm=TRUE)
+    return(x)
 }
 
-getInits <- function(nsp){
-    list(mu.p.0 = rnorm(1),
-         sigma.p.0 = runif(1),
-         mu.p.day.1 = rnorm(1),
-         sigma.p.day.1 = runif(1),
-         mu.p.day.2 = rnorm(1),
-         sigma.p.day.2= runif(1),
 
-         mu.phi.0 = rnorm(1),
-         sigma.phi.0 = runif(1),
-
-         mu.phi.hr.area = rnorm(1),
-         sigma.phi.hr.area = runif(1),
-         mu.phi.nat.area = rnorm(1),
-         sigma.phi.nat.area = runif(1),
-         mu.phi.fra = rnorm(1),
-         sigma.phi.fra = runif(1),
-
-         mu.gam.0 = rnorm(1),
-         sigma.gam.0 = runif(1),
-
-         mu.gam.hr.area = rnorm(1),
-         sigma.gam.hr.area = runif(1),
-         mu.gam.nat.area = rnorm(1),
-         sigma.gam.nat.area = runif(1),
-         mu.gam.fra = rnorm(1),
-         sigma.gam.fra = runif(1),
-
-         p.0 = rnorm(nsp),
-         p.day.1 = rnorm(nsp),
-         p.day.2 = rnorm(nsp),
-
-         phi.0 = rnorm(nsp),
-         phi.hr.area = rnorm(nsp),
-         phi.nat.area = rnorm(nsp),
-         phi.fra = rnorm(nsp),
-
-         phi.k = rnorm(1),
-         phi.B = rnorm(1),
-         phi.hr.area.fra = rnorm(1),
-         phi.nat.area.fra = rnorm(1),
-         phi.nat.area.k = rnorm(1),
-         phi.hr.area.k = rnorm(1),
-         phi.nat.area.B = rnorm(1),
-         phi.hr.area.B = rnorm(1),
-
-         gam.0 = rnorm(nsp),
-         gam.hr.area = rnorm(nsp),
-         gam.nat.area = rnorm(nsp),
-         gam.fra = rnorm(nsp),
-
-         gam.k = rnorm(1),
-         gam.B = rnorm(1),
-         gam.hr.area.fra = rnorm(1),
-         gam.nat.area.fra = rnorm(1),
-         gam.hr.area.k = rnorm(1),
-         gam.nat.area.k = rnorm(1),
-         gam.hr.area.B = rnorm(1),
-         gam.nat.area.B = rnorm(1)
-         )
-
+prepModel <- function(){
+    if(filtering){
+        source('src/dynamicOcc.R')
+        model.input$data$Z <- NULL
+        model.input$inits$Z <- NULL
+        ## We do not want any X element equal to NA or they will not be
+        ## considered data and will be sampled.
+        model.input$data$X[ is.na(model.input$data$X) ] <- -1000
+    }
+    testOccData()
+    return(model.input)
 }
+
+
+
+## ## return the closest syd in a data-set to argument syd
+## get.close.syd <- function(syd, d, threshold=10) {
+##     d.sub <- d[d$Site==get.site(syd) & d$Year ==as.character(get.year(syd)),]
+##     days.diff <- abs(as.numeric(d.sub$Day)-get.day(syd))
+
+##     if(length(days.diff)==0) {
+##         cat(sprintf('no match for %s\n', syd))
+##         return(NA)
+##     }
+##     if(min(days.diff)>threshold) {
+##         cat(sprintf('date discrepancy > %s days: ', threshold))
+##         cat(sprintf('%s\n', syd))
+##     }
+##     d.sub$syd[which.min(days.diff)]
+## }
+
+## get.site <- function(syd)
+##     as.vector(sapply(syd, function(x)
+##         strsplit(x, ';')[[1]][1]))
+## get.year <- function(syd)
+##     as.vector(sapply(syd, function(x)
+##         as.numeric(strsplit(x, ';')[[1]][2])))
+## get.day <- function(syd)
+##     as.vector(sapply(syd, function(x)
+##         as.numeric(strsplit(x, ';')[[1]][3])))
+
+
+

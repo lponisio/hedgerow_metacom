@@ -48,7 +48,6 @@ plotPosteriors <- function(){
         CI95_low <-  means - 1.96*sd(x)
         return(c(mean=means, CI95_upp=CI95_upp, CI95_low=CI95_low ))
     })
-    ## mus <- nimble.summary[,grep("^mu", colnames(nimble.summary))]
     mus <- nimble.summary[, to.plot]
 
     if(include.int == "no_noncrop"){
@@ -57,32 +56,29 @@ plotPosteriors <- function(){
     }
 
     f <- function() {plotPosterior(mus, to.plot, xlabs, phis, gams)}
-
+    checkDirExists(file.path(save.dir, "figures/posterior"))
     pdf.f(f,
           file=file.path(save.dir,
                          sprintf('figures/posterior/%s_mus_bees_%s_%s_%s.pdf',
-                                data.subset,
-                                natural.decay, HR.decay,
-                                include.int)),
+                                 data.subset,
+                                 natural.decay, HR.decay,
+                                 include.int)),
           height=7, width=12)
 
-    save(mus, file=file.path(save.dir,
-                             sprintf('runs/%s_mus_bees_%s_%s_%s.Rdata',
-                                data.subset,
-                                natural.decay, HR.decay,
-                                include.int)))
+    ## save(mus, file=file.path(save.dir,
+    ##                          sprintf('runs/%s_mus_bees_%s_%s_%s.Rdata',
+    ##                                  data.subset,
+    ##                                  natural.decay, HR.decay,
+    ##                                  include.int)))
 
 
     all.samples <- all.samples[, colnames(all.samples) %in%
                                  ms.ms.model$getNodeNames(includeData=FALSE,
                                                           stochOnly=TRUE)]
+    return(all.samples)
 }
 
 makeTable <- function(){
-    ## phis <- paste("phi", wanted.order,
-    ##               sep=".")
-    ## gams <- paste("gam", wanted.order,
-    ##               sep=".")
     probs.4.table.phis <- round(posterior.probs[rownames(posterior.probs) %in%
                                                 phis,],3)[phis,]
     probs.4.table.gams <- round(posterior.probs[rownames(posterior.probs) %in%
@@ -99,17 +95,17 @@ makeTable <- function(){
                          probs.4.table.gams)
 
     rownames(mat.4.table) <- names.4.table
+    checkDirExists(file.path(save.dir, "table"))
     write.table(mat.4.table,
                 sep=" & ",
-
                 file= file.path(save.dir,
-                        sprintf('table/%s_post_probs_nimble_bees_%s_%s_%s.txt',
-                                          data.subset,
-                                          natural.decay, HR.decay,
-                                          include.int)))
+                                sprintf('table/%s_post_probs_nimble_bees_%s_%s.txt',
+                                        data.subset,
+                                        natural.decay, HR.decay)))
 }
 
 checkChains <- function(){
+    checkDirExists(file.path(save.dir, "figures/chains"))
     runMCMCcheckChains(ms.ms.nimble$samples,
                        f.path= file.path(save.dir,
                                          'figures/chains'),
