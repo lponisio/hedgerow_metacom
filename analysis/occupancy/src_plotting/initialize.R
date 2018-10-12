@@ -3,8 +3,15 @@ library(dismo)
 library(rgdal)
 library(RColorBrewer)
 library(maptools)
+## library(maps)
 library(igraph)
+library(bipartite)
+library(rgeos)
 source('src/misc.R')
+
+save.dir <- "../../../hedgerow_metacom_saved/occupancy"
+checkDirExists(save.dir)
+checkDirExists(file.path(save.dir, "figures/networks"))
 
 load('../../data/networks/allSpecimens.Rdata')
 load('../../data/networks/years_networks.Rdata')
@@ -36,24 +43,15 @@ bbox.all <- matrix(c(bbox.sites[1,1],
                      bbox.sites[2,2]),
                    ncol=2)
 
-
-sys <- gmap(x=bbox.all,
-            scale=2,
-            type="satellite", zoom=11)
-
-all.sites.pt <- spTransform(all.sites.pt,
-                            sys@crs)
-lat.long <- coordinates(all.sites.pt)
-rownames(lat.long) <- all.sites.pt@data$df0
-nets.year.sp <- lapply(nets.year, t)
-landcover.nat <- spTransform(landcover.nat,
-                             sys@crs)
+makeSys <- function(){
+    sys <- gmap(x=bbox.all,
+                    scale=2,
+                    type="satellite", zoom=11)
+}
 
 ## use the phi and gamma data from the occupancy model to make the
 ## figures
-load('../../../hedgerow_metacom_saved/occupancy/runs/all_nimble_bees_2500_350_allInt.Rdata')
-load('../../../hedgerow_metacom_saved/occupancy/all-5-0-2500-350.RData')
- load('../../../hedgerow_metacom_saved/occupancy/runs/all_mus_bees_2500_350_allInt.Rdata')
+## load('../../../hedgerow_metacom_saved/occupancy/runs/all_nimble_bees_2500_350.Rdata')
 
 ## getSiteAve <- function(pattern, nimble.summary, model.input){
 ##     nimble.summary <- nimble.summary[, grep(pattern,

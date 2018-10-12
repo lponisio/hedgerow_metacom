@@ -1,3 +1,5 @@
+## @knitr external_occupancy_model
+
 ms.ms.occ <- nimbleCode({
     ## multi-species priors
     ## detectablility
@@ -177,3 +179,4 @@ ms.ms.occ <- nimbleCode({
     }
 })
 
+## @knitr external_occupancy_model

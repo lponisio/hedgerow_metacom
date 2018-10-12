@@ -1,3 +1,4 @@
+## @knitr external_dynamicOcc
 dDynamicOccupancy <- nimbleFunction(
     ## DynamicOccupancy removes the z's and muZ's from the model and computes
     ## the probability of all reps over all years for one site, species
@@ -45,6 +46,7 @@ dDynamicOccupancy <- nimbleFunction(
     }
 )
 
+## @knitr external_dynamicOcc_end
 
 rDynamicOccupancy <- nimbleFunction(
     run = function(n = double(0),
@@ -60,21 +62,21 @@ rDynamicOccupancy <- nimbleFunction(
           z[1] <- rbinom(1, size = 1,
                                     p = psi1)
           if(nrep[1] > 0) {
-            
+
           x[1, 1:nrep[1]] <- rbinom(nrep[1], size = 1,
                                     p = z[1]*p[1,1:nrep[1]])
           }
-         
+
           ProbOccNextTime <-  z[1] * phi[1] +
             (1- z[1]) * gamma[1]
-     
+
 
         if(nyears >= 1) {
             for(t in 2:nyears) {
                   z[t] <- rbinom(1, size = 1,
                                             p = ProbOccNextTime)
                   if(nrep[t] > 0) {
-                    
+
                   x[t, 1:nrep[t]] <- rbinom(nrep[t], size = 1,
                                             p = z[t]*p[t,1:nrep[t]])
 
@@ -85,7 +87,7 @@ rDynamicOccupancy <- nimbleFunction(
                             (1-z[t]) * gamma[t]
             }
         }
-          
+
         return(x)
         returnType(double(2))
     }

@@ -7,11 +7,9 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                               col.name.trait1, ## colname of one trait
                               col.name.trait2, ## colname of second trait
                               HRarea, ## vector of hedgerow area prox
-                              natural.mat=NULL, ## site by year
-                              ## natural area proximity
-                              natural.decay,## site by decay matrix
-                              ## natural
-                              HR.decay,## site by decay matrix natura
+                              natural.mat=NULL, ## site by year natural area proximity
+                              natural.decay,## site by decay matrix natural
+                              HR.decay,## site by decay matrix for hedgerows
                               veg, ## floral availability matrix
                               col.name.div.type="Div", ## colname of
                               ## the metric of floral availability

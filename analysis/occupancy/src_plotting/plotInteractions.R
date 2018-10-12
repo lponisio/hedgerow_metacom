@@ -247,7 +247,7 @@ plotInteractionsFloralDiv <- function(plot.turnover,
     ## interactions of floral resources and hedgerow proximity
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="")
-    legend("topleft", legend="(c)", bty="n", cex=1.2)
+    legend("topleft", legend="(b)", bty="n", cex=1.2)
     mtext("Colonization", 2, line=4, cex=1.3)
     ## mtext("Hedgerow proximity-weighted \n area", 1, line=5, cex=1.3)
     for(i in 1:length(quantiles.fra)){
@@ -309,6 +309,7 @@ plotInteractionsFloralDiv <- function(plot.turnover,
               col=cols[i],
               lwd=2,
               add=TRUE)
+        mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1.2)
     }
     if(plot.remnant){
         ## 6 occupancy nat hab*fra

@@ -1,9 +1,9 @@
 ## ************************************************************
 ## setwd('~/Dropbox/hedgerow_metacom')
-rm(list=ls())
 setwd('analysis/occupancy')
 args <- commandArgs(trailingOnly=TRUE)
 source('src/initialize.R')
+print(args)
 
 ## ************************************************************
 ## prep data

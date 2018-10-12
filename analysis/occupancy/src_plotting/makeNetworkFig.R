@@ -53,7 +53,7 @@ makeNetworkFig <- function(spec,
     ## color vertices by site stype, weight by the number of shared
     ## species,  add lat long positions
     V(gs)$size <- importance
-    E(gs)$width <- (E(gs)$weight/max(E(gs)$weight))*1.5
+    E(gs)$width <- (E(gs)$weight/max(E(gs)$weight))*2
 
     site.status <- spec$SiteStatus[match(V(gs)$name,
                                          spec$Site)]
@@ -84,15 +84,17 @@ makeNetworkFig <- function(spec,
 
         dims <- bbox(sys)
         plot(sys)
+        ## maps::map.scale(x=-124, y=34, ratio=FALSE, relwidth=0.3)
         rect(xleft=dims[1,1],ybottom=dims[2,1],
              xright=dims[1,2],ytop=dims[2,2],
              col= rgb(1,1,1, alpha=0.3))
         if(!is.null(natural.cover)){
             natural.cover <- crop(natural.cover,  dims)
-            poly.cols <- add.alpha("red",
+            poly.cols <- add.alpha("blue",
                                    alpha=0.2)
             plot(natural.cover,
-                 col=poly.cols, border="red", add=TRUE)
+                 col=poly.cols, border=add.alpha("black",
+                                   alpha=0.4), add=TRUE)
         }
 
     }
@@ -107,7 +109,7 @@ makeNetworkFig <- function(spec,
         E(gs)$color <- apply(c_scale(E(gs)$weight/max(E(gs)$weight)), 1,
                              function(x){
                                  rgb(x[1]/255,x[2]/255,x[3]/255,
-                                     alpha=0.7)
+                                     alpha=0.9)
                              })
     }
 
@@ -139,7 +141,7 @@ makeNetworkFig <- function(spec,
 
 plotAllStatuses <- function(){
     cols.vertex <- brewer.pal(11, 'RdGy')[c(1,10)]
-    cols.edges <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.5)
+    cols.edges <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.7)
     makeNetworkFig(spec, sys, lat.long=lat.long,
                    rows="Site",
                    cols="GenusSpecies",
