@@ -157,7 +157,7 @@ plot.panels.all <- function(){
     }
     path <- '../../../hedgerow_metacom_saved/networks/figures'
     pdf.f(f, file=file.path(path,
-                            sprintf("%s.pdf", "all_sig")),
+                            sprintf("all_sig_drop_li_ht%s.pdf", drop.li.ht)),
           width=9, height=5)
 }
 
@@ -255,9 +255,8 @@ plot.panels <- function(){
         mtext("Floral diet breadth", 1, line=3, cex=1.2)
 
     }
-    path <- '../../../hedgerow_metacom_saved/networks/figures'
-    pdf.f(f, file=file.path(path,
-                            sprintf("%s.pdf", "betweenness_degree")),
+    pdf.f(f, file=file.path(fig.path,
+                            sprintf("betweenness_degree_drop_li_ht%s.pdf", drop.li.ht)),
           width=5, height=4)
 }
 
@@ -322,8 +321,7 @@ plot.panels.sites <- function(){
               line=4, cex=1.2)
         mtext("Floral diversity", 1, line=3, cex=1.2)
     }
-    path <- '../../../hedgerow_metacom_saved/networks/figures'
-    pdf.f(f, file=file.path(path,
-                            sprintf("%s.pdf", "betweenness_degree_sites")),
+    pdf.f(f, file=file.path(fig.path,
+                            sprintf("betweenness_degree_sites_drop_li_ht%s.pdf", drop.li.ht)),
           width=4, height=5)
 }

@@ -1,22 +1,15 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
-rm(list=ls())
 setwd('analysis/networks')
 source('plotting/src/predictIntervals.R')
 source('plotting/src/CIplotting.R')
 source('plotting/src/plotPanels.R')
 
-natural.decay <- "2500"
-HR.decay <- "350"
-xvar.species <- c("r.degree", "BodyLength")
-xvar.site <- c("Div", "natArea", "hrArea")
-drop.li.ht <- FALSE
-
 source('src/initialize.R')
-load(file=file.path(save.path, "mods/specmetrics.Rdata"))
+load(file=sprintf('saved/mods/specmetrics_drop_li_ht%s.Rdata', drop.li.ht))
 
-ys <- c("k", "weighted.betweenness", "betweenness")
+ys <- c("k", "weighted.betweenness")
 
-ylabs <- c("Degree (z)", "Weighted centrality",  "Centrality")
+ylabs <- c("Degree (z)", "Weighted centrality")
 
 ## ************************************************************
 ## pollinators
@@ -29,13 +22,13 @@ r.degree.dd <- expand.grid(r.degree=seq(from= min(pol.specs[[1]]$r.degree,
                                         to= max(pol.specs[[1]]$r.degree,
                                                 na.rm=TRUE),
                                         length=10),
-                           BodyLength=mean(pol.specs[[1]]$BodyLength,
+                           MeanITD=mean(pol.specs[[1]]$MeanITD,
                                            na.rm=TRUE),
                            SiteStatus="all")
 
-body.dd <- expand.grid(BodyLength=seq(from= min(pol.specs[[1]]$BodyLength,
+body.dd <- expand.grid(MeanITD=seq(from= min(pol.specs[[1]]$MeanITD,
                                                   na.rm=TRUE),
-                                        to= max(pol.specs[[1]]$BodyLength,
+                                        to= max(pol.specs[[1]]$MeanITD,
                                                 na.rm=TRUE),
                                         length=10),
                            r.degree=mean(pol.specs[[1]]$r.degree,
@@ -61,7 +54,7 @@ makePlots(pp=pp, xvar=xvar.species,
           ys=ys, dd=body.dd,
           mods=pol.mods, ylabs=ylabs,
           all.specs=pol.specs,
-          xs="BodyLength",
+          xs="MeanITD",
           xlab= "Body size")
 
 plot.panels()
@@ -72,7 +65,8 @@ plot.panels()
 ## ************************************************************
 
 ## drop extrema to make plotting nicer
-specs.years.site <- specs.years.site[specs.years.site$Div != min(specs.years.site$Div),]
+specs.years.site <- specs.years.site[specs.years.site$Div !=
+                                     min(specs.years.site$Div),]
 
 frd.dd <- expand.grid(Div=seq(from= min(specs.years.site$Div,
                                         na.rm=TRUE),

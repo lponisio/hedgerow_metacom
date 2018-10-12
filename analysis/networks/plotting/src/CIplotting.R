@@ -91,7 +91,7 @@ plot.predict.ypr <- function(new.dd,
                              y2=NA,
                              xs='ypr',
                              xlabel= 'Years Post Restoration',
-                             path = 'figures',
+                             path = fig.path,
                              extinction.method,
                              agg.col="Site"){
     plot.ci <- function(){

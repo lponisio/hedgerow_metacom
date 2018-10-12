@@ -1,12 +1,5 @@
 ## setwd('~/Dropbox/hedgerow_metacom')
-rm(list=ls())
 setwd('analysis/networks')
-
-xvar.species <- c("r.degree", "BodyLength")
-xvar.site <- c("Div", "natArea", "hrArea")
-natural.decay <- "2500" ## match with occupancy model
-HR.decay <- "350" ## match with occupancy model
-drop.li.ht <- TRUE
 source('src/initialize.R')
 
 ## **********************************************************
@@ -14,9 +7,7 @@ source('src/initialize.R')
 ## **********************************************************
 
 ## anything outputted by specieslevel
-ys <- c("k", "weighted.betweenness", "betweenness")
-
-
+ys <- c("k", "weighted.betweenness")
 formulas.species <-lapply(ys, function(x) {
     as.formula(paste(x, "~",
                      paste(paste(xvar.species, collapse="+"),
@@ -40,8 +31,10 @@ names(mod.years.pol) <- names(mod.sites.pol) <- ys
 
 ## floral degree positivly related to all measures of network
 ## importance in space/time
-lapply(mod.years.pol, summary)
-lapply(mod.sites.pol, summary)
+print("metacommunity pollinator spatial network")
+print(lapply(mod.years.pol, summary))
+print("metacommunity pollinator temporal network")
+print(lapply(mod.sites.pol, summary))
 
 ## **********************************************************
 ## sites
@@ -55,24 +48,16 @@ formulas.site <-lapply(ys, function(x) {
                            sep="+")))
 })
 
-## within a site across years. This is not really that
-## interesting. Why is it imporant to know what year is most central?
-mod.sites.site <- lapply(formulas.site, function(x){
-    lmer(x, data=specs.site.site)
-})
-
 ## within a year across sites
 mod.years.site <- lapply(formulas.site, function(x){
     lmer(x, data=specs.years.site)
 })
 
 ## name them the same as the pollinators
-names(mod.years.site) <- names(mod.sites.site) <- ys
+names(mod.years.site)  <- ys
 
-lapply(mod.years.site, summary)
-## lapply(mod.sites.site, summary) ## not really sure what this
-## network means
+print("metacommunity patch network")
+print(lapply(mod.years.site, summary))
 
-
-save(mod.years.pol, mod.sites.pol, mod.years.site, mod.sites.site,
-     file='saved/mods/specmetrics.Rdata')
+save(mod.years.pol, mod.sites.pol, mod.years.site,
+     file=sprintf('saved/mods/specmetrics_drop_li_ht%s.Rdata', drop.li.ht))

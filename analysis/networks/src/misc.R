@@ -1,3 +1,16 @@
+
+checkDirExists <- function(save.dir){
+    if(!dir.exists(save.dir)) {
+        cat(paste("Needed dir",
+                  save.dir,
+                  "does not exist. OK to create? (Type 'yes' if ok.)"))
+        okToMakeDir <- readlines()
+        if(!identical(okToMakeDir, "yes"))
+            stop("Stopping because permission to make save.dir denied.")
+        dir.create(save.dir, showWarnings = FALSE)
+    }
+}
+
 ## standard error function
 se <- function(x) sqrt(var(x)/(length(x)-1))
 
