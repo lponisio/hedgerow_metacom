@@ -22,7 +22,6 @@ load('~/Dropbox/hedgerow/data_sets/misc/veg.Rdata')
 ## *******************************************************************
 ## subset data to only net samples and bees with IDs
 ## *******************************************************************
-
 ## minimum number of samples across year needed to be included in the
 ## analysis
 sample.min <- 5
@@ -43,14 +42,6 @@ spec <-  spec[spec$Species != '',]
 spec$SiteStatus[spec$SiteStatus == 'restored'] <- 'maturing'
 spec$Date <- as.Date(spec$Date)
 spec$doy <- as.numeric(strftime(spec$Date, format='%j'))
-
-occ.data <-
-    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/all-5-0-2500-350.Rdata'),
-        silent=TRUE)
-if(!inherits(occ.data, "try-error")){
-    keep.sites <- dimnames(model.input$data$X)[[1]]
-    spec <- spec[spec$Site %in% keep.sites,]
-}
 
 ## *******************************************************************
 ## create a giant network to calculate specialization
@@ -83,14 +74,24 @@ traits$r.degree[is.na(traits$r.degree)] <-
                              names(rare.plants.degree))]
 
 
-traits$BodyLength <- bee.trait$MeanITD[match(traits$GenusSpecies,
+traits$MeanITD <- bee.trait$MeanITD[match(traits$GenusSpecies,
                                              bee.trait$GenusSpecies)]
 
 rownames(traits) <- NULL
 
+
+occ.data <-
+    try(load('~/Dropbox/hedgerow_metacom_saved/occupancy/all-5-0-2500-350.Rdata'),
+        silent=TRUE)
+if(!inherits(occ.data, "try-error")){
+    keep.sites <- dimnames(model.input$data$X)[[1]]
+    spec <- spec[spec$Site %in% keep.sites,]
+}
+
 ## *******************************************************************
 ## drop forb and natural sites after network trait calculation
 ## *******************************************************************
+
 samples <- apply(apply(mat, c(1,2), function(x) all(!is.na(x))), 1,
                  sum)
 names(samples) <- gsub(":.+", "", names(samples))
@@ -174,7 +175,6 @@ write.csv(traits, file='../data/traits.csv', row.names=FALSE)
 ## *******************************************************************
 ## create networks
 ## *******************************************************************
-
 site.years <- aggregate(Year ~ Site, data=spec,
                          function(x) length(unique(x)))
 sites.to.keep <- site.years$Site[site.years$Year >= 1]
@@ -207,25 +207,6 @@ specs.save.path <- '../analysis/networks/saved'
 save(specs, specs.years, specs.site,
      file=file.path(specs.save.path, 'specs.Rdata'))
 
-
-## drop super generalists
-spec.for.nets <- spec.for.nets[!spec.for.nets$GenusSpecies %in%
-                               c("Lasioglossum (Dialictus) incompletum",
-                                 "Halictus tripartitus"), ]
-
-nets <- breakNet(spec.dat=spec.for.nets, 'Site', 'Year')
-## within a year, the network of shared species across sites
-nets.year <- breakNetSpTemp(spec.dat=spec.for.nets, 'Year', 'Site')
-## within a site, the network of shared species across years
-nets.site <- breakNetSpTemp(spec.dat=spec.for.nets, 'Site', 'Year')
-
-## save networks for each site, timeframe
-f.path <- '../data/networks'
-save(nets, file=file.path(f.path, 'all_networks_years_no_li_ht.Rdata'))
-save(nets.year, file=file.path(f.path, 'years_networks_no_li_ht.Rdata'))
-save(nets.site, file=file.path(f.path, 'sites_networks_no_li_ht.Rdata'))
-
-
 ## *******************************************************************
 ## veg data based on visitation
 ## *******************************************************************
@@ -233,7 +214,7 @@ abund.visits <- lapply(nets, function(x) apply(x, 1, sum))
 plant.div.visits <- sapply(abund.visits, diversity)
 
 
-div.visits <- lapply(nets, function(x) apply(x, 1, diversity))
+div.visits <- lapply(nets, function(x) apply(x, 1, vegan::diversity))
 plant.median.div.visits <- sapply(div.visits, median)
 
 by.site$Site <- sapply(strsplit(by.site$Site, ":"), function(x) x[1])
@@ -248,7 +229,27 @@ by.site$median.div.visits <- plant.median.div.visits[match(paste(by.site$Site,
 save(by.site, file="../data/veg.Rdata")
 
 
-load("~/Dropbox/hedgerow/data_sets/traditional/veg-complete.Rdata")
+## *******************************************************************
+## drop super generalists
+## *******************************************************************
+spec.for.nets <- spec.for.nets[!spec.for.nets$GenusSpecies %in%
+                               c("Lasioglossum (Dialictus) incompletum",
+                                 "Halictus tripartitus"), ]
 
-raw.flower.data <- dd
-save(raw.flower.data, file="../data/rawFlower.Rdata")
+nets <- breakNet(spec.dat=spec.for.nets, 'Site', 'Year')
+## within a year, the network of shared species across sites
+nets.year <- breakNetSpTemp(spec.dat=spec.for.nets, 'Year', 'Site')
+## within a site, the network of shared species across years
+nets.site <- breakNetSpTemp(spec.dat=spec.for.nets, 'Site', 'Year')
+
+specs <- calcSpec(nets, spec)
+specs$closeness.log <- log(specs$closeness + 1)
+
+## within a year, across sites
+specs.years <- calcSpec(nets.year, spec)
+## within a site across years
+specs.site <- calcSpec(nets.site, spec)
+
+specs.save.path <- '../analysis/networks/saved'
+save(specs, specs.years, specs.site,
+     file=file.path(specs.save.path, 'specs_no_li_ht.Rdata'))

@@ -25,7 +25,7 @@ plot.panels.all <- function(){
         col.fill <- add.alpha(col.lines, alpha=0.2)
         col.white <- add.alpha("white", alpha=0)
         names(col.lines) <- names(col.fill) <- "all"
-        layout(matrix(1:6, nrow=2, byrow=TRUE))
+        layout(matrix(1:8, nrow=2, byrow=TRUE))
         par(oma=c(4, 7, 3, 1),
             mar=c(1, 0, 0, 1.5), cex.axis=1.2)
 
@@ -35,6 +35,11 @@ plot.panels.all <- function(){
         dd.pi.degree.degree <- makePredictData(r.degree.dd, ys[1], pol.mods)
         dd.pi.degree.between <- makePredictData(r.degree.dd, ys[2],
                                                 pol.mods)
+
+        dd.pi.body.degree <- makePredictData(body.dd, ys[1], pol.mods)
+        dd.pi.body.between <- makePredictData(body.dd, ys[2],
+                                           pol.mods)
+
         dd.pi.frd.degree <- makePredictData(frd.dd, ys[1],
                                             mods.site, time=FALSE)
         dd.pi.natArea.degree <- makePredictData(natArea.dd, ys[1],
@@ -62,6 +67,25 @@ plot.panels.all <- function(){
         mtext("Spatial: pollinators", 3, line=1, cex=1.2)
         mtext(ylabs[1], 2,
               line=4, cex=1.2)
+
+        ## space body-degree
+        plot.panel(new.dd=dd.pi.body.degree$space,
+                   dats=pol.specs[["space"]],
+                   y1=ys[1],
+                   y2= range(c(dd.pi.body.degree$space$plo,
+                               dd.pi.body.degree$space$phi,
+                               dd.pi.body.degree$time$plo,
+                               dd.pi.body.degree$time$phi)),
+                   xs="MeanITD",
+                   col.fill=col.fill,
+                   col.lines=col.lines,
+                   plot.y=FALSE,
+                   plot.x=FALSE,
+                   treatments="all",
+                   agg.col="GenusSpecies")
+
+        mtext("Spatial: pollinators", 3, line=1, cex=1.2)
+
         ## time degree-degree
         plot.panel(new.dd=dd.pi.degree.degree$time,
                    dats=pol.specs[["time"]],
@@ -98,6 +122,8 @@ plot.panels.all <- function(){
         ##       line=4, cex=1.2)
         mtext("Spatial: patches", 3, line=1, cex=1.2)
 
+################################################
+        ##next row
         ## space between-degree
         plot.panel(new.dd=dd.pi.degree.between$space,
                    dats=pol.specs[["space"]],
@@ -117,6 +143,25 @@ plot.panels.all <- function(){
         mtext(ylabs[2], 2,
               line=4, cex=1.2)
         mtext("Floral diet breadth", 1, line=3, cex=1.2)
+
+        ## space between-body
+        plot.panel(new.dd=dd.pi.body.between$space,
+                   dats=pol.specs[["space"]],
+                   y1=ys[2],
+                   y2= range(c(dd.pi.body.between$space$plo,
+                               dd.pi.body.between$space$phi,
+                               dd.pi.body.between$time$plo,
+                               dd.pi.body.between$time$phi,1, 0)),
+                   xs="MeanITD",
+                   col.fill=col.white,
+                   col.lines=col.white,
+                   col.points=col.fill,
+                   plot.y=FALSE,
+                   plot.x=TRUE,
+                   treatments="all",
+                   agg.col="GenusSpecies")
+
+        mtext("Body size", 1, line=3, cex=1.2)
 
         ## time between-degree
         plot.panel(new.dd=dd.pi.degree.between$time,

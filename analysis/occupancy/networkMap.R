@@ -4,8 +4,10 @@ rm(list=ls())
 source('src_plotting/makeNetworkFig.R')
 source('src_plotting/initialize.R')
 
-## no idea why this doesn't work sometimes
-sys <- makeSys()
+## this doesn't work sometimes. No idea why.
+sys <- gmap(x=bbox.all,
+            scale=2,
+            type="satellite")
 
 all.sites.pt <- spTransform(all.sites.pt,
                             sys@crs)
@@ -46,8 +48,6 @@ pdf.f(plotbyStatus,
                      sprintf("figures/networks/%s_bystatus.pdf",
                              file.name)),
       height=6, width=8)
-
-
 
 
 ## only works when keeping track of site level phi and gamma

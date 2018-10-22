@@ -9,7 +9,8 @@ pdf.f <- function(f, file, ...) {
 }
 
 runMCMCcheckChains <- function(all.chains.samps, f.path,
-                               natural.decay, include.int,
+                               natural.decay,
+                               HR.decay,
                                data.subset,
                                params=NULL, num.samps=1000){
     ## function to plot values of parameters as a function of
@@ -45,8 +46,9 @@ runMCMCcheckChains <- function(all.chains.samps, f.path,
     pdf.f(f,
           file= file.path(f.path,
                           sprintf("%s_%s_%s.pdf",
-                                  data.subset, natural.decay,
-          HR.decay, include.int)),
+                                  data.subset,
+                                  natural.decay,
+                                  HR.decay)),
           height=11, width=8.5)
 }
 

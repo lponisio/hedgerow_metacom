@@ -60,10 +60,8 @@ makeNetworkFig <- function(spec,
     v.boarders <- rep("black", length(importance))
 
     if(!is.null(lat.long)){
-        site.status <- spec$SiteStatus[match(V(gs)$name,
-                                             spec$Site)]
         names(site.status) <- V(gs)$name
-        names(cols.vertex) <- vertex.names
+        ## names(cols.vertex) <- vertex.names
         V(gs)$color <- cols.vertex[site.status]
         poss <- match(V(gs)$name, rownames(lat.long))
         gs <- delete_vertices(gs, V(gs)[is.na(poss)])
@@ -77,9 +75,10 @@ makeNetworkFig <- function(spec,
         edge.names <-  get.edgelist(gs)
         status.edges <- cbind(site.status[edge.names[,1]],
                               site.status[edge.names[,2]])
-        edge.types <- apply(status.edges, 1, function(x) paste(x,
-                                                               collapse="_"))
-        names(cols.edges) <- unique(edge.types)
+        edge.types <- apply(status.edges, 1,
+                            function(x) paste(x, collapse="_"))
+        edge.types[edge.types == "control_mature"] <- "mature_control"
+        ## names(cols.edges) <- unique(edge.types)
         E(gs)$color <- cols.edges[edge.types]
 
         dims <- bbox(sys)
@@ -140,8 +139,12 @@ makeNetworkFig <- function(spec,
 }
 
 plotAllStatuses <- function(){
-    cols.vertex <- brewer.pal(11, 'RdGy')[c(1,10)]
-    cols.edges <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)], alpha=0.7)
+    cols.vertex <- brewer.pal(11, 'RdGy')[c(1,11)]
+    cols.edges <- add.alpha(brewer.pal(11, 'RdGy')[c(6,1, 11)],
+                            alpha=0.9)
+    names(cols.edges) <- c("mature_control", "mature_mature",
+                       "control_control")
+    names(cols.vertex) <- c("mature", "control")
     makeNetworkFig(spec, sys, lat.long=lat.long,
                    rows="Site",
                    cols="GenusSpecies",
@@ -170,17 +173,19 @@ plotbySpecies <- function(){
 
 
 plotbyStatus <- function(){
-    cols.e <- add.alpha(brewer.pal(11, 'RdGy')[c(6,10,1,6)],
-                        alpha=0.5)
+    cols.e <- add.alpha(brewer.pal(11, 'RdGy')[c(6,1, 11)],
+                        alpha=0.9)
+    names(cols.e) <- c("mature_control", "mature_mature", "control_control")
     cols.v <- brewer.pal(11, 'RdGy')[c(1,10)]
+    names(cols.v) <- c("mature", "control")
     print("mature")
     makeNetworkFig(spec[spec$SiteStatus == "mature",],
                    sys, lat.long=lat.long,
                    rows="Site",
                    cols="GenusSpecies",
                    nets=nets.year,
-                   cols.vertex=cols.v[2],
-                   cols.edges=cols.e[2],
+                   cols.vertex=cols.v['mature'],
+                   cols.edges=cols.e['mature_mature'],
                    vertex.names="mature",
                    natural.cover=landcover.nat,
                    add=TRUE,
@@ -192,15 +197,15 @@ plotbyStatus <- function(){
                    rows="Site",
                    cols="GenusSpecies",
                    nets=nets.year,
-                   cols.vertex=cols.v[1],
-                   cols.edges=cols.e[3],
+                   cols.vertex=cols.v['control'],
+                   cols.edges=cols.e['control_control'],
                    vertex.names="control",
                    natural.cover=landcover.nat,
                    add=TRUE,
                    rescale = FALSE,
                    site.ave=this.site.ave)
 
-    cols.e[c(2:3)] <- add.alpha("white", 0)
+    cols.e <- rep(add.alpha("white", 0), 3)
     print("mixed")
     makeNetworkFig(spec,
                    sys, lat.long=lat.long,

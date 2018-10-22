@@ -513,3 +513,101 @@ plotInteractionsB <- function(){
 
 
 
+
+## *********************************************************************************
+
+
+plotInteractionsk <- function(){
+
+    layout(matrix(c(1,1, 2,2, 3,3, 4,4), nrow=4, byrow=TRUE),
+           heights=c(0.75,1,1,1))
+    par(oma=c(5, 5, 2, 1),
+        mar=c(4, 2, 1, 1.5), cex.axis=1.5)
+    kept.traits <- all.traits$r.degree[all.traits$GenusSpecies %in%
+                                      names(model.input$data$k)]
+    nbreaks <- 30
+    h <- hist(kept.traits, breaks=nbreaks, plot=FALSE)
+    cols <- rev(viridis(length(h$density)))
+    plot(h, col=cols,
+         xlab="", main="", ylab="", las=1, yaxt="n")
+    axis(2, pretty(range(0, max(h$counts))))
+    abline(v=mean(kept.traits), lty=2, col="red", lwd=3)
+
+    quantiles.k <- (h$mids - mean(kept.traits))/sd(kept.traits)
+
+    mtext("Frequency", 2, line=4, cex=1.3)
+    mtext("Floral diet breadth", 1, line=3, cex=1)
+
+    ## 1 persistence
+    ## interactions of floral resources and hedgerow proximity
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="")
+    mtext("Persistence", 2, line=4, cex=1.3)
+    legend("bottomleft", legend="(a)", bty="n", cex=1.2)
+
+
+    for(i in 1:length(quantiles.k)){
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['phi.k'] * quantiles.k[i] +
+                        means['phi.hr.area.k'] * x * quantiles.k[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+
+    ## 2 colonization
+    plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
+         ylab="", xlab="")
+    legend("topleft", legend="(b)", bty="n", cex=1.2)
+    mtext("Colonization", 2, line=4, cex=1.3)
+
+    for(i in 1:length(quantiles.k)){
+        curve(inv.logit(means['mu.gam.0'] +
+                        means['mu.gam.hr.area'] * x +
+                        means['gam.k'] * quantiles.k[i] +
+                        means['gam.hr.area.k'] * x * quantiles.k[i]),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+
+    ## 3 occupancy
+    plot(NA, ylim=c(0, 1),
+         xlim=range(model.input$data$HRarea),
+         ylab="", xlab="", las=1)
+    legend("bottomright", legend="(c)", bty="n", cex=1.2)
+    mtext("Occupancy", 2, line=4, cex=1.3)
+
+    for(i in 1:length(quantiles.k)){
+        curve((inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.hr.area'] * x +
+                         means['gam.k'] * quantiles.k[i] +
+                         means['gam.hr.area.k'] * x *
+                         quantiles.k[i]))/
+              (1 + inv.logit(means['mu.gam.0'] +
+                             means['mu.gam.hr.area'] * x +
+                             means['gam.k'] * quantiles.k[i] +
+                             means['gam.hr.area.k'] * x *
+                             quantiles.k[i]) -
+               inv.logit(means['mu.phi.0'] +
+                         means['mu.phi.hr.area'] * x +
+                         means['phi.k'] * quantiles.k[i] +
+                         means['phi.hr.area.k'] * x * quantiles.k[i])),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col=cols[i],
+              lwd=2,
+              add=TRUE)
+    }
+    mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1)
+
+}
+
+
+
+

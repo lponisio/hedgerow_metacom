@@ -13,9 +13,11 @@ checkDirExists(fig.path)
 load('../../../hedgerow_metacom/data/networks/allSpecimens.Rdata')
 load('../../../hedgerow_metacom/data/networks/all_networks_years.Rdata')
 
-
 if(!exists("passed.args")){
     passed.args <- commandArgs(trailingOnly=TRUE)
+}
+if(length(passed.args) == 0){
+    passed.args <- c(TRUE, "2500", "350")
 }
 print(passed.args)
 drop.li.ht <- as.logical(passed.args[1])
