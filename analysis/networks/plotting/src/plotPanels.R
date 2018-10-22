@@ -161,7 +161,7 @@ plot.panels.all <- function(){
                    treatments="all",
                    agg.col="GenusSpecies")
 
-        mtext("Body size", 1, line=3, cex=1.2)
+        mtext("Intertegular span (mm)", 1, line=3, cex=1.2)
 
         ## time between-degree
         plot.panel(new.dd=dd.pi.degree.between$time,

@@ -8,15 +8,12 @@ source('src/initialize.R')
 load(file=sprintf('saved/mods/specmetrics_drop_li_ht%s.Rdata', drop.li.ht))
 
 ys <- c("k", "weighted.betweenness")
-
 ylabs <- c("Degree (z)", "Weighted centrality")
 
 ## ************************************************************
 ## pollinators
 ## ************************************************************
-
 pol.specs <- list(specs.site.pol, specs.years.pol)
-
 r.degree.dd <- expand.grid(r.degree=seq(from= min(pol.specs[[1]]$r.degree,
                                                   na.rm=TRUE),
                                         to= max(pol.specs[[1]]$r.degree,
@@ -34,7 +31,6 @@ body.dd <- expand.grid(MeanITD=seq(from= min(pol.specs[[1]]$MeanITD,
                            r.degree=mean(pol.specs[[1]]$r.degree,
                                          na.rm=TRUE),
                        SiteStatus="all")
-
 
 ## nets.sites is within a site across years (time), nets.years is across
 ## sites within a year (space)
@@ -59,9 +55,8 @@ makePlots(pp=pp, xvar=xvar.species,
 
 plot.panels()
 
-
 ## ************************************************************
-## sites
+## pacthes
 ## ************************************************************
 
 ## drop extrema to make plotting nicer
@@ -97,5 +92,5 @@ mods.site <- list(space=mod.years.site)
 specs <- specs.years.site
 plot.panels.sites()
 
-
+## plot pollinator and patch panels together
 plot.panels.all()

@@ -78,17 +78,17 @@
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \title{Plant diversity and pollinator niche breadth shape
-  metacommunity dynamics in a 10-year study of wild bees in a
-  agriculture landscape: a walk through of the models and analyses}
+metacommunity dynamics in a 10-year study of wild bees in a
+agriculture landscape: a walk through of the models and analyses}
 \author{Lauren Ponisio}
 
 
 \maketitle
 
 \begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.6\textwidth]{figure/degree_spatial.pdf}
-  \label{fig:network}
+\centering
+\includegraphics[width=0.6\textwidth]{figure/degree_spatial.pdf}
+\label{fig:network}
 \end{figure}
 \clearpage
 
@@ -126,30 +126,30 @@ individually.
 
 \section{Occupancy model}
 
-The occpany models are run through the main.R file in the
+The occupancy models are run through the main.R file in the
 analysis/occupancy folder. The script begins by setting the arguments
-for prepping the data. Run as is to reprodice the data use in the
+for prepping the data. Run as is to reproduce the data use in the
 study. Prior analyses used the area of hedgerows in buffers weighted
-by log distance from a focal site instead of the Guassian decay
+by log distance from a focal site instead of the Gaussian decay
 method, with similar results. In addition, the method for calculating
 the habitat quality of a patch can be toggled using the
 "col.name.div.type" argument. Other options are plant richness
 "Richness" or the diversity of flowers visited by pollinators
-"div.visits". All measures gave qualititative similar results.
+"div.visits". All measures gave qualitatively similar results.
 
 Importantly, "natural.decay" and "HR.decay" change the importance
-weighting of renmant and hedgerow proximity, respectivly. Different
+weighting of remnant and hedgerow proximity, respectively. Different
 combinations ($350$, $1000$, and $2500$) can be used to change the
 steepness of the decay rate from very steep ($\alpha=350$ represents
-$98.5\%$ reduction in weight by $1$ $km$) to very shalle
+$98.5\%$ reduction in weight by $1$ $km$) to very shallow
 ($\alpha=2500$ represents a $98.5\%$ reduction in weight by $7$
 $km$). The main.sh script executes all combinations of decay
-rates. They are executed indiviudally because the nimble models take a
-considerable amount fo computer memory which is not cleared after the
+rates. They are executed individually because the nimble models take a
+considerable amount of computer memory which is not cleared after the
 model is run. Running them all in a four loop within the same instance
 of R would overload most computers.
 
-To run the MCMC inorder to estimate the model coefficients, we use the
+To run the MCMC in order to estimate the model coefficients, we use the
 NIMBLE R package \citep{nimble-14, de2017programming}.  "nimble"
 stands for "numerical inference for statistical models with Bayesian
 and likelihood estimation."  It implements almost the same model
@@ -163,7 +163,7 @@ comparison to sampling every latent state.
 
 The multi-species, multi-season occupancy model is as follows: 
 
- We
+We
 assumed that the occupancy of the $i^{\mathrm{th}}$ species at the
 $j^{\mathrm{th}}$ patch in the $t^{\mathrm{th}}$ year is a Bernoulli random variable $z_{i,j,t} \sim \mathrm{Bern}(\psi_{i,j,t})$ with
 probability $\psi_{i,j,t}$.
@@ -175,8 +175,8 @@ for that patch:
 
 %
 \begin{equation}
-  \label{eq:occupancy2}
-  \psi_{i,j,1} = \gamma_{i,j}/(1-\phi_{i,j} + \gamma_{i,j}) \hspace{0.2em}.
+\label{eq:occupancy2}
+\psi_{i,j,1} = \gamma_{i,j}/(1-\phi_{i,j} + \gamma_{i,j}) \hspace{0.2em}.
 \end{equation}
 %
 
@@ -190,9 +190,9 @@ subsequent years is then
 
 %
 \begin{equation}
-  \label{eq:occupancy1}
-  \psi_{i,j,t+1} =
-  \phi_{i,j,t} * z_{i,j,t} + \gamma_{i,j,t} * (1-z_{i,j,t})\hspace{0.2em}.
+\label{eq:occupancy1}
+\psi_{i,j,t+1} =
+\phi_{i,j,t} * z_{i,j,t} + \gamma_{i,j,t} * (1-z_{i,j,t})\hspace{0.2em}.
 \end{equation}
 %
 
@@ -201,37 +201,37 @@ Patch-level intercept and slope parameters were modeled as species-specific but
 linked together by common community-level distributions (i.e., random intercepts and slopes). 
 %
 \begin{equation}
-  \begin{split}
-    \label{eq:phi_gam}
-    \mathrm{logit}(\phi_{i,j,k}) &=
-    \phi[1]_i +
-    \phi[2]_i* \mathrm{HRwtProx_j} +
-    \phi[3]_i* \mathrm{RemnantWtProx_j} + 
-     \phi[4]_i* \mathrm{frd_{j,t}} + \\
-    & \phi[5]* \mathrm{k_i} + 
-    \phi[6]* \mathrm{B_i} +  \\
-    & \phi[7]* \mathrm{frd_{j,t}}*\mathrm{HRwtProx_j}  +
-    \phi[8]* \mathrm{frd_{j,t}}*\mathrm{RemnantWtProx_j}  + \\
-    & \phi[9]* \mathrm{k_i}*\mathrm{HRwtProx_j}  + 
-      \phi[10]* \mathrm{B_i}*\mathrm{HRwtProx_j}  +  \\
-   & \phi[11]* \mathrm{k_i}*\mathrm{RemnantWtProx_j}  +  \phi[12]* \mathrm{B_i}*\mathrm{RemnantWtProx_j} \\
-    \phi[s]_i &\sim N(\mu_{\phi[s]}, \sigma_{\phi[s]}), s = 1 \ldots 4
-    \hspace{0.2em}\\
-    \mathrm{logit}(\gamma_{i,j,t}) &=
-      \gamma[1]_i +
-    \gamma[2]_i* \mathrm{HRwtProx_j} +
-       \gamma[3]_i* \mathrm{RemnantWtProx_j} + 
-     \gamma[4]_i* \mathrm{frd_{j,t}} + \\
-    & \gamma[5]* \mathrm{k_i} +
-    \gamma[6]* \mathrm{B_i} + \\
-     & \gamma[7]* \mathrm{frd_{j,t}}*\mathrm{HRwtProx_j}  +
-    \gamma[8]* \mathrm{frd_{j,t}}*\mathrm{RemnantWtProx_j}  + \\
-    & \gamma[9]* \mathrm{k_i}*\mathrm{HRwtProx_j}  + 
-    \gamma[10]* \mathrm{B_i}*\mathrm{HRwtProx_j}  + \\
-    & \gamma[11]* \mathrm{k_i}*\mathrm{RemnantWtProx_j} + 
-     \gamma[12]* \mathrm{B_i}*\mathrm{RemnantWtProx_j} \\
-    \gamma[s]_i &\sim N(\mu_{\gamma[s]}, \sigma_{\gamma[s]}), s = 1 \ldots 4 \hspace{0.2em}\\
-    \end{split}
+\begin{split}
+\label{eq:phi_gam}
+\mathrm{logit}(\phi_{i,j,k}) &=
+\phi[1]_i +
+\phi[2]_i* \mathrm{HRwtProx_j} +
+\phi[3]_i* \mathrm{RemnantWtProx_j} + 
+\phi[4]_i* \mathrm{frd_{j,t}} + \\
+& \phi[5]* \mathrm{k_i} + 
+\phi[6]* \mathrm{B_i} +  \\
+& \phi[7]* \mathrm{frd_{j,t}}*\mathrm{HRwtProx_j}  +
+\phi[8]* \mathrm{frd_{j,t}}*\mathrm{RemnantWtProx_j}  + \\
+& \phi[9]* \mathrm{k_i}*\mathrm{HRwtProx_j}  + 
+\phi[10]* \mathrm{B_i}*\mathrm{HRwtProx_j}  +  \\
+& \phi[11]* \mathrm{k_i}*\mathrm{RemnantWtProx_j}  +  \phi[12]* \mathrm{B_i}*\mathrm{RemnantWtProx_j} \\
+\phi[s]_i &\sim N(\mu_{\phi[s]}, \sigma_{\phi[s]}), s = 1 \ldots 4
+\hspace{0.2em}\\
+\mathrm{logit}(\gamma_{i,j,t}) &=
+\gamma[1]_i +
+\gamma[2]_i* \mathrm{HRwtProx_j} +
+\gamma[3]_i* \mathrm{RemnantWtProx_j} + 
+\gamma[4]_i* \mathrm{frd_{j,t}} + \\
+& \gamma[5]* \mathrm{k_i} +
+\gamma[6]* \mathrm{B_i} + \\
+& \gamma[7]* \mathrm{frd_{j,t}}*\mathrm{HRwtProx_j}  +
+\gamma[8]* \mathrm{frd_{j,t}}*\mathrm{RemnantWtProx_j}  + \\
+& \gamma[9]* \mathrm{k_i}*\mathrm{HRwtProx_j}  + 
+\gamma[10]* \mathrm{B_i}*\mathrm{HRwtProx_j}  + \\
+& \gamma[11]* \mathrm{k_i}*\mathrm{RemnantWtProx_j} + 
+\gamma[12]* \mathrm{B_i}*\mathrm{RemnantWtProx_j} \\
+\gamma[s]_i &\sim N(\mu_{\gamma[s]}, \sigma_{\gamma[s]}), s = 1 \ldots 4 \hspace{0.2em}\\
+\end{split}
 \end{equation}
 %
 
@@ -250,10 +250,10 @@ patch in the $r^{\mathrm{th}}$ replicate of the $t^{\mathrm{th}}$ year
 was specified as
 %
 \begin{equation}
-  \label{eq:detection}
-    \mathrm{logit}(p_{i,j,k,t}) = p[1]_i +
-    p[2]_i * \mathrm{date}_{j,k,r} +
-    p[3]_i * (\mathrm{date}_{j,k,r})^2\hspace{0.2em}
+\label{eq:detection}
+\mathrm{logit}(p_{i,j,k,t}) = p[1]_i +
+p[2]_i * \mathrm{date}_{j,k,r} +
+p[3]_i * (\mathrm{date}_{j,k,r})^2\hspace{0.2em}
 \end{equation}
 %
 where $p[1]_i$ denotes a species-specific effect and $p[2]_i$ and
@@ -264,7 +264,7 @@ species-specific rates of detection to have a seasonal peak.
 
 
 The model code follows the notation above, except $HRwtProx$ is
-abbriveated as $hr.area$, and $RemnantWtProx$ as $nat.area$. 
+abbreviated as $hr.area$, and $RemnantWtProx$ as $nat.area$. 
 
 
 
@@ -379,7 +379,7 @@ abbriveated as $hr.area$, and $RemnantWtProx$ as $nat.area$.
 \end{kframe}
 \end{knitrout}
 
-for those of you familular with working in BUGS or JAGS, the main
+for those of you familiar with working in BUGS or JAGS, the main
 difference here is the call to 'dDynamicOccupancy'. This is the
 function allows us to numerically integrate over sequences of latent
 states to directly calculate model likelihoods, removing the need to
@@ -429,7 +429,7 @@ perform MCMC sampling of these latent variables.
 ##         return(ll)
 ##     else return(exp(ll))
 ## }
-## <environment: 0x7fb1d4890d58>
+## <environment: 0x7f896defc958>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -444,21 +444,21 @@ mean and credible internal plots and table ($src\_plotting/posteriorPlotting.R$)
 \section{Metacommunity Network Analysis}
 
 The 'spTempMets.R' file executes the network analyses. The  user can
-provide any network metrics takened by the function 'speciesLevel' in
+provide any network metrics taken by the function 'speciesLevel' in
 the bipartite package. The  $y_{i,j,k}$ network
 metrics of the $i^{\mathrm{th}}$ species at the $j^{\mathrm{th}}$ site
 in the $k^{\mathrm{th}}$ year was modeled as:
 
 %
 \begin{equation}
-  \label{eq:lms}
-    \begin{split}
-    \mathrm{y}_{i,j,k} \sim \mathrm{B}_{i} + \mathrm{k}_{i} +
-    \mathrm{site}_{j} + \mathrm{site}_{k} \\   
-     \mathrm{site}_{j} \sim N(0, \sigma_{site}) \\  
-     \mathrm{year}_{k} \sim N(0, \sigma_{year})
-  \hspace{0.2em}
-    \end{split}
+\label{eq:lms}
+\begin{split}
+\mathrm{y}_{i,j,k} \sim \mathrm{B}_{i} + \mathrm{k}_{i} +
+\mathrm{site}_{j} + \mathrm{site}_{k} \\   
+\mathrm{site}_{j} \sim N(0, \sigma_{site}) \\  
+\mathrm{year}_{k} \sim N(0, \sigma_{year})
+\hspace{0.2em}
+\end{split}
 \end{equation}
 %
 
@@ -704,10 +704,13 @@ $plotting/spTempMets.R$ script.
 
 \clearpage
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htFALSE.pdf}
-  \label{fig:connectivity}
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htFALSE.pdf}
+\label{fig:connectivity}
+\caption{The relationship between species and patch traits and their
+position in the metacommunity network when the supergeneralists
+are not included in the community. Floral diet breadth was positively related to both species degree (standardized) and centrality and floral within a year across patches (spatial network) and within a patch across years (temporal network). Body size (mean intertegular distance, mm) was negatively related to species degree but not centrality in the spatial network.  In addition, the floral diversity of a patch was positively  related to its degree and centrality (marginally significant) within the patch network within a year. Points represent means for each species or patch. The solid line indicates the mean slope estimate and the dashed lines are the $95\%$ confidence intervals around the estimate.}
 \end{figure}
 \clearpage
 
@@ -870,10 +873,13 @@ the temporal metacommmunity network without super generalists:
 \clearpage
 
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htTRUE.pdf}
-  \label{fig:connectivity}
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htTRUE.pdf}
+\label{fig:connectivity}
+\caption{The relationship between species and patch traits and their
+position in the metacommunity network when the supergeneralists
+are not included in the community. Floral diet breadth was positively related to both species degree (standardized) and centrality and floral within a year across patches (spatial network) and within a patch across years (temporal network). Body size (mean intertegular distance, mm) was negatively related to species degree but not centrality in the spatial network.  In addition, the floral diversity of a patch was positively  related to its degree and centrality (marginally significant) within the patch network within a year. Points represent means for each species or patch. The solid line indicates the mean slope estimate and the dashed lines are the $95\%$ confidence intervals around the estimate.}
 \end{figure}
 \clearpage
 
