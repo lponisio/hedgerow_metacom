@@ -23,6 +23,7 @@ Rscript analysis/spatial/landscapeHRcalc.R 10
 ## combination of renmany habitat decay (first argument, alpha from
 ## manuscript) and hedgerow decay (second argument).
 ## note these  models only track top-level parameters by default
+Rscript analysis/occupancy/main.R "100" "2500" "filtering" "all" 1e2
 Rscript analysis/occupancy/main.R "350" "350" "filtering" "all" 1e2
 Rscript analysis/occupancy/main.R "1000" "350" "filtering" "all" 1e2
 Rscript analysis/occupancy/main.R "2500" "350" "filtering" "all" 1e2

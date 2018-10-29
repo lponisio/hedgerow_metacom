@@ -26,8 +26,7 @@ plotInteractionsHRRemnant <- function(means,
            heights=c(0.75,1,1,1))
     par(oma=c(5, 5, 2, 1),
         mar=c(4, 2, 1, 1.5), cex.axis=1.5)
-    kept.traits <- all.traits[, all.traits.col.name][all.traits$GenusSpecies %in%
-                                                     names(model.input$data[[model.input.trait.col.name]])]
+    kept.traits <- all.traits[, all.traits.col.name][all.traits$GenusSpecies %in% names(model.input$data[[model.input.trait.col.name]])]
     h <- hist(kept.traits, breaks=nbreaks, plot=FALSE)
     cols <- rev(viridis(length(h$density)))
     plot(h, col=cols,
@@ -186,13 +185,13 @@ plotInteractionsFloralDiv <- function(plot.turnover,
                                       plot.remnant){
     if(plot.turnover){
         layout(matrix(c(1,1, 2:5), nrow=3, byrow=TRUE),
-               heights=c(0.75,1,1,1,1))
+               heights=c(1,1,1,1,1))
     } else if(plot.remnant){
         layout(matrix(c(1,1, 2:7), nrow=4, byrow=TRUE),
                heights=c(0.75,1,1,1))
     } else{
         layout(matrix(c(1,1, 2,2, 3,3, 4,4), nrow=4, byrow=TRUE),
-               heights=c(0.75,1,1,1))
+               heights=c(1,1,1,1))
     }
     par(oma=c(5, 5, 2, 1),
         mar=c(4, 2, 1, 1.5), cex.axis=1.5)
@@ -202,6 +201,13 @@ plotInteractionsFloralDiv <- function(plot.turnover,
     cols <- rev(viridis(length(h$density)))
     plot(h, col=cols,
          xlab="", main="", ylab="", las=1)
+    site.hr <- unique(spec$Site[spec$SiteStatus %in% c("mature",
+                                                       "maturing")])
+    h.hedgerow <-
+        hist(model.input$data$fra[rownames(model.input$data$fra) %in% site.hr],
+             breaks=h$breaks, plot=FALSE)
+    plot(h.hedgerow,
+         xlab="", main="", ylab="", yaxy="n", xaxt="n", add=TRUE, density=15)
     abline(v=mean(model.input$data$fra), lty=2, col="red", lwd=3)
     quantiles.fra <- (h$mids - mean(model.input$data$fra))/sd(model.input$data$fra)
     mtext("Frequency", 2, line=4, cex=1.3)

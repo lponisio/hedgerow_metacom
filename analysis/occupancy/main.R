@@ -16,8 +16,8 @@ model.input <- prepOccModelInput(nzero=0,
                                  traits=all.traits,
                                  col.name.trait1 = "r.degree",
                                  col.name.trait2 = "MeanITD",
-                                 HRarea= hr.area.sum, #sum.dist.area, ##spstats
-                                 natural.mat=nat.area.sum, ## natural
+                                 HRarea= hr.area.sum,
+                                 natural.mat=nat.area.sum,
                                  natural.decay=natural.decay,
                                  HR.decay=HR.decay,
                                  veg=by.site,
@@ -30,10 +30,10 @@ model.input <- prepModel()
 ## ## ## ****************************************************************
 ## ## run model
 ## ## *****************************************************************
-burnin <- 1e1*scale
-niter <- (1e3)*scale
-nthin <- 2
-nchain <- 3
+## burnin <- 1e1*scale
+## niter <- (1e3)*scale
+## nthin <- 2
+## nchain <- 3
 
 ## ## ## build R model
 ## ms.ms.model <- nimbleModel(code=ms.ms.occ,
@@ -53,9 +53,6 @@ nchain <- 3
 ## mcmc.spec <- configureMCMC(ms.ms.model,
 ##                            print=FALSE,
 ##                            monitors = model.input$monitors,
-##                            ## monitors=ms.ms.model$getNodeNames(
-##                            ##                      stochOnly = TRUE,
-##                            ##                      includeData = FALSE),
 ##                            enableWAIC = TRUE)
 ## mcmc <- buildMCMC(mcmc.spec,
 ##                   enableWAIC = TRUE)
