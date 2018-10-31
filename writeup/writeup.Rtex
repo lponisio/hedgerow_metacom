@@ -35,9 +35,7 @@
 %% end.rcode
 
 \begin{document}
-\title{Plant diversity and pollinator niche breadth shape
-metacommunity dynamics in a 10-year study of wild bees in a
-agriculture landscape: a walk through of the models and analyses}
+\title{Proximity of restored hedgerows interacts with local floral diversity and species traits to shape  long-term pollinator metacommunity dynamics: a walk through of the models and analyses}
 \author{Lauren Ponisio}
 
 
@@ -66,7 +64,8 @@ Navigate to the analysis folder within the github repo
 (hedgerow\_metacommunity) then the main.sh file can be selected and
 run (a warning, the occupancy analyses each take several hours on my
 2.3 GHz imac pro, so all together they will take quite a while), you
-could run of the analyses in the study by running this line in BASH.
+could run all of the analyses in the study by running this line in
+BASH.
 
 %% begin.rcode bash-chunk2, engine='bash', eval=FALSE
 % bash main.sh
@@ -82,7 +81,7 @@ individually.
 
 The occupancy models are run through the main.R file in the
 analysis/occupancy folder. The script begins by setting the arguments
-for prepping the data. Run as is to reproduce the data use in the
+for prepping the data. Run as is to reproduce the data used in the
 study. Prior analyses used the area of hedgerows in buffers weighted
 by log distance from a focal site instead of the Gaussian decay
 method, with similar results. In addition, the method for calculating
@@ -90,13 +89,13 @@ the habitat quality of a patch can be toggled using the ``col.name.div.type" arg
 ``Richness" or the diversity of flowers visited by pollinators
 ``div.visits". All measures gave qualitatively similar results.
 
-Importantly, ``natural.decay" and ``HR.decay" change the importance
-weighting of remnant and hedgerow proximity, respectively. Different
-combinations ($350$, $1000$, and $2500$) can be used to change the
-steepness of the decay rate from very steep ($\alpha=350$ represents
-$98.5\%$ reduction in weight by $1$ $km$) to very shallow
-($\alpha=2500$ represents a $98.5\%$ reduction in weight by $7$
-$km$). The main.sh script executes all combinations of decay
+Importantly, ``natural.decay" and ``HR.decay" change the decay
+($\alpha$) of weighting of remnant and hedgerow area,
+respectively. Different combinations ($350$, $1000$, and $2500$) can
+be used to change the steepness of the decay rate from very steep
+($\alpha=350$ represents $98.5\%$ reduction in weight by $1$ $km$) to
+very shallow ($\alpha=2500$ represents a $98.5\%$ reduction in weight
+by $7$ $km$). The main.sh script executes all combinations of decay
 rates. They are executed individually because the nimble models take a
 considerable amount of computer memory which is not cleared after the
 model is run. Running them all in a four loop within the same instance
@@ -109,7 +108,7 @@ and likelihood estimation."  It implements almost the same model
 language as BUGS and JAGS, but supports easy customization of MCMC
 algorithms, including writing new samplers, and user-defined functions
 and distributions, which opens up enormous flexibility in how models
-are written. This enabled us to integrate out the latent states,
+are written. This enabled us to integrate over the latent states,
 increasing computational efficiency by an order of magnitude in
 comparison to sampling every latent state. 
 
@@ -127,7 +126,7 @@ $nat.area$):
 %% ms.ms.occ
 %% end.rcode
 
-for those of you familiar with working in BUGS or JAGS, the main
+For those of you familiar with working in BUGS or JAGS, the main
 difference here is the call to 'dDynamicOccupancy'. This is the
 function allows us to numerically integrate over sequences of latent
 states to directly calculate model likelihoods, removing the need to
@@ -178,21 +177,21 @@ in the $k^{\mathrm{th}}$ year was modeled as:
 % source('analysis/networks/spTempMets.R')
 %% end.rcode
 
-The results for how species traits effect the role of pollinators in
+The results for how species traits affect the role of pollinators in
 the spatial metacommmunity network: 
 %% begin.rcode nets1
 %% lapply(mod.years.pol, summary)
 %% end.rcode
 
 
-And for how species traits effect the role of pollinators in
+And for how species traits affect the role of pollinators in
 the temporal metacommmunity network: 
 %% begin.rcode nets2
 %% lapply(mod.sites.pol, summary)
 %% end.rcode
 
 
-Lastly, for how patch ``traits" effect their role in spatial  metacommmunity network: 
+Lastly, for how patch ``traits" affect their role in spatial  metacommmunity network: 
 %% begin.rcode nets3
 %% lapply(mod.years.site, summary)
 %% end.rcode
@@ -203,15 +202,21 @@ $plotting/spTempMets.R$ script.
 
 \clearpage
 
-\begin{figure}
-\centering
+\begin{figure} \centering
 \includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htFALSE.pdf}
-\label{fig:connectivity}
-\caption{The relationship between species and patch traits and their
-position in the metacommunity network when the supergeneralists
-are not included in the community. Floral diet breadth was positively related to both species degree (standardized) and centrality and floral within a year across patches (spatial network) and within a patch across years (temporal network). Body size (mean intertegular distance, mm) was negatively related to species degree but not centrality in the spatial network.  In addition, the floral diversity of a patch was positively  related to its degree and centrality (marginally significant) within the patch network within a year. Points represent means for each species or patch. The solid line indicates the mean slope estimate and the dashed lines are the $95\%$ confidence intervals around the estimate.}
-\end{figure}
-\clearpage
+\label{fig:connectivity} \caption{The relationship between species and
+patch traits and their position in the metacommunity network when the
+supergeneralists are not included in the community. Floral diet
+breadth was positively related to both species degree (standardized)
+and centrality and floral within a year across patches (spatial
+network) and within a patch across years (temporal network). Body size
+(mean intertegular distance, mm) was negatively related to species
+degree but not centrality in the spatial network.  In addition, the
+floral diversity of a patch was positively related to its degree and
+centrality (marginally significant) within the patch network within a
+year. Points represent means for each species or patch. The solid line
+indicates the mean slope estimate and the dashed lines are the $95\%$
+confidence intervals around the estimate.}  \end{figure} \clearpage
 
 
 %% begin.rcode setupNetwork_nosuperGen, include=FALSE
@@ -222,14 +227,14 @@ are not included in the community. Floral diet breadth was positively related to
 
 
 
-The results for how species traits effect the role of pollinators in
+The results for how species traits affect the role of pollinators in
 the spatial metacommmunity network without supergeneralists: 
 %% begin.rcode nets4
 %% lapply(mod.years.pol, summary)
 %% end.rcode
 
 
-And for how species traits effect the role of pollinators in
+And for how species traits affect the role of pollinators in
 the temporal metacommmunity network without super generalists: 
 %% begin.rcode nets5
 %% lapply(mod.sites.pol, summary)
@@ -237,15 +242,21 @@ the temporal metacommmunity network without super generalists:
 \clearpage
 
 
-\begin{figure}
-\centering
+\begin{figure} \centering
 \includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htTRUE.pdf}
-\label{fig:connectivity}
-\caption{The relationship between species and patch traits and their
-position in the metacommunity network when the supergeneralists
-are not included in the community. Floral diet breadth was positively related to both species degree (standardized) and centrality and floral within a year across patches (spatial network) and within a patch across years (temporal network). Body size (mean intertegular distance, mm) was negatively related to species degree but not centrality in the spatial network.  In addition, the floral diversity of a patch was positively  related to its degree and centrality (marginally significant) within the patch network within a year. Points represent means for each species or patch. The solid line indicates the mean slope estimate and the dashed lines are the $95\%$ confidence intervals around the estimate.}
-\end{figure}
-\clearpage
+\label{fig:connectivity} \caption{The relationship between species and
+patch traits and their position in the metacommunity network when the
+supergeneralists are not included in the community. Floral diet
+breadth was positively related to both species degree (standardized)
+and centrality and floral within a year across patches (spatial
+network) and within a patch across years (temporal network). Body size
+(mean intertegular distance, mm) was negatively related to species
+degree but not centrality in the spatial network.  In addition, the
+floral diversity of a patch was positively related to its degree and
+centrality (marginally significant) within the patch network within a
+year. Points represent means for each species or patch. The solid line
+indicates the mean slope estimate and the dashed lines are the $95\%$
+confidence intervals around the estimate.}  \end{figure} \clearpage
 
 
 \clearpage
