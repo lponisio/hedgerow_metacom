@@ -49,7 +49,7 @@ load('../../data/veg.Rdata')
 if(length(args) == 0){
     natural.decay  <- "2500"
     HR.decay <- "350"
-    filtering <- TRUE
+    filtering <- FALSE
     scale <- 1e2
     data.subset <- "all"
 }else{

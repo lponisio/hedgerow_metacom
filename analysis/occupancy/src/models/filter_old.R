@@ -39,7 +39,7 @@ ms.ms.occ <- nimbleCode({
     gam.k  ~ dnorm(0,0.001)
 
     ## body size
-    ## phi.B  ~ dnorm(0,0.001)
+    phi.B  ~ dnorm(0,0.001)
     gam.B  ~ dnorm(0,0.001)
 
     ## interaction between hedgerow proximity and floral resources
@@ -135,7 +135,7 @@ ms.ms.occ <- nimbleCode({
                 phi[site,yr,sp] <-
                     phi.0[sp] +
                     phi.k*k[sp] +
-                    ## phi.B*B[sp] +
+                    phi.B*B[sp] +
                     phi.hr.area[sp]*HRarea[site] +
                     phi.nat.area[sp]*natural[site] +
                     phi.fra[sp]*fra[site, yr] +

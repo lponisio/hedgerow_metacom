@@ -220,7 +220,6 @@ prepOccModelInput <- function(nzero, ## if augmenting data
                  fra = flower.mat[dimnames(X)$site,])
 
     monitors <- getParams()
-
     my.inits <- inits
     model.input <- list(data=data,
                         monitors=monitors,
@@ -243,6 +242,8 @@ prepModel <- function(){
         ## We do not want any X element equal to NA or they will not be
         ## considered data and will be sampled.
         model.input$data$X[ is.na(model.input$data$X) ] <- -1000
+    } else{
+        model.input$monitors <- c("Z",  model.input$monitors)
     }
     testOccData()
     return(model.input)

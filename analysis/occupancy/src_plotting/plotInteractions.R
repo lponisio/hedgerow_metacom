@@ -54,6 +54,18 @@ plotInteractionsHRRemnant <- function(means,
               add=TRUE)
     }
 
+    ## mean
+    curve(inv.logit(means['mu.phi.0'] +
+                    means['mu.phi.hr.area'] * x +
+                    means[paste0('phi.', param.name)] * mean(kept.traits) +
+                    means[paste0('phi.hr.area.', param.name)] * x * mean(kept.traits)),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
     ## 2 persistence
     ## interactions of floral resources and nat habitat proximity
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$natural), las=1,
@@ -70,6 +82,18 @@ plotInteractionsHRRemnant <- function(means,
               lwd=2,
               add=TRUE)
     }
+
+    curve(inv.logit(means['mu.phi.0'] +
+                    means['mu.phi.nat.area'] * x +
+                    means[paste0('phi.', param.name)] * mean(kept.traits) +
+                    means[paste0('phi.nat.area.', param.name)] * x * mean(kept.traits)),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lwd=2,
+          lty=2,
+          add=TRUE)
+
 
     ## 3 colonization
     ## interactions of floral resources and hedgerow proximity
@@ -90,6 +114,17 @@ plotInteractionsHRRemnant <- function(means,
               add=TRUE)
     }
 
+    curve(inv.logit(means['mu.gam.0'] +
+                    means['mu.gam.hr.area'] * x +
+                    means[paste0('gam.', param.name)] * mean(kept.traits) +
+                    means[paste0('gam.hr.area.', param.name)] * x * mean(kept.traits)),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lwd=2,
+          lty=2,
+          add=TRUE)
+
     ## 4 colonization
     ## interactions of floral resources and natural habitat
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$natural), las=1,
@@ -108,6 +143,17 @@ plotInteractionsHRRemnant <- function(means,
               lwd=2,
               add=TRUE)
     }
+
+    curve(inv.logit(means['mu.gam.0'] +
+                    means['mu.gam.nat.area'] * x +
+                    means[paste0('gam.', param.name)] * mean(kept.traits) +
+                    means[paste0('gam.nat.area.', param.name)] * x * mean(kept.traits)),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lwd=2,
+          lty=2,
+          add=TRUE)
 
 
     ## 5 occupancy hedgerow*k
@@ -140,6 +186,28 @@ plotInteractionsHRRemnant <- function(means,
     }
 
 
+    curve((inv.logit(means['mu.gam.0'] +
+                     means['mu.gam.hr.area'] * x +
+                     means[paste0('gam.', param.name)] * mean(kept.traits) +
+                     means[paste0('gam.hr.area.', param.name)] * x *
+                     mean(kept.traits)))/
+          (1 + inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.hr.area'] * x +
+                         means[paste0('gam.', param.name)] * mean(kept.traits) +
+                         means[paste0('gam.hr.area.', param.name)] * x *
+                         mean(kept.traits)) -
+           inv.logit(means['mu.phi.0'] +
+                     means['mu.phi.hr.area'] * x +
+                     means[paste0('phi.', param.name)] * mean(kept.traits) +
+                     means[paste0('phi.hr.area.', param.name)] * x * mean(kept.traits))),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lwd=2,
+          lty=2,
+          add=TRUE)
+
+
     mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1)
 
     ## 6 occupancy nat hab*k
@@ -170,6 +238,28 @@ plotInteractionsHRRemnant <- function(means,
               lwd=2,
               add=TRUE)
     }
+
+
+    curve((inv.logit(means['mu.gam.0'] +
+                     means['mu.gam.nat.area'] * x +
+                     means[paste0('gam.', param.name)] *  mean(kept.traits) +
+                     means[paste0('gam.nat.area.', param.name)] * x *
+                     mean(kept.traits)))/
+          (1 + inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.nat.area'] * x +
+                         means[paste0('gam.', param.name)] *  mean(kept.traits) +
+                         means[paste0('gam.nat.area.', param.name)] * x *
+                         mean(kept.traits)) -
+           inv.logit(means['mu.phi.0'] +
+                     means['mu.phi.nat.area'] * x +
+                     means[paste0('phi.', param.name)] *  mean(kept.traits) +
+                     means[paste0('phi.nat.area.', param.name)] * x *  mean(kept.traits))),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lwd=2,
+          lty=2,
+          add=TRUE)
 
     mtext("Remnant habitat \n proximity-weighted area", 1, line=5.5, cex=1)
 }
@@ -229,6 +319,18 @@ plotInteractionsFloralDiv <- function(plot.turnover,
               col=cols[i],
               lwd=2,
               add=TRUE)
+
+
+        curve(inv.logit(means['mu.phi.0'] +
+                        means['mu.phi.hr.area'] * x +
+                        means['mu.phi.fra'] * mean(model.input$data$fra) +
+                        means['phi.hr.area.fra'] * x * mean(model.input$data$fra)),
+              from=range(model.input$data$HRarea)[1],
+              to=range(model.input$data$HRarea)[2],
+              col="red",
+              lty=2,
+              lwd=2,
+              add=TRUE)
     }
     if(plot.remnant){
         ## 2 persistence
@@ -267,6 +369,18 @@ plotInteractionsFloralDiv <- function(plot.turnover,
               lwd=2,
               add=TRUE)
     }
+
+    curve(inv.logit(means['mu.gam.0'] +
+                    means['mu.gam.hr.area'] * x +
+                    means['mu.gam.fra'] * mean(model.input$data$fra) +
+                    means['gam.hr.area.fra'] * x * mean(model.input$data$fra)),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
     if(plot.remnant){
         ## 4 colonization
         ## interactions of floral resources and natural habitat
@@ -315,8 +429,31 @@ plotInteractionsFloralDiv <- function(plot.turnover,
               col=cols[i],
               lwd=2,
               add=TRUE)
-        mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1.2)
+
     }
+
+    curve((inv.logit(means['mu.gam.0'] +
+                     means['mu.gam.hr.area'] * x +
+                     means['mu.gam.fra'] * mean(model.input$data$fra) +
+                     means['gam.hr.area.fra'] * x *
+                     mean(model.input$data$fra)))/
+          (1 + inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.hr.area'] * x +
+                         means['mu.gam.fra'] * mean(model.input$data$fra) +
+                         means['gam.hr.area.fra'] * x *
+                         mean(model.input$data$fra)) -
+           inv.logit(means['mu.phi.0'] +
+                     means['mu.phi.hr.area'] * x +
+                     means['mu.phi.fra'] * mean(model.input$data$fra) +
+                     means['phi.hr.area.fra'] * x * mean(model.input$data$fra))),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
+    mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1.2)
     if(plot.remnant){
         ## 6 occupancy nat hab*fra
         plot(NA, ylim=c(0, 1),
@@ -335,7 +472,7 @@ plotInteractionsFloralDiv <- function(plot.turnover,
                                  means['mu.gam.nat.area'] * x +
                                  means['mu.gam.fra'] * quantiles.fra[i] +
                                  means['gam.nat.area.fra'] * x *
-                                 quantiles.fra[i]) -
+                                  quantiles.fra[i]) -
                    inv.logit(means['mu.phi.0'] +
                              means['mu.phi.nat.area'] * x +
                              means['mu.phi.fra'] * quantiles.fra[i] +
@@ -466,6 +603,19 @@ plotInteractionsB <- function(){
               add=TRUE)
     }
 
+
+    curve(inv.logit(means['mu.phi.0'] +
+                    means['mu.phi.nat.area'] * x +
+                    means['phi.B'] *0 +
+                    means['phi.nat.area.B'] * x *0),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
+
     ## 2 colonization
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$natural), las=1,
          ylab="", xlab="")
@@ -483,6 +633,18 @@ plotInteractionsB <- function(){
               lwd=2,
               add=TRUE)
     }
+
+
+    curve(inv.logit(means['mu.gam.0'] +
+                    means['mu.gam.nat.area'] * x +
+                    means['gam.B'] *0 +
+                    means['gam.nat.area.B'] * x *0),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
 
     ## 3 occupancy
     plot(NA, ylim=c(0, 1),
@@ -512,6 +674,28 @@ plotInteractionsB <- function(){
               lwd=2,
               add=TRUE)
     }
+
+    curve((inv.logit(means['mu.gam.0'] +
+                     means['mu.gam.nat.area'] * x +
+                     means['gam.B'] *0 +
+                     means['gam.nat.area.B'] * x *
+                    0))/
+          (1 + inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.nat.area'] * x +
+                         means['gam.B'] *0 +
+                         means['gam.nat.area.B'] * x *
+                        0) -
+           inv.logit(means['mu.phi.0'] +
+                     means['mu.phi.nat.area'] * x +
+                     means['phi.B'] *0 +
+                     means['phi.nat.area.B'] * x *0)),
+          from=range(model.input$data$natural)[1],
+          to=range(model.input$data$natural)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
     mtext("Remnant habitat \n proximity-weighted area", 1, line=5.5, cex=1)
 
 }
@@ -530,7 +714,7 @@ plotInteractionsk <- function(){
     par(oma=c(5, 5, 2, 1),
         mar=c(4, 2, 1, 1.5), cex.axis=1.5)
     kept.traits <- all.traits$r.degree[all.traits$GenusSpecies %in%
-                                      names(model.input$data$k)]
+                                       names(model.input$data$k)]
     nbreaks <- 30
     h <- hist(kept.traits, breaks=nbreaks, plot=FALSE)
     cols <- rev(viridis(length(h$density)))
@@ -564,6 +748,17 @@ plotInteractionsk <- function(){
               add=TRUE)
     }
 
+    curve(inv.logit(means['mu.phi.0'] +
+                    means['mu.phi.hr.area'] * x +
+                    means['phi.k'] * 0 +
+                    means['phi.hr.area.k'] * x * 0),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
+
     ## 2 colonization
     plot(NA, ylim=c(0, 1), xlim=range(model.input$data$HRarea), las=1,
          ylab="", xlab="")
@@ -581,6 +776,17 @@ plotInteractionsk <- function(){
               lwd=2,
               add=TRUE)
     }
+
+    curve(inv.logit(means['mu.gam.0'] +
+                    means['mu.gam.hr.area'] * x +
+                    means['gam.k'] * 0 +
+                    means['gam.hr.area.k'] * x *  0),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
 
     ## 3 occupancy
     plot(NA, ylim=c(0, 1),
@@ -611,6 +817,28 @@ plotInteractionsk <- function(){
               add=TRUE)
     }
     mtext("Hedgerow \n proximity-weighted area", 1, line=5.5, cex=1)
+
+
+    curve((inv.logit(means['mu.gam.0'] +
+                     means['mu.gam.hr.area'] * x +
+                     means['gam.k'] * 0 +
+                     means['gam.hr.area.k'] * x *
+                     0))/
+          (1 + inv.logit(means['mu.gam.0'] +
+                         means['mu.gam.hr.area'] * x +
+                         means['gam.k'] * 0 +
+                         means['gam.hr.area.k'] * x *
+                         0) -
+           inv.logit(means['mu.phi.0'] +
+                     means['mu.phi.hr.area'] * x +
+                     means['phi.k'] * 0 +
+                     means['phi.hr.area.k'] * x * 0)),
+          from=range(model.input$data$HRarea)[1],
+          to=range(model.input$data$HRarea)[2],
+          col="red",
+          lty=2,
+          lwd=2,
+          add=TRUE)
 
 }
 
