@@ -1,8 +1,8 @@
 ## calculates the species roles from a network and returns a dataframe
 ## with site status and ypr
-## takes networks and specimen data  
+## takes networks and specimen data
 
-calcSpec <- function(nets, spec, spec.metric, cutoff){
+calcSpec <- function(nets){
   ## applies specieslevel from bipartite to networks
   species.lev <- lapply(nets, function(x){
     sl <- specieslevel(x)
@@ -48,8 +48,5 @@ calcSpec <- function(nets, spec, spec.metric, cutoff){
   specs$overall.spec <- traits[,spec.metric][match(specs$GenusSpecies,
                                                    traits$GenusSpecies)]
 
-  specs$specialization <- "spec"
-  specs$specialization[specs$overall.spec > cutoff] <- "gen"
-  
   return(specs)
 }

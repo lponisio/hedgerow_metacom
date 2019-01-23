@@ -1,4 +1,12 @@
 
+species.lev <- function(x){
+    sl <- specieslevel(x)
+    sl$'higher level'$tot.int <- colSums(x)
+    sl$'lower level'$tot.int <- rowSums(x)
+    return(sl)
+}
+
+
 checkDirExists <- function(save.dir){
     if(!dir.exists(save.dir)) {
         cat(paste("Needed dir",

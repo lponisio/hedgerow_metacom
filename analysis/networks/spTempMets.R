@@ -61,3 +61,22 @@ print(lapply(mod.years.site, summary))
 
 save(mod.years.pol, mod.sites.pol, mod.years.site,
      file=sprintf('saved/mods/specmetrics_drop_li_ht%s.Rdata', drop.li.ht))
+
+
+
+load('~/Dropbox/hedgerow_metacom_saved/occupancy/runs/Z_all_2500_350.Rdata')
+samples <- do.call(rbind, ms.ms.nimble)
+
+samples.z <- samples[, grepl("Z", colnames(samples))]
+samples.z <- colSums(samples.z)/nrow(samples.z)
+
+
+dim1 <- sapply(strsplit(names(samples.z), ","), function(x) x[1])
+dim1 <- as.numeric(gsub("Z\\[", "", dim1))
+dim2 <- as.numeric(sapply(strsplit(names(samples.z), ","), function(x) x[2]))
+dim3 <- sapply(strsplit(names(samples.z), ","), function(x) x[3])
+dim3 <- as.numeric(gsub("\\]", "", dim3))
+
+z.array <- array(samples.z,
+                 dim=dim(model.input$data$Z),
+                  dimnames=dimnames(model.input$data$Z))
