@@ -50,7 +50,8 @@ year.site <- merge(year.site, by.site)
 ## **********************************************************
 
 ## anything outputted by specieslevel
-ys <- c("degree", "betweenness")
+ys <- c("degree", "betweenness", "closeness")
+mod.weights <- c("sd.degree", "sd.betweenness", "sd.closeness")
 
 xvar.species.form <- paste0("scale(", xvar.species, ")")
 
@@ -61,21 +62,28 @@ formulas.species <-lapply(ys, function(x) {
                            sep="+")))
 })
 
+
 ## within a year, across sites
 mod.years.pol <- list()
 mod.years.pol[[1]] <- lmer(formulas.species[[1]], data=year.sp,
-                           weights=(1/year.sp$sd.degree))
+                               weights=sqrt((1/year.sp$sd.degree)))
 
 mod.years.pol[[2]] <- lmer(formulas.species[[2]], data=year.sp,
-                           weights=(1/year.sp$sd.betweenness))
+                           weights=sqrt((1/year.sp$sd.betweenness)))
+
+mod.years.pol[[3]] <- lmer(formulas.species[[3]], data=year.sp,
+                           weights=sqrt((1/year.sp$sd.closeness)))
 
 ## within a site across years
 mod.sites.pol <- list()
 mod.sites.pol[[1]] <- lmer(formulas.species[[1]], data=site.sp,
-                           weights=(1/site.sp$sd.degree))
+                           weights=sqrt((1/site.sp$sd.degree)))
 
 mod.sites.pol[[2]] <- lmer(formulas.species[[2]], data=site.sp,
-                           weights=(1/site.sp$sd.betweenness))
+                           weights=sqrt((1/site.sp$sd.betweenness)))
+
+mod.sites.pol[[3]] <- lmer(formulas.species[[3]], data=site.sp,
+                           weights=sqrt((1/site.sp$sd.closeness)))
 
 
 names(mod.years.pol) <- names(mod.sites.pol) <- ys
@@ -95,21 +103,26 @@ formulas.site <-lapply(ys, function(x) {
     as.formula(paste(x, "~",
                      paste(paste(xvar.site.form, collapse="+"),
                            "(1|Site)",
+                           ## "(1|Year)",
                            sep="+")))
 })
 mod.years.site <- list()
 mod.years.site[[1]] <- lmer(formulas.site[[1]], data=year.site,
-                           weights=(1/year.site$sd.degree))
+                           weights=sqrt((1/year.site$sd.degree)))
 
 mod.years.site[[2]] <- lmer(formulas.site[[2]], data=year.site,
-                           weights=(1/year.site$sd.betweenness))
+                            weights=sqrt((1/year.site$sd.betweenness)))
+
+mod.years.site[[3]] <- lmer(formulas.site[[3]], data=year.site,
+                           weights=sqrt((1/year.site$sd.closeness)))
 
 
 ## name them the same as the pollinators
-names(mod.year.site)  <- ys
+names(mod.years.site)  <- ys
 
 print("metacommunity patch network")
-print(lapply(mod.year.site, summary))
+print(lapply(mod.years.site, summary))
 
-save(mod.years.pol, mod.sites.pol, mod.year.site,
+save(mod.years.pol, mod.sites.pol, mod.years.site,
+     year.sp, site.sp, year.site,
      file=sprintf('saved/mods/zmets_drop_li_ht%s.Rdata', drop.li.ht))
