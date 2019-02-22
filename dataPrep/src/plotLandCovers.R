@@ -17,13 +17,9 @@ plotLandscapeCovers <- function(){
                          bbox.sites[2,2]),
                        ncol=2)
 
-
-
     sys <- try(gmap(x=bbox.all,
                     scale=2,
-                    type="satellite", zoom=10))
-
-
+                    type="satellite"))
 
     sys <- gmap(x=bbox.all,
                 scale=2,
@@ -159,4 +155,65 @@ plotLandscapeCovers <- function(){
                     "Surveyed field margin"),
            ncol=3, bty="n")
 
+}
+
+
+plotLandscapeCoversWithBuffers <- function(){
+    ## prep map and site data
+    all.sites.pt <- spTransform(all.sites.pt,
+                                CRS("+init=epsg:4326"))
+
+    landcover.nat <- spTransform(landcover.nat,
+                                 CRS("+init=epsg:4326"))
+
+    bbox.sites <- bbox(all.sites.pt)
+    bbox.nat <- bbox(landcover.nat)
+
+    ## no idea why it doesn't work the first time
+    bbox.all <- matrix(c(bbox.sites[1,1],
+                         bbox.sites[2,1],
+                         bbox.sites[1,2],
+                         bbox.sites[2,2]),
+                       ncol=2)
+    sys <- try(gmap(x=bbox.all,
+                    scale=2,
+                    type="satellite"))
+    sys <- try(gmap(x=bbox.all,
+                    scale=2,
+                    type="satellite", zoom=10))
+    all.sites.pt <- spTransform(all.sites.pt,
+                                sys@crs)
+    landcover.nat <- spTransform(landcover.nat,
+                                 sys@crs)
+    new.hr <- all.sites.pt[grepl("new", all.sites.pt@data$df0),]
+    surveyed.hr <- all.sites.pt[all.sites.pt@data$df0 %in%
+                                unique(spec$Site[spec$SiteStatus %in%
+                                                 c("maturing", "mature")]),]
+    surveyed.control <- all.sites.pt[all.sites.pt@data$df0 %in%
+                                     unique(spec$Site[spec$SiteStatus =="control"]),]
+
+    dims <- bbox(sys)
+    plot(sys)
+    rect(xleft=dims[1,1],ybottom=dims[2,1],
+         xright=dims[1,2],ytop=dims[2,2],
+         col= rgb(1,1,1, alpha=0.3))
+    natural.cover <- crop(landcover.nat,  dims)
+    poly.cols <- add.alpha("blue",
+                           alpha=0.2)
+    plot(natural.cover,
+         col=poly.cols, add=TRUE)
+
+    buffers <- gBuffer(rbind(surveyed.hr, surveyed.control),
+                       width = 1000)
+    plot(buffers, col = add.alpha("yellow", .35), add = TRUE)
+    buffers2 <- gBuffer(rbind(surveyed.hr, surveyed.control),
+                        width = 7000)
+    plot(buffers2, col = add.alpha("red", .35), add = TRUE)
+
+    points(new.hr, col="darkturquoise", pch=15, cex=0.5)
+    points(surveyed.hr, col="dodgerblue", pch=16, cex=0.5)
+    points(surveyed.control, col="navy", pch=17, cex=0.5)
+    points(new.hr, col="black", pch=0, cex=0.5)
+    points(surveyed.hr, col="black", pch=1, cex=0.5)
+    points(surveyed.control, col="black", pch=2, cex=0.5)
 }

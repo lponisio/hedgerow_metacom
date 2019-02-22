@@ -104,7 +104,6 @@ formulas.site <-lapply(ys, function(x) {
     as.formula(paste(x, "~",
                      paste(paste(xvar.site.form, collapse="+"),
                            "(1|Site)",
-                           ## "(1|Year)",
                            sep="+")))
 })
 mod.years.site <- list()

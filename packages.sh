@@ -35,10 +35,10 @@ Rscript -e 'install.packages("rgeos", repos="http://cran.r-project.org")'
 ## Bayesian analyses
 Rscript -e 'install.packages("vegan", repos="http://cran.r-project.org")'
 Rscript -e 'install.packages("igraph", repos="http://cran.r-project.org")'
-Rscript -e 'install.packages("nimble", repos="http://cran.r-project.org")'
 Rscript -e 'install.packages("abind", repos="http://cran.r-project.org")'
 Rscript -e 'install.packages("RColorBrewer", repos="http://cran.r-project.org")'
 Rscript -e 'install.packages("viridis", repos="http://cran.r-project.org")'
+Rscript -e 'install.packages("nimble"))'
 
 ## frequentist analyses
 Rscript -e 'install.packages("lmerTest", repos="http://cran.r-project.org")'

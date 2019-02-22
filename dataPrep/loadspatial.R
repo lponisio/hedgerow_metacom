@@ -158,6 +158,10 @@ dats <- data.frame(type="natural")
 rownames(dats) <- "natural"
 landcover.nat <- SpatialPolygonsDataFrame(landcover.nat,
                                           data=dats)
+pdf.f(plotLandscapeCoversWithBuffers,
+      file="../../../hedgerow_metacom_saved/map/covermap_withBuffers.pdf",
+      height=10, width=8)
+
 save(landcover.nat,
      file=file.path(save.dir, "landcoverNat.Rdata"))
 
