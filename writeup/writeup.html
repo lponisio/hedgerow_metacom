@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>{</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<p>\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width&gt;\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother</p>
+
+<p>\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb</p>
+
+<p>\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother</p>
+
+<p>\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX</p>
+
+<p>\let\hlesc\hlstd \let\hlpps\hlstd \let\hllin\hlstd \let\hlslc\hlcom \let\hlppc\hlcom
+\usepackage{alltt}
+\usepackage{natbib}
+\usepackage[unicode=true]{hyperref}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{mathpazo}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{lscape}
+\usepackage{fancyhdr}
+\usepackage{wrapfig,lipsum,booktabs}
+\usepackage[normalem]{ulem}
+\usepackage[parfill]{parskip}
+\usepackage{multirow}
+\geometry{tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}</p>
+
+<p>\bibliographystyle{ecology_let}</p>
+
+<p>%% for inline R code: if the inline code is not correctly parsed, you will see a message
+\newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}</p>
+
+<p>\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\title{Proximity of restored hedgerows interacts with local floral diversity and species traits to shape  long-term pollinator metacommunity dynamics: a walk through of the models and analyses}
+\author{Lauren Ponisio}</p>
+
+<p>\maketitle</p>
+
+<p>\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{figure/degree_spatial.pdf}
+\label{fig:network}
+\end{figure}
+\clearpage</p>
+
+<p>\section{Overview}
+In our study we examine the metacommunity dynamics of plant-pollinator
+communities using variety of different methods including 1) occupancy
+modeling and 2) network analyses.  We are committed to reproducible
+science and all analytical code will be maintained on github, along
+with this write up.</p>
+
+<p>The entire analysis is executable from the main.sh file. All of the
+packages needed to run the analyses are listed in the packages.sh
+file. All analyses were run using R (version \(3.5.1\))
+and nimble (0.6-12). </p>
+
+<p>Navigate to the analysis folder within the github repo
+(hedgerow_metacommunity) then the main.sh file can be selected and
+run (a warning, the occupancy analyses each take several hours on my
+2.3 GHz imac pro, so all together they will take quite a while), you
+could run all of the analyses in the study by running this line in
+BASH.</p>
+
+<p>\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\noindent
+\ttfamily
+\hlstd{bash\ main.sh}\hspace*{\fill}
+\mbox{}
+\normalfont
+\end{kframe}
+\end{knitrout}</p>
+
+<p>This will somewhat helpfully print the results of each analysis
+and re-create any accompanying figures.</p>
+
+<p>We will walk through each the main script for each analysis
+individually.</p>
+
+<p>\section{Occupancy model}</p>
+
+<p>The occupancy models are run through the main.R file in the
+analysis/occupancy folder. The script begins by setting the arguments
+for prepping the data. Run as is to reproduce the data used in the
+study. Prior analyses used the area of hedgerows in buffers weighted
+by log distance from a focal site instead of the Gaussian decay
+method, with similar results. In addition, the method for calculating
+the habitat quality of a patch can be toggled using the <code>col.name.div.type&quot; argument. Other options are plant richness
+</code>Richness&quot; or the diversity of flowers visited by pollinators
+&ldquo;div.visits&rdquo;. All measures gave qualitatively similar results.</p>
+
+<p>Importantly, <code>natural.decay&quot; and</code>HR.decay&quot; change the decay
+(\(\alpha\)) of weighting of remnant and hedgerow area,
+respectively. Different combinations (\(350\), \(1000\), and \(2500\)) can
+be used to change the steepness of the decay rate from very steep
+(\(\alpha=350\) represents \(98.5\%\) reduction in weight by \(1\) \(km\)) to
+very shallow (\(\alpha=2500\) represents a \(98.5\%\) reduction in weight
+by \(7\) \(km\)). The main.sh script executes all combinations of decay
+rates. They are executed individually because the nimble models take a
+considerable amount of computer memory which is not cleared after the
+model is run. Running them all in a four loop within the same instance
+of R would overload most computers.</p>
+
+<p>To run the MCMC in order to estimate the model coefficients, we use the
+NIMBLE R package \citep{nimble-14, de2017programming}.  <code>nimble&quot;
+stands for</code>numerical inference for statistical models with Bayesian
+and likelihood estimation.&ldquo;  It implements almost the same model
+language as BUGS and JAGS, but supports easy customization of MCMC
+algorithms, including writing new samplers, and user-defined functions
+and distributions, which opens up enormous flexibility in how models
+are written. This enabled us to integrate over the latent states,
+increasing computational efficiency by an order of magnitude in
+comparison to sampling every latent state. </p>
+
+<p>The multi-species, multi-season occupancy model is as follows (the
+model code follows the notation in equation 5-6 in the manucript,
+except \(HRwtProx\) is abbreviated as \(hr.area\), and \(RemnantWtProx\) as
+\(nat.area\)):</p>
+
+<p>\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ms.ms.occ}
+\end{alltt}
+\begin{verbatim}</p>
+
+<h2>{</h2>
+
+<h2>mu.p.0 ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.p.day.1 ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.p.day.2 ~ dnorm(0, 0.001)</h2>
+
+<h2>sigma.p.0 ~ dunif(0, 100)</h2>
+
+<h2>sigma.p.day.1 ~ dunif(0, 100)</h2>
+
+<h2>sigma.p.day.2 ~ dunif(0, 100)</h2>
+
+<h2>mu.phi.0 ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.gam.0 ~ dnorm(0, 0.001)</h2>
+
+<h2>sigma.phi.0 ~ dunif(0, 100)</h2>
+
+<h2>sigma.gam.0 ~ dunif(0, 100)</h2>
+
+<h2>mu.phi.hr.area ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.gam.hr.area ~ dnorm(0, 0.001)</h2>
+
+<h2>sigma.phi.hr.area ~ dunif(0, 100)</h2>
+
+<h2>sigma.gam.hr.area ~ dunif(0, 100)</h2>
+
+<h2>mu.phi.nat.area ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.gam.nat.area ~ dnorm(0, 0.001)</h2>
+
+<h2>sigma.phi.nat.area ~ dunif(0, 100)</h2>
+
+<h2>sigma.gam.nat.area ~ dunif(0, 100)</h2>
+
+<h2>mu.phi.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>mu.gam.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>sigma.phi.fra ~ dunif(0, 100)</h2>
+
+<h2>sigma.gam.fra ~ dunif(0, 100)</h2>
+
+<h2>phi.k ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.k ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.B ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.hr.area.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.hr.area.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.nat.area.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.nat.area.fra ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.hr.area.k ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.hr.area.k ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.nat.area.k ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.nat.area.k ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.hr.area.B ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.hr.area.B ~ dnorm(0, 0.001)</h2>
+
+<h2>phi.nat.area.B ~ dnorm(0, 0.001)</h2>
+
+<h2>gam.nat.area.B ~ dnorm(0, 0.001)</h2>
+
+<h2>for (sp in 1:nsp) {</h2>
+
+<h2>p.0[sp] ~ dnorm(mu.p.0, sd = sigma.p.0)</h2>
+
+<h2>p.day.1[sp] ~ dnorm(mu.p.day.1, sd = sigma.p.day.1)</h2>
+
+<h2>p.day.2[sp] ~ dnorm(mu.p.day.2, sd = sigma.p.day.2)</h2>
+
+<h2>phi.0[sp] ~ dnorm(mu.phi.0, sd = sigma.phi.0)</h2>
+
+<h2>gam.0[sp] ~ dnorm(mu.gam.0, sd = sigma.gam.0)</h2>
+
+<h2>phi.hr.area[sp] ~ dnorm(mu.phi.hr.area, sd = sigma.phi.hr.area)</h2>
+
+<h2>gam.hr.area[sp] ~ dnorm(mu.gam.hr.area, sd = sigma.gam.hr.area)</h2>
+
+<h2>phi.nat.area[sp] ~ dnorm(mu.phi.nat.area, sd = sigma.phi.nat.area)</h2>
+
+<h2>gam.nat.area[sp] ~ dnorm(mu.gam.nat.area, sd = sigma.gam.nat.area)</h2>
+
+<h2>phi.fra[sp] ~ dnorm(mu.phi.fra, sd = sigma.phi.fra)</h2>
+
+<h2>gam.fra[sp] ~ dnorm(mu.gam.fra, sd = sigma.gam.fra)</h2>
+
+<h2>}</h2>
+
+<h2>for (sp in 1:nsp) {</h2>
+
+<h2>for (site in 1:nsite) {</h2>
+
+<h2>for (yr in 1:nyear) {</h2>
+
+<h2>for (rep in 1:nrep[site, yr, sp]) {</h2>
+
+<h2>logit(p[site, yr, rep, sp]) &lt;- p.0[sp] + p.day.1[sp] *</h2>
+
+<h2>day[site, yr, rep, sp] + p.day.2[sp] * day.2[site,</h2>
+
+<h2>yr, rep, sp]</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>logit(phi.site.sp.mean[site, sp]) &lt;- mean(phi[site,</h2>
+
+<h2>1:(nyear - 1), sp])</h2>
+
+<h2>logit(gam.site.sp.mean[site, sp]) &lt;- mean(gam[site,</h2>
+
+<h2>1:(nyear - 1), sp])</h2>
+
+<h2>psi.1[site, sp] &lt;- gam.site.sp.mean[site, sp]/(1 -</h2>
+
+<h2>phi.site.sp.mean[site, sp] + gam.site.sp.mean[site,</h2>
+
+<h2>sp])</h2>
+
+<h2>psi[site, 1, sp] &lt;- psi.1[site, sp]</h2>
+
+<h2>for (yr in 1:(nyear - 1)) {</h2>
+
+<h2>phi[site, yr, sp] &lt;- phi.0[sp] + phi.k * k[sp] +</h2>
+
+<h2>phi.B * B[sp] + phi.hr.area[sp] * HRarea[site] +</h2>
+
+<h2>phi.nat.area[sp] * natural[site] + phi.fra[sp] *</h2>
+
+<h2>fra[site, yr] + phi.hr.area.fra * fra[site,</h2>
+
+<h2>yr] * HRarea[site] + phi.nat.area.fra * fra[site,</h2>
+
+<h2>yr] * natural[site] + phi.hr.area.k * k[sp] *</h2>
+
+<h2>HRarea[site] + phi.nat.area.k * k[sp] * natural[site] +</h2>
+
+<h2>phi.hr.area.B * B[sp] * HRarea[site] + phi.nat.area.B *</h2>
+
+<h2>B[sp] * natural[site]</h2>
+
+<h2>gam[site, yr, sp] &lt;- gam.0[sp] + gam.k * k[sp] +</h2>
+
+<h2>gam.B * B[sp] + gam.hr.area[sp] * HRarea[site] +</h2>
+
+<h2>gam.nat.area[sp] * natural[site] + gam.fra[sp] *</h2>
+
+<h2>fra[site, yr] + gam.hr.area.fra * fra[site,</h2>
+
+<h2>yr] * HRarea[site] + gam.nat.area.fra * fra[site,</h2>
+
+<h2>yr] * natural[site] + gam.hr.area.k * k[sp] *</h2>
+
+<h2>HRarea[site] + gam.nat.area.k * k[sp] * natural[site] +</h2>
+
+<h2>gam.hr.area.B * B[sp] * HRarea[site] + gam.nat.area.B *</h2>
+
+<h2>B[sp] * natural[site]</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>for (site in 1:nsite) {</h2>
+
+<h2>for (sp in 1:nsp) {</h2>
+
+<h2>X[site, 1:nyear, 1:max.nreps, sp] ~ dDynamicOccupancy(nrep = nrep[site,</h2>
+
+<h2>1:nyear, sp], psi1 = psi[site, 1, sp], phi = expit(phi[site,</h2>
+
+<h2>1:(nyear - 1), sp]), gamma = expit(gam[site,</h2>
+
+<h2>1:(nyear - 1), sp]), p = p[site, 1:nyear, 1:max.nreps,</h2>
+
+<h2>sp])</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<p>\end{verbatim}
+\end{kframe}
+\end{knitrout}</p>
+
+<p>For those of you familiar with working in BUGS or JAGS, the main
+difference here is the call to &#39;dDynamicOccupancy&#39;. This is the
+function allows us to numerically integrate over sequences of latent
+states to directly calculate model likelihoods, removing the need to
+perform MCMC sampling of these latent variables.</p>
+
+<p>\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{dDynamicOccupancy}
+\end{alltt}
+\begin{verbatim}</p>
+
+<h2>function (x, nrep, psi1, phi, gamma, p, log = 0)</h2>
+
+<h2>{</h2>
+
+<h2>ProbOccNextTime &lt;- psi1</h2>
+
+<h2>ll &lt;- 0</h2>
+
+<h2>nyears &lt;- nimDim(x)[1]</h2>
+
+<h2>if (nyears &gt;= 1) {</h2>
+
+<h2>for (t in 1:nyears) {</h2>
+
+<h2>if (nrep[t] &gt; 0) {</h2>
+
+<h2>numObs &lt;- sum(x[t, 1:nrep[t]])</h2>
+
+<h2>if (numObs &lt; 0) {</h2>
+
+<h2>nimPrint(&quot;Error in dDynamicOccupancy: numObs &lt; 0 but nrep[t] &gt; 0\n&rdquo;)</h2>
+
+<h2>nimStop(&ldquo;Error in dDynamicOccupancy: numObs &lt; 0 but nrep[t] &gt; 0\n&rdquo;)</h2>
+
+<h2>}</h2>
+
+<h2>ProbOccAndCount &lt;- ProbOccNextTime * exp(sum(dbinom(x[t,</h2>
+
+<h2>1:nrep[t]], size = 1, p = p[t, 1:nrep[t]],</h2>
+
+<h2>log = 1)))</h2>
+
+<h2>ProbUnoccAndCount &lt;- (1 - ProbOccNextTime) *</h2>
+
+<h2>(numObs == 0)</h2>
+
+<h2>ProbCount &lt;- ProbOccAndCount + ProbUnoccAndCount</h2>
+
+<h2>ProbOccGivenCount &lt;- ProbOccAndCount/ProbCount</h2>
+
+<h2>ll &lt;- ll + log(ProbCount)</h2>
+
+<h2>if (t &lt; nyears)</h2>
+
+<h2>ProbOccNextTime &lt;- ProbOccGivenCount * phi[t] +</h2>
+
+<h2>(1 - ProbOccGivenCount) * gamma[t]</h2>
+
+<h2>}</h2>
+
+<h2>else {</h2>
+
+<h2>if (t &lt; nyears)</h2>
+
+<h2>ProbOccNextTime &lt;- ProbOccNextTime * phi[t] +</h2>
+
+<h2>(1 - ProbOccNextTime) * gamma[t]</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>}</h2>
+
+<h2>if (log)</h2>
+
+<h2>return(ll)</h2>
+
+<h2>else return(exp(ll))</h2>
+
+<h2>}</h2>
+
+<h2><environment: 0x7fc7426ed000></h2>
+
+<p>\end{verbatim}
+\end{kframe}
+\end{knitrout}</p>
+
+<p>The number of MCMC iterations, burnin, number of chains, etc. can be
+toggled by changing the value of the scale object. This script will
+also generate MCMC diagnostic figures (\(src\_plotting/checkChains.R\)),
+interaction plots (\(src\_plotting/plotInteractions.R\)), and posterior
+mean and credible internal plots and table (\(src\_plotting/posteriorPlotting.R\)).</p>
+
+<p>\section{Metacommunity Network Analysis}</p>
+
+<p>The &#39;spTempMets.R&#39; file executes the network analyses. The  user can
+provide any network metrics taken by the function &#39;speciesLevel&#39; in
+the bipartite package. The  \(y_{i,j,k}\) network
+metrics of the \(i^{\mathrm{th}}\) species at the \(j^{\mathrm{th}}\) site
+in the \(k^{\mathrm{th}}\) year was modeled as:</p>
+
+<p>%
+\begin{equation}
+\label{eq:lms}
+\begin{split}
+\mathrm{y}<em>{i,j,k} \sim \mathrm{B}</em>{i} + \mathrm{k}<em>{i} +
+\mathrm{site}</em>{j} + \mathrm{site}<em>{k} \<br/>
+\mathrm{site}</em>{j} \sim N(0, \sigma<em>{site}) \<br/>
+\mathrm{year}</em>{k} \sim N(0, \sigma_{year})
+\hspace{0.2em}
+\end{split}
+\end{equation}
+%</p>
+
+<p>\clearpage
+\bibliography{refs}
+\clearpage</p>
+
+<p>\end{document}</p>
+
+</body>
+
+</html>

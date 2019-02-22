@@ -58,7 +58,16 @@ with this write up.
 The entire analysis is executable from the main.sh file. All of the
 packages needed to run the analyses are listed in the packages.sh
 file. All analyses were run using R (version $3.5.1$)
-and nimble (0.6-12). 
+and nimble (0.6-12).
+
+Note, there is an incompatibility with Nimble version 7.0 released in
+February 2019. If this effects you can you either install the older
+version of Nimble, or install from the branch
+"avoid-protect-stack-overflow" directly from github. See post at
+\url{https://groups.google.com/forum/#!topic/nimble-users/k6VMapOfxOk}
+
+Hopefully this bug will be fixed soon and the models will run on any
+version of NIMBLE.
 
 Navigate to the analysis folder within the github repo
 (hedgerow\_metacommunity) then the main.sh file can be selected and
@@ -85,7 +94,8 @@ for prepping the data. Run as is to reproduce the data used in the
 study. Prior analyses used the area of hedgerows in buffers weighted
 by log distance from a focal site instead of the Gaussian decay
 method, with similar results. In addition, the method for calculating
-the habitat quality of a patch can be toggled using the ``col.name.div.type" argument. Other options are plant richness
+the habitat quality of a patch can be toggled using the
+``col.name.div.type" argument. Other options are plant richness
 ``Richness" or the diversity of flowers visited by pollinators
 ``div.visits". All measures gave qualitatively similar results.
 
@@ -95,11 +105,16 @@ respectively. Different combinations ($350$, $1000$, and $2500$) can
 be used to change the steepness of the decay rate from very steep
 ($\alpha=350$ represents $98.5\%$ reduction in weight by $1$ $km$) to
 very shallow ($\alpha=2500$ represents a $98.5\%$ reduction in weight
-by $7$ $km$). The main.sh script executes all combinations of decay
+by $7$ $km$).
+
+
+ The main.sh script executes all combinations of decay
 rates. They are executed individually because the nimble models take a
 considerable amount of computer memory which is not cleared after the
 model is run. Running them all in a four loop within the same instance
-of R would overload most computers.
+of R would overload most computers. The last argument supplied is a
+scale parameter to determine the number for iterations ($1e3$*scale)
+and burnin ($1e1$*scale).
 
 To run the MCMC in order to estimate the model coefficients, we use the
 NIMBLE R package \citep{nimble-14, de2017programming}.  ``nimble"
@@ -114,7 +129,7 @@ comparison to sampling every latent state.
 
 
 The multi-species, multi-season occupancy model is as follows (the
-model code follows the notation in equation 5-6 in the manucript,
+model code follows the notation in equation 5-6 in the manuscript,
 except $HRwtProx$ is abbreviated as $hr.area$, and $RemnantWtProx$ as
 $nat.area$):
 %% begin.rcode setupoccupancy, include=FALSE
@@ -150,113 +165,73 @@ mean and credible internal plots and table ($src\_plotting/posteriorPlotting.R$)
 
 \section{Metacommunity Network Analysis}
 
-The 'spTempMets.R' file executes the network analyses. The  user can
+There are three versions of the metacommunity network analysis. The
+first two follow the suggestion of an anonymous reviewer and use the
+inferred latent states from the occupancy model to estimate the
+presence/absence of a species at a site. The third uses the raw
+data. The results are almost completely consistent between the options,
+though some of the pvalues bounce between marginally significant and
+significant. 
+
+Unfortunately, the fancy work we did to integrate out the latent
+states (i.e., filter) is not helpful here since we need to sample the latent states
+in order to use them in this analysis. So we created an alternative
+version of the model which run a bit more slowly but samples all of
+the latent states. It also outputs a truly massive model output with
+with all the samples of the Zs.
+
+In the main.sh file, you can run this model but setting filtering
+FALSE which is done by passing the argument "latent" into the setup
+code. We use the alpha values for the best fitting model. 
+
+%% begin.rcode bash-chunk3, engine='bash', eval=FALSE
+% Rscript analysis/occupancy/main.R "2500" "350" "latent" "all" 1e2
+%% end.rcode
+
+Once we have the Zs, we have two options for creating the networks
+from which to calculate the centrality metrics for species and
+sites. The first creates a posterior distribution of metrics but
+taking a random sample of the MCMC samples for the Zs, building
+networks for each sample, then calculating metrics for each
+sample. The mean and SD of the posterior distribution of network
+metrics is then calculated and used in weighted linear mixed models. 
+
+
+This analysis can be run using the following line in the shell
+
+%% begin.rcode bash-chunk4, engine='bash', eval=FALSE
+Rscript analysis/networks/Znetwork_posterior.R
+%% end.rcode
+
+
+The second flavor of this analysis uses the probability a species is
+present at a site as inferred from the MCMC samples by taking the mean
+Z value across all samples. This probability is then used as a weight
+when constructing the metacommunity networks. The metrics of those
+weighted networks and then used in the same linear mixed models as the
+above (except without weights).
+
+That analysis can be executed using the following line in the shell. 
+%% begin.rcode bash-chunk5, engine='bash', eval=FALSE
+Rscript analysis/networks/Znetwork.R
+%% end.rcode
+
+
+The last variety of this analysis uses the raw data which includes
+species abundances. The data is not corrected for imperfect detection.
+The 'spTempMets.R' file executes the network analyses. The user can
 provide any network metrics taken by the function 'speciesLevel' in
-the bipartite package. The  $y_{i,j,k}$ network
-metrics of the $i^{\mathrm{th}}$ species at the $j^{\mathrm{th}}$ site
-in the $k^{\mathrm{th}}$ year was modeled as:
+the bipartite package.
 
-%
-\begin{equation}
-\label{eq:lms}
-\begin{split}
-\mathrm{y}_{i,j,k} \sim \mathrm{B}_{i} + \mathrm{k}_{i} +
-\mathrm{site}_{j} + \mathrm{site}_{k} \\   
-\mathrm{site}_{j} \sim N(0, \sigma_{site}) \\  
-\mathrm{year}_{k} \sim N(0, \sigma_{year})
-\hspace{0.2em}
-\end{split}
-\end{equation}
-%
+This analysis can be run using the following line in the shell
 
-
-
-%% begin.rcode setupNetwork, include=FALSE
-% setwd('../')
-% passed.args <- c(FALSE, "2500", "350")
-% source('analysis/networks/spTempMets.R')
-%% end.rcode
-
-The results for how species traits affect the role of pollinators in
-the spatial metacommmunity network: 
-%% begin.rcode nets1
-%% lapply(mod.years.pol, summary)
+%% begin.rcode bash-chunk6, engine='bash', eval=FALSE
+Rscript analysis/networks/spTempMets.R
 %% end.rcode
 
 
-And for how species traits affect the role of pollinators in
-the temporal metacommmunity network: 
-%% begin.rcode nets2
-%% lapply(mod.sites.pol, summary)
-%% end.rcode
-
-
-Lastly, for how patch ``traits" affect their role in spatial  metacommmunity network: 
-%% begin.rcode nets3
-%% lapply(mod.years.site, summary)
-%% end.rcode
-
-
-The plotting is then executed in the accompanying
-$plotting/spTempMets.R$ script.
-
-\clearpage
-
-\begin{figure} \centering
-\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htFALSE.pdf}
-\label{fig:connectivity} \caption{The relationship between species and
-patch traits and their position in the metacommunity network when the
-supergeneralists are not included in the community. Floral diet
-breadth was positively related to both species degree (standardized)
-and centrality and floral within a year across patches (spatial
-network) and within a patch across years (temporal network). Body size
-(mean intertegular distance, mm) was negatively related to species
-degree but not centrality in the spatial network.  In addition, the
-floral diversity of a patch was positively related to its degree and
-centrality (marginally significant) within the patch network within a
-year. Points represent means for each species or patch. The solid line
-indicates the mean slope estimate and the dashed lines are the $95\%$
-confidence intervals around the estimate.}  \end{figure} \clearpage
-
-
-%% begin.rcode setupNetwork_nosuperGen, include=FALSE
-% setwd('../')
-% passed.args <- c(TRUE, "2500", "350")
-% source('analysis/networks/spTempMets.R')
-%% end.rcode
-
-
-
-The results for how species traits affect the role of pollinators in
-the spatial metacommmunity network without supergeneralists: 
-%% begin.rcode nets4
-%% lapply(mod.years.pol, summary)
-%% end.rcode
-
-
-And for how species traits affect the role of pollinators in
-the temporal metacommmunity network without super generalists: 
-%% begin.rcode nets5
-%% lapply(mod.sites.pol, summary)
-%% end.rcode
-\clearpage
-
-
-\begin{figure} \centering
-\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htTRUE.pdf}
-\label{fig:connectivity} \caption{The relationship between species and
-patch traits and their position in the metacommunity network when the
-supergeneralists are not included in the community. Floral diet
-breadth was positively related to both species degree (standardized)
-and centrality and floral within a year across patches (spatial
-network) and within a patch across years (temporal network). Body size
-(mean intertegular distance, mm) was negatively related to species
-degree but not centrality in the spatial network.  In addition, the
-floral diversity of a patch was positively related to its degree and
-centrality (marginally significant) within the patch network within a
-year. Points represent means for each species or patch. The solid line
-indicates the mean slope estimate and the dashed lines are the $95\%$
-confidence intervals around the estimate.}  \end{figure} \clearpage
+All of these flavors results in the same inferences about the effect
+of site and species traits on their metacommunity network roles. 
 
 
 \clearpage

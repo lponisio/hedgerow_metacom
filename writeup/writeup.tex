@@ -48,6 +48,7 @@
 \definecolor{errorcolor}{rgb}{1, 0, 0}
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
+\let\hlesc\hlstd \let\hlpps\hlstd \let\hllin\hlstd \let\hlslc\hlcom \let\hlppc\hlcom
 \usepackage{alltt}
 \usepackage{natbib}
 \usepackage[unicode=true]{hyperref}
@@ -100,7 +101,16 @@ with this write up.
 The entire analysis is executable from the main.sh file. All of the
 packages needed to run the analyses are listed in the packages.sh
 file. All analyses were run using R (version $3.5.1$)
-and nimble (0.6-12). 
+and nimble (0.6-12).
+
+Note, there is an incompatibility with Nimble version 7.0 released in
+February 2019. If this effects you can you either install the older
+version of Nimble, or install from the branch
+"avoid-protect-stack-overflow" directly from github. See post at
+\url{https://groups.google.com/forum/#!topic/nimble-users/k6VMapOfxOk}
+
+Hopefully this bug will be fixed soon and the models will run on any
+version of NIMBLE.
 
 Navigate to the analysis folder within the github repo
 (hedgerow\_metacommunity) then the main.sh file can be selected and
@@ -111,9 +121,11 @@ BASH.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-bash main.sh
-\end{alltt}
+\noindent
+\ttfamily
+\hlstd{bash\ main.sh}\hspace*{\fill}
+\mbox{}
+\normalfont
 \end{kframe}
 \end{knitrout}
 
@@ -131,7 +143,8 @@ for prepping the data. Run as is to reproduce the data used in the
 study. Prior analyses used the area of hedgerows in buffers weighted
 by log distance from a focal site instead of the Gaussian decay
 method, with similar results. In addition, the method for calculating
-the habitat quality of a patch can be toggled using the ``col.name.div.type" argument. Other options are plant richness
+the habitat quality of a patch can be toggled using the
+``col.name.div.type" argument. Other options are plant richness
 ``Richness" or the diversity of flowers visited by pollinators
 ``div.visits". All measures gave qualitatively similar results.
 
@@ -141,11 +154,16 @@ respectively. Different combinations ($350$, $1000$, and $2500$) can
 be used to change the steepness of the decay rate from very steep
 ($\alpha=350$ represents $98.5\%$ reduction in weight by $1$ $km$) to
 very shallow ($\alpha=2500$ represents a $98.5\%$ reduction in weight
-by $7$ $km$). The main.sh script executes all combinations of decay
+by $7$ $km$).
+
+
+ The main.sh script executes all combinations of decay
 rates. They are executed individually because the nimble models take a
 considerable amount of computer memory which is not cleared after the
 model is run. Running them all in a four loop within the same instance
-of R would overload most computers.
+of R would overload most computers. The last argument supplied is a
+scale parameter to determine the number for iterations ($1e3$*scale)
+and burnin ($1e1$*scale).
 
 To run the MCMC in order to estimate the model coefficients, we use the
 NIMBLE R package \citep{nimble-14, de2017programming}.  ``nimble"
@@ -160,7 +178,7 @@ comparison to sampling every latent state.
 
 
 The multi-species, multi-season occupancy model is as follows (the
-model code follows the notation in equation 5-6 in the manucript,
+model code follows the notation in equation 5-6 in the manuscript,
 except $HRwtProx$ is abbreviated as $hr.area$, and $RemnantWtProx$ as
 $nat.area$):
 
@@ -196,7 +214,6 @@ $nat.area$):
 ##     sigma.gam.fra ~ dunif(0, 100)
 ##     phi.k ~ dnorm(0, 0.001)
 ##     gam.k ~ dnorm(0, 0.001)
-##     phi.B ~ dnorm(0, 0.001)
 ##     gam.B ~ dnorm(0, 0.001)
 ##     phi.hr.area.fra ~ dnorm(0, 0.001)
 ##     gam.hr.area.fra ~ dnorm(0, 0.001)
@@ -326,7 +343,7 @@ perform MCMC sampling of these latent variables.
 ##         return(ll)
 ##     else return(exp(ll))
 ## }
-## <environment: 0x7f88f4c125f8>
+## <environment: 0x7f84b30c25c8>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -340,454 +357,97 @@ mean and credible internal plots and table ($src\_plotting/posteriorPlotting.R$)
 
 \section{Metacommunity Network Analysis}
 
-The 'spTempMets.R' file executes the network analyses. The  user can
+There are three versions of the metacommunity network analysis. The
+first two follow the suggestion of an anonymous reviewer and use the
+inferred latent states from the occupancy model to estimate the
+presence/absence of a species at a site. The third uses the raw
+data. The results are almost completely consistent between the options,
+though some of the pvalues bounce between marginally significant and
+significant. 
+
+Unfortunately, the fancy work we did to integrate out the latent
+states (i.e., filter) is not helpful here since we need to sample the latent states
+in order to use them in this analysis. So we created an alternative
+version of the model which run a bit more slowly but samples all of
+the latent states. It also outputs a truly massive model output with
+with all the samples of the Zs.
+
+In the main.sh file, you can run this model but setting filtering
+FALSE which is done by passing the argument "latent" into the setup
+code. We use the alpha values for the best fitting model. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\noindent
+\ttfamily
+\hlstd{Rscript\ analysis}\hlopt{/}\hlstd{occupancy}\hlopt{/}\hlstd{main.R\ }\hlstr{"2500"}\hlstd{\ }\hlstr{"350"}\hlstd{\ }\hlstr{"latent"}\hlstd{\ }\hlstr{"all"}\hlstd{\ }\hlnum{1}\hlstd{e2}\hspace*{\fill}
+\mbox{}
+\normalfont
+\end{kframe}
+\end{knitrout}
+
+Once we have the Zs, we have two options for creating the networks
+from which to calculate the centrality metrics for species and
+sites. The first creates a posterior distribution of metrics but
+taking a random sample of the MCMC samples for the Zs, building
+networks for each sample, then calculating metrics for each
+sample. The mean and SD of the posterior distribution of network
+metrics is then calculated and used in weighted linear mixed models. 
+
+
+This analysis can be run using the following line in the shell
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\noindent
+\ttfamily
+\hlstd{Rscript\ analysis}\hlopt{/}\hlstd{networks}\hlopt{/}\hlstd{Znetwork\textunderscore posterior.R}\hspace*{\fill}
+\mbox{}
+\normalfont
+\end{kframe}
+\end{knitrout}
+
+
+The second flavor of this analysis uses the probability a species is
+present at a site as inferred from the MCMC samples by taking the mean
+Z value across all samples. This probability is then used as a weight
+when constructing the metacommunity networks. The metrics of those
+weighted networks and then used in the same linear mixed models as the
+above (except without weights).
+
+That analysis can be executed using the following line in the shell. 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\noindent
+\ttfamily
+\hlstd{Rscript\ analysis}\hlopt{/}\hlstd{networks}\hlopt{/}\hlstd{Znetwork.R}\hspace*{\fill}
+\mbox{}
+\normalfont
+\end{kframe}
+\end{knitrout}
+
+
+The last variety of this analysis uses the raw data which includes
+species abundances. The data is not corrected for imperfect detection.
+The 'spTempMets.R' file executes the network analyses. The user can
 provide any network metrics taken by the function 'speciesLevel' in
-the bipartite package. The  $y_{i,j,k}$ network
-metrics of the $i^{\mathrm{th}}$ species at the $j^{\mathrm{th}}$ site
-in the $k^{\mathrm{th}}$ year was modeled as:
+the bipartite package.
 
-%
-\begin{equation}
-\label{eq:lms}
-\begin{split}
-\mathrm{y}_{i,j,k} \sim \mathrm{B}_{i} + \mathrm{k}_{i} +
-\mathrm{site}_{j} + \mathrm{site}_{k} \\   
-\mathrm{site}_{j} \sim N(0, \sigma_{site}) \\  
-\mathrm{year}_{k} \sim N(0, \sigma_{year})
-\hspace{0.2em}
-\end{split}
-\end{equation}
-%
+This analysis can be run using the following line in the shell
 
-
-
-
-
-The results for how species traits affect the role of pollinators in
-the spatial metacommmunity network: 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lapply}\hlstd{(mod.years.pol, summary)}
-\end{alltt}
-\begin{verbatim}
-## $k
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.pol
-## 
-## REML criterion at convergence: 557
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.0281 -0.4275 -0.0558  0.3588  3.4899 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.09441  0.3073  
-##  Site         (Intercept) 0.01585  0.1259  
-##  Residual                 0.16260  0.4032  
-## Number of obs: 413, groups:  GenusSpecies, 102; Site, 10
-## 
-## Fixed effects:
-##              Estimate Std. Error        df t value Pr(>|t|)    
-## (Intercept)  -0.05166    0.05682  20.54598  -0.909   0.3738    
-## r.degree      0.75945    0.04553  92.12789  16.680   <2e-16 ***
-## MeanITD      -0.09329    0.04015 115.53534  -2.324   0.0219 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree 0.169        
-## MeanITD  0.008  0.144 
-## 
-## $weighted.betweenness
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.pol
-## 
-## REML criterion at convergence: -1017.5
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -6.7043 -0.1604 -0.0414  0.1147  7.8436 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.00151  0.03886 
-##  Site         (Intercept) 0.00000  0.00000 
-##  Residual                 0.00381  0.06173 
-## Number of obs: 413, groups:  GenusSpecies, 102; Site, 10
-## 
-## Fixed effects:
-##               Estimate Std. Error         df t value Pr(>|t|)    
-## (Intercept)   0.025858   0.005359 110.137374   4.825 4.53e-06 ***
-## r.degree      0.057224   0.006035  95.986259   9.481 1.94e-15 ***
-## MeanITD      -0.005847   0.005419 124.159779  -1.079    0.283    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree 0.217        
-## MeanITD  0.014  0.150
-\end{verbatim}
+\noindent
+\ttfamily
+\hlstd{Rscript\ analysis}\hlopt{/}\hlstd{networks}\hlopt{/}\hlstd{spTempMets.R}\hspace*{\fill}
+\mbox{}
+\normalfont
 \end{kframe}
 \end{knitrout}
 
 
-And for how species traits affect the role of pollinators in
-the temporal metacommmunity network: 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lapply}\hlstd{(mod.sites.pol, summary)}
-\end{alltt}
-\begin{verbatim}
-## $k
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.site.pol
-## 
-## REML criterion at convergence: 839
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.1765 -0.5764 -0.1379  0.3329  4.0470 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.036829 0.19191 
-##  Site         (Intercept) 0.008274 0.09096 
-##  Residual                 0.368523 0.60706 
-## Number of obs: 429, groups:  GenusSpecies, 98; Site, 17
-## 
-## Fixed effects:
-##             Estimate Std. Error       df t value Pr(>|t|)    
-## (Intercept) -0.03852    0.04514 21.74320  -0.853    0.403    
-## r.degree     0.71464    0.04454 46.96095  16.046   <2e-16 ***
-## MeanITD     -0.05535    0.03911 97.36820  -1.415    0.160    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree  0.136       
-## MeanITD  -0.022  0.221
-## 
-## $weighted.betweenness
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.site.pol
-## 
-## REML criterion at convergence: -601.4
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.1409 -0.2313 -0.0816  0.1394  6.5257 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.001316 0.03628 
-##  Site         (Intercept) 0.000000 0.00000 
-##  Residual                 0.012708 0.11273 
-## Number of obs: 429, groups:  GenusSpecies, 98; Site, 17
-## 
-## Fixed effects:
-##               Estimate Std. Error         df t value Pr(>|t|)    
-## (Intercept)   0.038922   0.007243  97.667693   5.374 5.24e-07 ***
-## r.degree      0.075158   0.008329  71.313326   9.024 2.04e-13 ***
-## MeanITD      -0.007204   0.007262 137.218365  -0.992    0.323    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree  0.173       
-## MeanITD  -0.035  0.222
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-
-Lastly, for how patch ``traits" affect their role in spatial  metacommmunity network: 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lapply}\hlstd{(mod.years.site, summary)}
-\end{alltt}
-\begin{verbatim}
-## $k
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.site
-## 
-## REML criterion at convergence: 398.3
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -1.8047 -0.6924 -0.1022  0.5191  2.7629 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.3167   0.5627  
-##  Site         (Intercept) 0.0000   0.0000  
-##  Residual                 0.4947   0.7033  
-## Number of obs: 163, groups:  GenusSpecies, 31; Site, 10
-## 
-## Fixed effects:
-##              Estimate Std. Error        df t value Pr(>|t|)    
-## (Intercept)   0.01499    0.11809  25.22235   0.127    0.900    
-## Div           0.28437    0.06903 157.27042   4.120 6.12e-05 ***
-## natArea      -0.02375    0.10887  28.87677  -0.218    0.829    
-## hrArea        0.16699    0.13577  21.48215   1.230    0.232    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##         (Intr) Div    natAre
-## Div      0.011              
-## natArea -0.060 -0.059       
-## hrArea   0.069  0.050  0.167
-## 
-## $weighted.betweenness
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.site
-## 
-## REML criterion at convergence: -190.5
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -1.6527 -0.3194 -0.1939 -0.0430  6.1733 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.003197 0.05655 
-##  Site         (Intercept) 0.000000 0.00000 
-##  Residual                 0.013625 0.11673 
-## Number of obs: 163, groups:  GenusSpecies, 31; Site, 10
-## 
-## Fixed effects:
-##               Estimate Std. Error         df t value Pr(>|t|)   
-## (Intercept)   0.048898   0.014083  29.699705   3.472  0.00161 **
-## Div           0.023152   0.010796 154.423397   2.145  0.03355 * 
-## natArea      -0.002564   0.013378  37.990886  -0.192  0.84902   
-## hrArea        0.029587   0.015608  22.753103   1.896  0.07079 . 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##         (Intr) Div    natAre
-## Div      0.015              
-## natArea -0.046 -0.090       
-## hrArea   0.051  0.076  0.148
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-
-The plotting is then executed in the accompanying
-$plotting/spTempMets.R$ script.
-
-\clearpage
-
-\begin{figure} \centering
-\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htFALSE.pdf}
-\label{fig:connectivity} \caption{The relationship between species and
-patch traits and their position in the metacommunity network when the
-supergeneralists are not included in the community. Floral diet
-breadth was positively related to both species degree (standardized)
-and centrality and floral within a year across patches (spatial
-network) and within a patch across years (temporal network). Body size
-(mean intertegular distance, mm) was negatively related to species
-degree but not centrality in the spatial network.  In addition, the
-floral diversity of a patch was positively related to its degree and
-centrality (marginally significant) within the patch network within a
-year. Points represent means for each species or patch. The solid line
-indicates the mean slope estimate and the dashed lines are the $95\%$
-confidence intervals around the estimate.}  \end{figure} \clearpage
-
-
-
-
-
-
-The results for how species traits affect the role of pollinators in
-the spatial metacommmunity network without supergeneralists: 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lapply}\hlstd{(mod.years.pol, summary)}
-\end{alltt}
-\begin{verbatim}
-## $k
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.pol
-## 
-## REML criterion at convergence: 767.9
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.3223 -0.4184 -0.0923  0.3166  3.7501 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.1755   0.41892 
-##  Site         (Intercept) 0.0093   0.09644 
-##  Residual                 0.3026   0.55012 
-## Number of obs: 393, groups:  GenusSpecies, 100; Site, 10
-## 
-## Fixed effects:
-##              Estimate Std. Error        df t value Pr(>|t|)    
-## (Intercept)  -0.06969    0.06361  34.03898  -1.096   0.2810    
-## r.degree      0.56697    0.05783 104.66451   9.804   <2e-16 ***
-## MeanITD      -0.11872    0.05480 117.17997  -2.167   0.0323 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree 0.214        
-## MeanITD  0.003  0.012 
-## 
-## $weighted.betweenness
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.years.pol
-## 
-## REML criterion at convergence: -1183.1
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.6166 -0.1857 -0.0309  0.0624  7.3648 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.002304 0.04800 
-##  Site         (Intercept) 0.000000 0.00000 
-##  Residual                 0.001805 0.04249 
-## Number of obs: 393, groups:  GenusSpecies, 100; Site, 10
-## 
-## Fixed effects:
-##               Estimate Std. Error         df t value Pr(>|t|)    
-## (Intercept)   0.023876   0.005808 106.531229   4.111 7.78e-05 ***
-## r.degree      0.035537   0.006057 108.007658   5.867 4.93e-08 ***
-## MeanITD      -0.005655   0.005648 118.283865  -1.001    0.319    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree 0.326        
-## MeanITD  0.004  0.002
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-
-And for how species traits affect the role of pollinators in
-the temporal metacommmunity network without super generalists: 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lapply}\hlstd{(mod.sites.pol, summary)}
-\end{alltt}
-\begin{verbatim}
-## $k
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.site.pol
-## 
-## REML criterion at convergence: 919.9
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -3.1393 -0.5599 -0.1581  0.2961  3.4808 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.06921  0.2631  
-##  Site         (Intercept) 0.00000  0.0000  
-##  Residual                 0.62262  0.7891  
-## Number of obs: 372, groups:  GenusSpecies, 95; Site, 15
-## 
-## Fixed effects:
-##              Estimate Std. Error        df t value Pr(>|t|)    
-## (Intercept)  -0.02572    0.05326  81.36366  -0.483    0.631    
-## r.degree      0.48541    0.05630  73.50603   8.623 9.04e-13 ***
-## MeanITD      -0.06897    0.05278 100.38555  -1.307    0.194    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree  0.141       
-## MeanITD  -0.034  0.059
-## 
-## $weighted.betweenness
-## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-## lmerModLmerTest]
-## Formula: x
-##    Data: specs.site.pol
-## 
-## REML criterion at convergence: -496.9
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -2.6593 -0.3989 -0.1419  0.0920  6.6031 
-## 
-## Random effects:
-##  Groups       Name        Variance Std.Dev.
-##  GenusSpecies (Intercept) 0.001649 0.0406  
-##  Site         (Intercept) 0.000000 0.0000  
-##  Residual                 0.013291 0.1153  
-## Number of obs: 372, groups:  GenusSpecies, 95; Site, 15
-## 
-## Fixed effects:
-##               Estimate Std. Error         df t value Pr(>|t|)    
-## (Intercept)   0.036438   0.007956  99.335554   4.580 1.35e-05 ***
-## r.degree      0.045370   0.008419  91.554906   5.389 5.47e-07 ***
-## MeanITD      -0.012505   0.007865 122.245992  -1.590    0.114    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Correlation of Fixed Effects:
-##          (Intr) r.degr
-## r.degree  0.154       
-## MeanITD  -0.036  0.057
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-\clearpage
-
-
-\begin{figure} \centering
-\includegraphics[width=1\textwidth]{figure/all_sig_drop_li_htTRUE.pdf}
-\label{fig:connectivity} \caption{The relationship between species and
-patch traits and their position in the metacommunity network when the
-supergeneralists are not included in the community. Floral diet
-breadth was positively related to both species degree (standardized)
-and centrality and floral within a year across patches (spatial
-network) and within a patch across years (temporal network). Body size
-(mean intertegular distance, mm) was negatively related to species
-degree but not centrality in the spatial network.  In addition, the
-floral diversity of a patch was positively related to its degree and
-centrality (marginally significant) within the patch network within a
-year. Points represent means for each species or patch. The solid line
-indicates the mean slope estimate and the dashed lines are the $95\%$
-confidence intervals around the estimate.}  \end{figure} \clearpage
+All of these flavors results in the same inferences about the effect
+of site and species traits on their metacommunity network roles. 
 
 
 \clearpage
