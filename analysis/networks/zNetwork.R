@@ -2,16 +2,19 @@
 setwd('analysis/networks')
 source('src/initialize.R')
 
+
 ## load the GIANT model file that tracks all of the latent states
-## load('~/Dropbox/hedgerow_metacom_saved/occupancy/runs/Z_all_2500_350.Rdata')
-## samples <- do.call(rbind, ms.ms.nimble)
-## samples.z <- samples[, grepl("Z", colnames(samples))]
-## samples.z <- colSums(samples.z)/nrow(samples.z)
-## z.array <- array(samples.z,
-##                  dim=dim(model.input$data$Z),
-##                  dimnames=dimnames(model.input$data$Z))
-## save(z.array,
-##      file=sprintf('saved/zarray_drop_li_ht%s.Rdata', drop.li.ht))
+load.dir <- "../../../hedgerow_metacom_saved/occupancy/runs"
+load(file.path(load.dir, 'all_2500_350_FALSE.Rdata'))
+
+samples <- do.call(rbind, ms.ms.nimble)
+samples.z <- samples[, grepl("Z", colnames(samples))]
+samples.z <- colSums(samples.z)/nrow(samples.z)
+z.array <- array(samples.z,
+                 dim=dim(model.input$data$Z),
+                 dimnames=dimnames(model.input$data$Z))
+save(z.array,
+     file=sprintf('saved/zarray_drop_li_ht%s.Rdata', drop.li.ht))
 
 load(file=sprintf('saved/zarray_drop_li_ht%s.Rdata', drop.li.ht))
 

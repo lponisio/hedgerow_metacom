@@ -7,7 +7,8 @@ library(parallel)
 options(ncores=10)
 
 ## load the GIANT model file that tracks all of the latent states
-load('../../../hedgerow_metacom_saved/occupancy/runs/Z_all_2500_350.Rdata')
+load.dir <- "../../../hedgerow_metacom_saved/occupancy/runs"
+load(file.path(load.dir, 'all_2500_350_FALSE.Rdata'))
 
 zs <- grepl("Z", colnames(ms.ms.nimble[[1]]))
 samples.z <- lapply(ms.ms.nimble, function(x) x[,zs])
