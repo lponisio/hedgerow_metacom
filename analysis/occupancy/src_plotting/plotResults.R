@@ -2,9 +2,11 @@
 
 if(!exists("ms.ms.nimble")){
     load(file=file.path(save.dir,
-                        sprintf('runs/%s_%s_%s.Rdata',
+                        sprintf('runs/%s_%s_%s_%s.Rdata',
                                 data.subset,
-                                natural.decay, HR.decay)))
+                                natural.decay,
+                                HR.decay,
+                                filtering)))
 }
 if(is.list(ms.ms.nimble$samples)){
     samples.4.table <- do.call(rbind, ms.ms.nimble$samples)

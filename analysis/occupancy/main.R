@@ -30,8 +30,8 @@ model.input <- prepModel()
 ## ## ## ****************************************************************
 ## ## run model
 ## ## *****************************************************************
-burnin <- 1e1*scale
-niter <- (1e3)*scale
+burnin <- 1e1*mcmc.scale
+niter <- (1e3)*mcmc.scale
 nthin <- 2
 nchain <- 3
 
@@ -64,10 +64,11 @@ ms.ms.nimble <- runMCMC(C.mcmc, niter=niter,
                         nburnin=burnin,
                         WAIC=FALSE)
 save(ms.ms.nimble, model.input, file=file.path(save.dir,
-                                               sprintf('runs/%s_%s_%s.Rdata',
+                                               sprintf('runs/%s_%s_%s_%s.Rdata',
                                                        data.subset,
                                                        natural.decay,
-                                                       HR.decay)))
+                                                       HR.decay,
+                                                       filtering)))
 
 source('src_plotting/plotResults.R')
 checkChains()

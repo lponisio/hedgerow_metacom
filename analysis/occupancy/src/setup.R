@@ -47,14 +47,6 @@ getParams <- function(){
       'gam.hr.area.B',
       'gam.nat.area.B'
 
-
-      ## ## site level effects
-      ## 'phi.nat.area',
-      ## 'phi.hr.area',
-      ## 'phi.hr.area.fra',
-      ## 'phi.nat.area.fra',
-      ## 'phi.hr.area.k'
-
       )
 }
 

@@ -49,8 +49,8 @@ load('../../data/veg.Rdata')
 if(length(args) == 0){
     natural.decay  <- "2500"
     HR.decay <- "350"
-    filtering <- FALSE
-    scale <- 1e2
+    filtering <- TRUE
+    mcmc.scale <- 1e2
     data.subset <- "all"
 }else{
     natural.decay <- args[1]
@@ -58,11 +58,11 @@ if(length(args) == 0){
     filtering <- args[3]
     if(filtering == "filtering"){
         filtering <- TRUE
-    } else {
+    } else if(filtering == "latent"){
         filtering <- FALSE
     }
     data.subset <- args[4]
-    scale <- as.numeric(args[5])
+    mcmc.scale <- as.numeric(args[5])
 }
 
 if(data.subset == "hedgerow"){

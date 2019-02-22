@@ -113,11 +113,6 @@ ms.ms.occ <- nimbleCode({
                 }
             }
 
-
-            ## logit(p[site, 1:nyear, 1:max.nreps, sp]) <- p.0[sp] +
-            ##     p.day.1[sp]*day[site, 1:nyear, 1:max.nreps,sp] +
-            ##     p.day.2[sp]*day.2[site,1:nyear,1:max.nreps,sp]
-
             ## start off at the average for each species, site across years
             logit(phi.site.sp.mean[site,sp]) <- mean(phi[site, 1:(nyear-1),sp])
             logit(gam.site.sp.mean[site,sp]) <- mean(gam[site,1:(nyear-1),sp])
@@ -135,7 +130,7 @@ ms.ms.occ <- nimbleCode({
                 phi[site,yr,sp] <-
                     phi.0[sp] +
                     phi.k*k[sp] +
-                    ## phi.B*B[sp] +
+                     phi.B*B[sp] +
                     phi.hr.area[sp]*HRarea[site] +
                     phi.nat.area[sp]*natural[site] +
                     phi.fra[sp]*fra[site, yr] +
