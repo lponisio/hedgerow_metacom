@@ -1,6 +1,6 @@
 # hedgerow_metacom
 Analysis code for "Proximity of restored hedgerows interacts with local floral diversity and species traits to shape  long-term pollinator metacommunity dynamics". 
-Please refer to witeup (writeup/writeup.pdf) for a description of the organization of the repo and instructions on how to use the scripts. 
+Please refer to witeup (writeup/writeup.pdf) for a description of the organization of the repo and instructions on how to use the scripts. The data accompanies the code for reproducibility, but we ask to be contacted (lponisio@gmail.com and ckremen@zoology.ubc.ca) if authors wish to use the data for a publication.
 
 In our study we examine the metacommunity dynamics of plant-pollinator communities using variety of different methods including 1) occupancy modeling and 2) network analyses.  We are committed to reproducible science and all analytical code will be maintained on github, along with this write up.
 
