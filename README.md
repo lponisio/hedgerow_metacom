@@ -4,7 +4,7 @@ Please refer to witeup (writeup/writeup.pdf) for a description of the organizati
 
 In our study we examine the metacommunity dynamics of plant-pollinator communities using variety of different methods including 1) occupancy modeling and 2) network analyses.  We are committed to reproducible science and all analytical code will be maintained on github, along with this write up.
 
-The entire analysis is executable from the main.sh file. All of the packages needed to run the analyses are listed in the packages.sh file. All analyses were run using R (version $3.5.1$) and nimble (0.6-12).
+The entire analysis is executable from the main.sh file. All of the packages needed to run the analyses are listed in the packages.sh file. All analyses were run using R (version 3.5.1) and nimble (0.6-12).
 
 Note, there is an incompatibility with Nimble version 7.0 released in February 2019. If this effects you can you either install the older version of Nimble, or install from the branch "avoid-protect-stack-overflow" directly from github. See post at \url{https://groups.google.com/forum/#!topic/nimble-users/k6VMapOfxOk}
 
